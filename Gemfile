@@ -27,7 +27,12 @@ gem "stimulus-rails"
 gem "jbuilder"
 
 # Google Drive APIのgem
-gem 'google-apis-drive_v2', '~> 0.1'
+gem 'google-apis-drive_v3'
+# google APIの認証用のgem
+gem 'googleauth'
+
+gem 'pry-rails'
+
 
 # Use Redis adapter to run Action Cable in production
 # gem "redis", ">= 4.0.1"
