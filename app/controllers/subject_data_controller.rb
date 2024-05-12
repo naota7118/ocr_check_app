@@ -23,7 +23,13 @@ class SubjectDataController < ApplicationController
       auth_client.fetch_access_token!
       auth_client.client_secret = nil
       session[:credentials] = auth_client.to_json
-      binding.pry
+
+      client_opts = JSON.parse(session[:credentials])
+      auth_client = Signet::OAuth2::Client.new(client_opts)
+      drive = Google::Apis::DriveV3::DriveService.new
+      drive.authorization = auth_client
+      files = drive.list_files
+      @data = JSON.pretty_generate(files.to_h)
     end
   end
 
