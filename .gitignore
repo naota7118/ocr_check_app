@@ -34,5 +34,3 @@
 # Ignore master key for decrypting credentials and more.
 /config/master.key
 
-# Google認証情報はGitHubに公開しない
-client_secrets.json
