@@ -28,8 +28,19 @@ class SubjectDataController < ApplicationController
       auth_client = Signet::OAuth2::Client.new(client_opts)
       drive = Google::Apis::DriveV3::DriveService.new
       drive.authorization = auth_client
-      files = drive.list_files
-      @data = JSON.pretty_generate(files.to_h)
+
+      # ファイル一覧を表示
+      # files = drive.list_files
+      # @data = JSON.pretty_generate(files.to_h)
+
+      # Search for files in Drive (first page only)
+      files = drive.list_files(q: "name contains 'エクセルデータのサンプル.pdf'")
+      files.files.each_with_index do |file, i|
+        drive.get_file(file.id, download_dest: "/Users/naota7118/ocr_check_app/tmp/sample.pdf")       
+        @data = drive.export_file(file.id, 'text/plain', download_dest: "/Users/naota7118/ocr_check_app/tmp/sample.txt")
+      end
+      
+      
     end
   end
 
