@@ -29,18 +29,15 @@ class SubjectDataController < ApplicationController
       drive = Google::Apis::DriveV3::DriveService.new
       drive.authorization = auth_client
 
-      # ファイル一覧を表示
-      # files = drive.list_files
-      # @data = JSON.pretty_generate(files.to_h)
+      # ファイルをアップロード
+      metadata = Google::Apis::DriveV3::File.new(title: 'My document')
+      metadata = drive.create_file(metadata, upload_source: './tmp/sample.pdf', content_type: 'application/pdf')
 
-      # Search for files in Drive (first page only)
-      files = drive.list_files(q: "name contains 'エクセルデータのサンプル.pdf'")
-      files.files.each_with_index do |file, i|
-        drive.get_file(file.id, download_dest: "/Users/naota7118/ocr_check_app/tmp/sample.pdf")       
-        @data = drive.export_file(file.id, 'text/plain', download_dest: "/Users/naota7118/ocr_check_app/tmp/sample.txt")
-      end
+      # Googleドキュメント形式に変換
+      converted_file = drive.copy_file(metadata.id, Google::Apis::DriveV3::File.new(mime_type: 'application/vnd.google-apps.document'))
       
-      
+      # ファイルを出力
+      drive.export_file(converted_file.id, 'text/plain', download_dest: './tmp/sample.txt')
     end
   end
 
