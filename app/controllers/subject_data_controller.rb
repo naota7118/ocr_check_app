@@ -28,8 +28,16 @@ class SubjectDataController < ApplicationController
       auth_client = Signet::OAuth2::Client.new(client_opts)
       drive = Google::Apis::DriveV3::DriveService.new
       drive.authorization = auth_client
-      files = drive.list_files
-      @data = JSON.pretty_generate(files.to_h)
+
+      # ファイルをアップロード
+      metadata = Google::Apis::DriveV3::File.new(title: 'My document')
+      metadata = drive.create_file(metadata, upload_source: './tmp/sample.pdf', content_type: 'application/pdf')
+
+      # Googleドキュメント形式に変換
+      converted_file = drive.copy_file(metadata.id, Google::Apis::DriveV3::File.new(mime_type: 'application/vnd.google-apps.document'))
+      
+      # ファイルを出力
+      drive.export_file(converted_file.id, 'text/plain', download_dest: './tmp/sample.txt')
     end
   end
 
