@@ -30,9 +30,10 @@ gem "jbuilder"
 gem 'google-apis-drive_v3'
 # google APIの認証用のgem
 gem 'googleauth'
-
+# デバッグツール
 gem 'pry-rails'
-
+# ExcelをCSVのように読み込む
+gem "roo", "~> 2.10.0"
 
 # Use Redis adapter to run Action Cable in production
 # gem "redis", ">= 4.0.1"
