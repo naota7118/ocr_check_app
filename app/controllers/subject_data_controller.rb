@@ -4,6 +4,7 @@ class SubjectDataController < ApplicationController
     require 'google/apis/drive_v3'
     require 'google/api_client/client_secrets'
     require 'csv'
+    require 'roo'
   
     # client_secret.jsonファイルを読み取ってオブジェクトを作成
     client_secrets = Google::APIClient::ClientSecrets.load
@@ -40,7 +41,7 @@ class SubjectDataController < ApplicationController
       # テキストファイルを出力
       drive.export_file(converted_file.id, 'text/plain', download_dest: './tmp/sample.txt')
 
-      # 文字を抽出
+      # テキストファイルから文字を抽出
       @lines = []
       File.open("./tmp/sample.txt", "r") do |f|
         f.each_line do |l|
@@ -49,8 +50,18 @@ class SubjectDataController < ApplicationController
             @lines.push(s)
           end
         end
-
       end
+
+      # Excelからデータを取得
+      xlsx = Roo::Excelx.new("./tmp/sample.xlsx")
+      @excel_data = xlsx.parse(headers: true, clean: true)
+
+      #Excelからidだけ取得
+      @excel_id = @excel_data.map do |hash|
+        hash['被験者番号']
+      end
+      # 配列の先頭はidではないので削除
+      @excel_id.shift
     end
   end
 
