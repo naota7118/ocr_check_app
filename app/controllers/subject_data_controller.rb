@@ -3,6 +3,7 @@ class SubjectDataController < ApplicationController
   def index  
     require 'google/apis/drive_v3'
     require 'google/api_client/client_secrets'
+    require 'csv'
   
     # client_secret.jsonファイルを読み取ってオブジェクトを作成
     client_secrets = Google::APIClient::ClientSecrets.load
@@ -36,8 +37,20 @@ class SubjectDataController < ApplicationController
       # Googleドキュメント形式に変換
       converted_file = drive.copy_file(metadata.id, Google::Apis::DriveV3::File.new(mime_type: 'application/vnd.google-apps.document'))
       
-      # ファイルを出力
+      # テキストファイルを出力
       drive.export_file(converted_file.id, 'text/plain', download_dest: './tmp/sample.txt')
+
+      # 文字を抽出
+      @lines = []
+      File.open("./tmp/sample.txt", "r") do |f|
+        f.each_line do |l|
+          s = l.chomp.strip
+          if s.include?('CHIBA')
+            @lines.push(s)
+          end
+        end
+
+      end
     end
   end
 
