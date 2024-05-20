@@ -1,5 +1,22 @@
 class SubjectDataController < ApplicationController
 
+  # PDFデータとExcelデータを照合する
+  def verify_suject_id(pdf_data, excel_data)
+    # 不一致の件数をカウントする
+    @count = 0
+    @result = []
+    pdf_data.each_with_index do |subject_id, i|
+      if pdf_data[i] == excel_data[i]
+        @result << "一致しています"
+      else
+        @result << "一致しません。\n
+        PDFのIDは#{pdf_data[i]}です。\n
+        ExcelのIDは#{excel_data[i]}です。"
+        @count += 1
+      end
+    end
+  end
+
   def index  
     require 'google/apis/drive_v3'
     require 'google/api_client/client_secrets'
@@ -42,12 +59,12 @@ class SubjectDataController < ApplicationController
       drive.export_file(converted_file.id, 'text/plain', download_dest: './tmp/sample.txt')
 
       # テキストファイルから文字を抽出
-      @lines = []
+      @pdf_id = []
       File.open("./tmp/sample.txt", "r") do |f|
         f.each_line do |l|
           s = l.chomp.strip
           if s.include?('CHIBA')
-            @lines.push(s)
+            @pdf_id.push(s)
           end
         end
       end
@@ -62,6 +79,9 @@ class SubjectDataController < ApplicationController
       end
       # 配列の先頭はidではないので削除
       @excel_id.shift
+
+      # PDFデータとExcelデータを照合する
+      verify_suject_id(@pdf_id, @excel_id)
     end
   end
 
