@@ -1,2 +1,6 @@
-<%= @lines %>
+<%= @pdf_id %>
 <%= @excel_id %>
+<% @result.each do |result| %>
+  <%= result %>
+<% end %>
+不一致の件数は<%= @count %>件です。
