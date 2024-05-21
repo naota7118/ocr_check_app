@@ -59,14 +59,23 @@ class SubjectDataController < ApplicationController
     end
   end
 
+  def create
+    uploaded_file = params[:file]
+    excel_file_path = Rails.root.join("public/uploads/#{uploaded_file.original_filename}")
+    File.open(excel_file_path, 'w+b') do |file|
+      file.write(uploaded_file.read)
+      binding.pry
+    end
+  end
+
   def index
-    pass_authentication
-    return if performed?
-    convert(@drive)
-    get_id_from_text
-    get_id_from_excel
-    # PDFデータとExcelデータを照合する
-    verify_suject_id(@pdf_id, @excel_id)
+    # pass_authentication
+    # return if performed?
+    # convert(@drive)
+    # get_id_from_text
+    # get_id_from_excel
+    # # PDFデータとExcelデータを照合する
+    # verify_suject_id(@pdf_id, @excel_id)
   end
 
   private

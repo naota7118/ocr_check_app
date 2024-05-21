@@ -1,7 +1,4 @@
-<%= @pdf_id %>
-<%= @excel_id %>
-<% @result.each do |result| %>
-  <%= result %>
+<%= form_with url: "/subject_data", multipart: true do |form| %>
+  <%= file_field_tag :file %>
+  <%= form.submit %>
 <% end %>
-不一致の件数は<%= @count %>件です。
-
