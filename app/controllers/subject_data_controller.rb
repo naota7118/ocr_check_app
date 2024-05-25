@@ -59,12 +59,15 @@ class SubjectDataController < ApplicationController
     end
   end
 
+  # ファイルをアップロード
   def create
-    uploaded_file = params[:file]
-    excel_file_path = Rails.root.join("public/uploads/#{uploaded_file.original_filename}")
-    File.open(excel_file_path, 'w+b') do |file|
-      file.write(uploaded_file.read)
-      binding.pry
+    uploaded_files = params[:uploads]
+    uploaded_files.shift # 最初の要素を削除
+    uploaded_files.each do |uploaded_file|
+      file_path = Rails.root.join("public/uploads/#{uploaded_file.original_filename}")
+      File.open(file_path, 'w+b') do |file|
+        file.write(uploaded_file.read)
+      end
     end
   end
 
