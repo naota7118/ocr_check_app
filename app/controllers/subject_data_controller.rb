@@ -33,6 +33,12 @@ class SubjectDataController < ApplicationController
       
     # テキストファイルを出力
     drive.export_file(converted_file.id, 'text/plain', download_dest: './tmp/txt/sample.txt')
+
+    # GoogleドライブからPDFファイルを削除する
+    drive.delete_file(metadata.id)
+    # GoogleドライブからGoogleドキュメントファイルを削除する
+    binding.pry
+    drive.delete_file(converted_file.id)
   end
 
   def get_id_from_text #テキストファイルからIDを取得
@@ -96,7 +102,7 @@ class SubjectDataController < ApplicationController
     delete_files
   end
 
-  # ファイルを削除する
+  # ローカルからファイルを削除する
   def delete_files
     FileUtils.rm_r(Dir.glob("#{Rails.root.join("public/uploads/*.xlsx")}"))
     FileUtils.rm_r(Dir.glob("#{Rails.root.join("public/uploads/*.pdf")}"))
