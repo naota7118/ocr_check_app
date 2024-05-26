@@ -2,6 +2,7 @@ require 'google/apis/drive_v3'
 require 'google/api_client/client_secrets'
 require 'csv'
 require 'roo'
+require 'Fileutils'
 
 class SubjectDataController < ApplicationController
 
@@ -31,12 +32,12 @@ class SubjectDataController < ApplicationController
     converted_file = drive.copy_file(metadata.id, Google::Apis::DriveV3::File.new(mime_type: 'application/vnd.google-apps.document'))
       
     # テキストファイルを出力
-    drive.export_file(converted_file.id, 'text/plain', download_dest: './tmp/sample.txt')
+    drive.export_file(converted_file.id, 'text/plain', download_dest: './tmp/txt/sample.txt')
   end
 
   def get_id_from_text #テキストファイルからIDを取得
     @pdf_id = []
-    File.open("./tmp/sample.txt", "r") do |f|
+    File.open("./tmp/txt/sample.txt", "r") do |f|
       f.each_line do |l|
         s = l.chomp.strip
         if s.include?('CHIBA')
@@ -68,21 +69,22 @@ class SubjectDataController < ApplicationController
     @result = []
     pdf_data.each_with_index do |subject_id, i|
       if pdf_data[i] == excel_data[i]
-        puts @result << "一致しています"
+        @result << "一致しています"
       else
-        puts @result << "一致しません。\n
+        @result << "一致しません。\n
         PDFのIDは#{pdf_data[i]}です。\n
         ExcelのIDは#{excel_data[i]}です。"
         @count += 1
       end
     end
+
   end
 
   def index
     
   end
 
-  def result
+  def result #照合して結果を表示
     pass_authentication
     return if performed?
     convert(@drive)
@@ -90,6 +92,15 @@ class SubjectDataController < ApplicationController
     get_id_from_excel
     # PDFデータとExcelデータを照合する
     verify_suject_id(@pdf_id, @excel_id)
+    # 照合が完了したらファイルを削除する
+    delete_files
+  end
+
+  # ファイルを削除する
+  def delete_files
+    FileUtils.rm_r(Dir.glob("#{Rails.root.join("public/uploads/*.xlsx")}"))
+    FileUtils.rm_r(Dir.glob("#{Rails.root.join("public/uploads/*.pdf")}"))
+    FileUtils.rm_r(Dir.glob("#{Rails.root.join("tmp/txt/*.txt")}"))
   end
 
   private
