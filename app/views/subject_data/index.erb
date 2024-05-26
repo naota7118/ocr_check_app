@@ -1,4 +1,4 @@
-<%= form_with url: "/subject_data", method: :post, enctype: "multipart/form-data" do |form| %>
+<%= form_with url: "/subject_data", method: :post, enctype: "multipart/form-data", data: { turbo: false } do |form| %>
   <p>
     <label for="uploads">ファイルを選択してください：</label>
     <%= form.file_field :uploads, name: "uploads[]", multiple: true, accept: ".xlsx, .pdf" %>
