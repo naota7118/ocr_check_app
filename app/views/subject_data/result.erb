@@ -1,6 +1,20 @@
-<%= @pdf_id %>
-<%= @excel_id %>
-<% @result.each do |result| %>
-  <%= result %>
-<% end %>
-不一致の件数は<%= @count %>件です。
+<div>
+  <p>PDFデータのID一覧</p>
+  <%= @pdf_id %>
+</div>
+<br>
+<div>
+  <p>ExcelデータのID一覧</p>
+  <%= @excel_id %>
+</div>
+<br>
+<div>
+  <p>照合結果</p>
+  <% @result.each do |result| %>
+    <p><%= result %></p>
+  <% end %>
+</div>
+<br>
+<div>
+  不一致の件数は<%= @count %>件です。
+</div>
