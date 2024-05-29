@@ -37,7 +37,6 @@ class SubjectDataController < ApplicationController
     # GoogleドライブからPDFファイルを削除する
     drive.delete_file(metadata.id)
     # GoogleドライブからGoogleドキュメントファイルを削除する
-    binding.pry
     drive.delete_file(converted_file.id)
   end
 
@@ -73,7 +72,7 @@ class SubjectDataController < ApplicationController
     # 不一致の件数をカウントする
     @count = 0
     @result = []
-    pdf_data.each_with_index do |subject_id, i|
+    pdf_data.each_with_index do |_, i|
       if pdf_data[i] == excel_data[i]
         @result << "一致しています"
       else
