@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'google/apis/drive_v3'
 require 'google/api_client/client_secrets'
 require 'csv'
@@ -5,7 +7,6 @@ require 'roo'
 require 'Fileutils'
 
 class SubjectDataController < ApplicationController
-
   # ファイルをアップロード
   def create
     uploaded_files = params[:uploads]
@@ -20,17 +21,18 @@ class SubjectDataController < ApplicationController
     redirect_to result_path
   end
 
-  def convert(drive) #PDFファイルからテキストファイルに変換
+  # PDFファイルからテキストファイルに変換
+  def convert(drive)
     # Google Driveにファイルをアップロード
     metadata = Google::Apis::DriveV3::File.new(title: 'My document')
     # PDFファイルのパス取得してupload_sourceに代入
-    Dir.glob("#{Rails.root.join("public/uploads/*.pdf")}").each do |pdf|
+    Dir.glob(Rails.root.join('public/uploads/*.pdf').to_s).each do |pdf|
       metadata = drive.create_file(metadata, upload_source: pdf, content_type: 'application/pdf')
     end
 
     # Googleドキュメント形式に変換
     converted_file = drive.copy_file(metadata.id, Google::Apis::DriveV3::File.new(mime_type: 'application/vnd.google-apps.document'))
-      
+
     # テキストファイルを出力
     drive.export_file(converted_file.id, 'text/plain', download_dest: './tmp/txt/sample.txt')
 
@@ -40,26 +42,26 @@ class SubjectDataController < ApplicationController
     drive.delete_file(converted_file.id)
   end
 
-  def get_id_from_text #テキストファイルからIDを取得
+  # テキストファイルからIDを取得
+  def get_id_from_text
     @pdf_id = []
-    File.open("./tmp/txt/sample.txt", "r") do |f|
+    File.open('./tmp/txt/sample.txt', 'r') do |f|
       f.each_line do |l|
         s = l.chomp.strip
-        if s.include?('CHIBA')
-          @pdf_id.push(s)
-        end
+        @pdf_id.push(s) if s.include?('CHIBA')
       end
     end
   end
 
-  def get_id_from_excel #エクセルファイルからIDを取得
+  # エクセルファイルからIDを取得
+  def get_id_from_excel
     # Excelからデータを取得
-    Dir.glob("#{Rails.root.join("public/uploads/*.xlsx")}").each do |excel|
+    Dir.glob(Rails.root.join('public/uploads/*.xlsx').to_s).each do |excel|
       @xlsx = Roo::Excelx.new(excel)
     end
     @excel_data = @xlsx.parse(headers: true, clean: true)
 
-    #Excelからidだけ取得
+    # Excelからidだけ取得
     @excel_id = @excel_data.map do |hash|
       hash['被験者番号']
     end
@@ -74,7 +76,7 @@ class SubjectDataController < ApplicationController
     @result = []
     pdf_data.each_with_index do |_, i|
       if pdf_data[i] == excel_data[i]
-        @result << "一致しています"
+        @result << '一致しています'
       else
         @result << "一致しません。\n
         PDFのIDは#{pdf_data[i]}です。\n
@@ -82,16 +84,15 @@ class SubjectDataController < ApplicationController
         @count += 1
       end
     end
-
   end
 
-  def index
-    
-  end
+  def index; end
 
-  def result #照合して結果を表示
+  # 照合して結果を表示
+  def result
     pass_authentication
     return if performed?
+
     convert(@drive)
     get_id_from_text
     get_id_from_excel
@@ -103,25 +104,27 @@ class SubjectDataController < ApplicationController
 
   # ローカルからファイルを削除する
   def delete_files
-    FileUtils.rm_r(Dir.glob("#{Rails.root.join("public/uploads/*.xlsx")}"))
-    FileUtils.rm_r(Dir.glob("#{Rails.root.join("public/uploads/*.pdf")}"))
-    FileUtils.rm_r(Dir.glob("#{Rails.root.join("tmp/txt/*.txt")}"))
+    FileUtils.rm_r(Dir.glob(Rails.root.join('public/uploads/*.xlsx').to_s))
+    FileUtils.rm_r(Dir.glob(Rails.root.join('public/uploads/*.pdf').to_s))
+    FileUtils.rm_r(Dir.glob(Rails.root.join('tmp/txt/*.txt').to_s))
   end
 
   private
-  def pass_authentication # Google API認証を通す
+
+  # Google API認証を通す
+  def pass_authentication
     # client_secret.jsonファイルを読み取ってオブジェクトを作成
     client_secrets = Google::APIClient::ClientSecrets.load
     auth_client = client_secrets.to_authorization
     auth_client.update!(
-      :scope => 'https://www.googleapis.com/auth/drive.metadata.readonly',
-      :redirect_uri => 'http://localhost:3000/result',
-      :additional_parameters => {
-        "access_type" => "offline",         # offline access
-        "include_granted_scopes" => "true"  # incremental auth
+      scope: 'https://www.googleapis.com/auth/drive.metadata.readonly',
+      redirect_uri: 'http://localhost:3000/result',
+      additional_parameters: {
+        'access_type' => 'offline',         # offline access
+        'include_granted_scopes' => 'true'  # incremental auth
       }
     )
-    if request.params['code'] == nil # 認証コードを持っていなかった場合
+    if request.params['code'].nil? # 認証コードを持っていなかった場合
       auth_uri = auth_client.authorization_uri.to_s
       redirect_to auth_uri, allow_other_host: true
     else # 認証コードを持っている場合
