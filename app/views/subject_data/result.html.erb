@@ -1,0 +1,36 @@
+<p>注意：更新ボタンは押さないでください。<p>
+
+<div class="total">
+  不一致の件数は<a class='count'><%= @count %></a>件です。
+</div>
+
+<div class="result_table">
+  <table border="1" style="border-collapse: collapse">
+    <thead>
+      <tr>
+        <th>PDF</th>
+        <th>Excel</th>
+        <th>結果</th>
+      </tr>
+    </thead>
+    <tbody>
+      <% @result.each do |result| %>
+        <tr>
+          <td><%= result[0] %></td>
+          <td><%= result[1] %></td>
+          <td class="result"><%= result[2] %></td>
+        </tr>
+      <% end %>
+    </tbody>
+  </table>
+</div>
+
+<div class="back-btn">
+<%= link_to subject_data_path, class: 'btn btn_back' do %>
+  <i class="fa-solid fa-arrow-left"></i>ファイル選択画面に戻る
+<% end %>
+</div>
+
+<script type="module">
+  import "result";
+</script>

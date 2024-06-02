@@ -75,12 +75,17 @@ class SubjectDataController < ApplicationController
     @count = 0
     @result = []
     pdf_data.each_with_index do |_, i|
+      result_element = []
       if pdf_data[i] == excel_data[i]
-        @result << '一致しています'
+        result_element << pdf_data[i]
+        result_element << excel_data[i]
+        result_element << "一致しています"
+        @result << result_element
       else
-        @result << "一致しません。\n
-        PDFのIDは#{pdf_data[i]}です。\n
-        ExcelのIDは#{excel_data[i]}です。"
+        result_element << pdf_data[i]
+        result_element << excel_data[i]
+        result_element << "一致しません"
+        @result << result_element
         @count += 1
       end
     end
@@ -96,6 +101,7 @@ class SubjectDataController < ApplicationController
     convert(@drive)
     get_id_from_text
     get_id_from_excel
+
     # PDFデータとExcelデータを照合する
     verify_suject_id(@pdf_id, @excel_id)
     # 照合が完了したらファイルを削除する
