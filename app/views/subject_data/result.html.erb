@@ -1,0 +1,27 @@
+<p>注意：更新ボタンは押さないでください。<p>
+
+<div>
+  不一致の件数は<%= @count %>件です。
+</div>
+
+<table border="1" style="border-collapse: collapse">
+  <thead>
+    <tr>
+      <th>PDF</th>
+      <th>Excel</th>
+      <th>結果</th>
+    </tr>
+  </thead>
+  <tbody>
+    <% @result.each do |result| %>
+      <tr>
+        <td><%= result[0] %></td>
+        <td><%= result[1] %></td>
+        <td class="result"><%= result[2] %></td>
+      </tr>
+    <% end %>
+  </tbody>
+</table>
+
+
+<button><%= link_to 'ファイル選択画面に戻る', subject_data_path %></button>
