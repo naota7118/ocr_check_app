@@ -72,6 +72,7 @@ class MocaDataController < ApplicationController
             @pdf_scores << [revised_chars[i-2].to_i, revised_chars[i-1].to_i].join
             @pdf_scores.pop
           else
+            # 1/3が31と表示されるので2ケタ以上は1の位のみ表示
             if ([revised_chars[i-2].to_i, revised_chars[i-1].to_i].join).length == 1
               @pdf_scores << [revised_chars[i-2].to_i, revised_chars[i-1].to_i].join
             else
@@ -79,7 +80,11 @@ class MocaDataController < ApplicationController
             end
           end
         else # それ以外なら1つ前だけ表示
-          @pdf_scores << revised_chars[i-1]
+          if revised_chars.first == '/'
+            @pdf_scores << '読みとり失敗'
+          else
+            @pdf_scores << revised_chars[i-1]
+          end
         end
       end
     end
