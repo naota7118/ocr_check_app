@@ -122,23 +122,16 @@ class MocaDataController < ApplicationController
 
   # PDFデータとExcelデータを照合する
   def verify_suject_id(pdf_data, excel_data)
-    # 不一致の件数をカウントする
     @count = 0
     @result = []
     pdf_data.each_with_index do |_, i|
-      result_element = []
       if pdf_data[i] == excel_data[i]
-        result_element << pdf_data[i]
-        result_element << excel_data[i]
-        result_element << "一致しています"
-        @result << result_element
+        result_element = [pdf_data[i], excel_data[i], "一致しています"]
       else
-        result_element << pdf_data[i]
-        result_element << excel_data[i]
-        result_element << "一致しません"
-        @result << result_element
+        result_element = [pdf_data[i], excel_data[i], "一致しません"]
         @count += 1
       end
+      @result << result_element
     end
   end
 
