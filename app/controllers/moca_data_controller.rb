@@ -63,10 +63,20 @@ class MocaDataController < ApplicationController
       if int != 0
         # /の後ろが30(1つ後ろが3 && 2つ後ろが0)なら2つ前と1つ前を表示
         if revised_chars[i+1].to_i == 3 && revised_chars[i+2].to_i == 0
-          @pdf_scores << [revised_chars[i-2].to_i, revised_chars[i-1].to_i].join
+          puts revised_chars.inspect
+          # 01→1, 03→3に修正
+          if revised_chars[i-2].to_i == 0
+            @pdf_scores << revised_chars[i-1].to_i
           # 26/30は得点ではないので除外
-          if revised_chars[i-2].to_i == 2 && revised_chars[i-1].to_i == 6
+          elsif revised_chars[i-2].to_i == 2 && revised_chars[i-1].to_i == 6
+            @pdf_scores << [revised_chars[i-2].to_i, revised_chars[i-1].to_i].join
             @pdf_scores.pop
+          else
+            if ([revised_chars[i-2].to_i, revised_chars[i-1].to_i].join).length == 1
+              @pdf_scores << [revised_chars[i-2].to_i, revised_chars[i-1].to_i].join
+            else
+              @pdf_scores << revised_chars[i-1]
+            end
           end
         else # それ以外なら1つ前だけ表示
           @pdf_scores << revised_chars[i-1]
@@ -83,7 +93,6 @@ class MocaDataController < ApplicationController
         chars = line.strip.split('')
         revised_chars = one_to_slash(chars)
         if revised_chars.include?('/')
-          puts revised_chars.inspect
           revised_chars.each_with_index do |char, i|
             score(revised_chars, char, i)
           end
