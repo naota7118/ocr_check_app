@@ -63,7 +63,6 @@ class MocaDataController < ApplicationController
       if int != 0
         # /の後ろが30(1つ後ろが3 && 2つ後ろが0)なら2つ前と1つ前を表示
         if revised_chars[i+1].to_i == 3 && revised_chars[i+2].to_i == 0
-          puts revised_chars.inspect
           # 01→1, 03→3に修正
           if revised_chars[i-2].to_i == 0
             @pdf_scores << revised_chars[i-1].to_i
@@ -106,20 +105,19 @@ class MocaDataController < ApplicationController
     end
   end
 
-  # エクセルファイルからIDを取得
+  # エクセルファイルから得点データを取得
   def get_id_from_excel
     # Excelからデータを取得
     Dir.glob(Rails.root.join('public/uploads/*.xlsx').to_s).each do |excel|
       @xlsx = Roo::Excelx.new(excel)
     end
     @excel_data = @xlsx.parse(headers: true, clean: true)
-
     # Excelからidだけ取得
-    @excel_id = @excel_data.map do |hash|
-      hash['被験者番号']
-    end
-    # 配列の先頭はidではないので削除
-    @excel_id.shift
+    @excel_data.shift
+    3.times { @excel_data.first.shift }
+    @excel_scores = []
+    @excel_data.first.each_value { |value| @excel_scores << value }
+    @excel_scores
   end
 
   # PDFデータとExcelデータを照合する
@@ -156,7 +154,7 @@ class MocaDataController < ApplicationController
     get_id_from_excel
 
     # PDFデータとExcelデータを照合する
-    verify_suject_id(@pdf_scores, @excel_id)
+    verify_suject_id(@pdf_scores, @excel_scores)
     # 照合が完了したらファイルを削除する
     delete_files
   end
