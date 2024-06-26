@@ -112,12 +112,20 @@ class MocaDataController < ApplicationController
       @xlsx = Roo::Excelx.new(excel)
     end
     @excel_data = @xlsx.parse(headers: true, clean: true)
-    # Excelからidだけ取得
+    # ヘッダー行は不要
     @excel_data.shift
-    3.times { @excel_data.first.shift }
+    # 被験者番号から時計までの列は不要
+    6.times { @excel_data.first.shift }
+    # 語想起数は不要
+    @excel_data.delete_at(8)
+    # 照合のために必要なデータだけ格納
+    @scales = []
     @excel_scores = []
-    @excel_data.first.each_value { |value| @excel_scores << value }
-    @excel_scores
+    @excel_data.first.each do |k, v|
+      @scales << k
+      @excel_scores << v 
+    end
+    return @scales, @excel_scores
   end
 
   # PDFデータとExcelデータを照合する
