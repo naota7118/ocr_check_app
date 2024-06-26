@@ -55,7 +55,7 @@ class MocaDataController < ApplicationController
     chars
   end
 
-  # x/yのxだけを取得
+  # 得点データx/yのうちxだけを取得
   def score(revised_chars, char, i)
     if char == '/'
       # /の前後が数値でなければ対象外
@@ -125,7 +125,7 @@ class MocaDataController < ApplicationController
     @count = 0
     @result = []
     pdf_data.each_with_index do |_, i|
-      if pdf_data[i] == excel_data[i]
+      if pdf_data[i].to_i == excel_data[i]
         result_element = [pdf_data[i], excel_data[i], "一致しています"]
       else
         result_element = [pdf_data[i], excel_data[i], "一致しません"]
