@@ -4,7 +4,6 @@ require 'google/apis/drive_v3'
 require 'google/api_client/client_secrets'
 require 'csv'
 require 'roo'
-require 'Fileutils'
 
 class MocaDataController < ApplicationController
   # ファイルをアップロード
