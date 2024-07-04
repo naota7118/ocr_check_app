@@ -12,7 +12,6 @@ class MocaDataController < ApplicationController
     uploaded_files.shift # 最初の要素を削除
     uploaded_files.each do |uploaded_file|
       file_path = Rails.root.join("public/uploads/#{uploaded_file.original_filename}")
-      p file_path
       File.open(file_path, 'w+b') do |file|
         file.write(uploaded_file.read)
       end
