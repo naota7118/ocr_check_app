@@ -177,7 +177,7 @@ class MocaDataController < ApplicationController
       scope: 'https://www.googleapis.com/auth/drive.metadata.readonly',
       redirect_uri: 'http://localhost:3000/moca_result',
       additional_parameters: {
-        'access_type' => 'offline',         # offline access
+        'access_type' => 'online',         # online access
         'include_granted_scopes' => 'true'  # incremental auth
       }
     )
