@@ -12,6 +12,7 @@ class MocaDataController < ApplicationController
     uploaded_files.shift # 最初の要素を削除
     uploaded_files.each do |uploaded_file|
       file_path = Rails.root.join("public/uploads/#{uploaded_file.original_filename}")
+      p file_path
       File.open(file_path, 'w+b') do |file|
         file.write(uploaded_file.read)
       end
@@ -177,7 +178,7 @@ class MocaDataController < ApplicationController
       scope: 'https://www.googleapis.com/auth/drive.metadata.readonly',
       redirect_uri: 'http://localhost:3000/moca_result',
       additional_parameters: {
-        'access_type' => 'offline',         # offline access
+        'access_type' => 'online',         # online access
         'include_granted_scopes' => 'true'  # incremental auth
       }
     )
