@@ -46,7 +46,7 @@ class MocaDataController < ApplicationController
     string = chars.join
     defects = %w(010 011 012 013 014 015 016 116 112 113 114 115 116 212 213 214 215 216 313 314 315 316 414 415 416 515 516 616)
     if defects.include?(string)
-      chars = string.split('')
+      chars = string.chars
       chars.each do |char|
         chars[1] = '/'
       end
