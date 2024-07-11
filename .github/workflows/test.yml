@@ -1,0 +1,29 @@
+name: Test
+
+on:
+  push:
+    branched: [ feature/build-ci ]
+  pull_request:
+    branched: [ feature/build-ci ]
+
+jobs:
+  test:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Set up Ruby
+      uses: ruby/setup-ruby@b256bd96bb4867e7d23e92e087d9bb697270b725
+      with: 
+        ruby-version: '3.3.0'
+    
+    - name: Install dependencies
+      run: bundle install
+
+    - name: Run tests
+      run: bundle exec rspec
+
+    - name: Run rubocop
+      run: bundle exec rubocop -a
