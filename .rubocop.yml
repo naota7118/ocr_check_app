@@ -2,6 +2,7 @@ inherit_from: .rubocop_todo.yml
 
 AllCops:
   NewCops: enable
+
 Lint/IncompatibleIoSelectWithFiberScheduler: # new in 1.21
   Enabled: true
 Lint/ItWithoutArgumentsInBlock: # new in 1.59

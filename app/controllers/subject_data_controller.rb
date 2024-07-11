@@ -13,9 +13,7 @@ class SubjectDataController < ApplicationController
     uploaded_files.shift # 最初の要素を削除
     uploaded_files.each do |uploaded_file|
       file_path = Rails.root.join("public/uploads/#{uploaded_file.original_filename}")
-      File.open(file_path, 'w+b') do |file|
-        file.write(uploaded_file.read)
-      end
+      File.binwrite(file_path, uploaded_file.read)
     end
 
     redirect_to result_path
@@ -76,15 +74,13 @@ class SubjectDataController < ApplicationController
     @result = []
     pdf_data.each_with_index do |_, i|
       result_element = []
+      result_element << pdf_data[i]
+      result_element << excel_data[i]
       if pdf_data[i] == excel_data[i]
-        result_element << pdf_data[i]
-        result_element << excel_data[i]
-        result_element << "一致しています"
+        result_element << '一致しています'
         @result << result_element
       else
-        result_element << pdf_data[i]
-        result_element << excel_data[i]
-        result_element << "一致しません"
+        result_element << '一致しません'
         @result << result_element
         @count += 1
       end

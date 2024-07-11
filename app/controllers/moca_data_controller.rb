@@ -12,9 +12,7 @@ class MocaDataController < ApplicationController
     uploaded_files.shift # 最初の要素を削除
     uploaded_files.each do |uploaded_file|
       file_path = Rails.root.join("public/uploads/#{uploaded_file.original_filename}")
-      File.open(file_path, 'w+b') do |file|
-        file.write(uploaded_file.read)
-      end
+      File.binwrite(file_path, uploaded_file.read)
     end
 
     redirect_to moca_result_path
@@ -44,10 +42,10 @@ class MocaDataController < ApplicationController
   # 116を1/6に変換
   def one_to_slash(chars)
     string = chars.join
-    defects = %w(010 011 012 013 014 015 016 116 112 113 114 115 116 212 213 214 215 216 313 314 315 316 414 415 416 515 516 616)
+    defects = %w[010 011 012 013 014 015 016 116 112 113 114 115 116 212 213 214 215 216 313 314 315 316 414 415 416 515 516 616]
     if defects.include?(string)
       chars = string.chars
-      chars.each do |char|
+      chars.each do |_|
         chars[1] = '/'
       end
     end
@@ -56,35 +54,33 @@ class MocaDataController < ApplicationController
 
   # 得点データx/yのうちxだけを取得
   def score(revised_chars, char, i)
-    if char == '/'
-      # /の前後が数値でなければ対象外
-      int = revised_chars[i+1].to_i
-      if int != 0
-        # /の後ろが30(1つ後ろが3 && 2つ後ろが0)なら2つ前と1つ前を表示
-        if revised_chars[i+1].to_i == 3 && revised_chars[i+2].to_i == 0
-          # 01→1, 03→3に修正
-          if revised_chars[i-2].to_i == 0
-            @pdf_scores << revised_chars[i-1].to_i
-          # 26/30は得点ではないので除外
-          elsif revised_chars[i-2].to_i == 2 && revised_chars[i-1].to_i == 6
-            @pdf_scores << [revised_chars[i-2].to_i, revised_chars[i-1].to_i].join
-            @pdf_scores.pop
-          else
-            # 1/3が31と表示されるので2ケタ以上は1の位のみ表示
-            if ([revised_chars[i-2].to_i, revised_chars[i-1].to_i].join).length == 1
-              @pdf_scores << [revised_chars[i-2].to_i, revised_chars[i-1].to_i].join
-            else
-              @pdf_scores << revised_chars[i-1]
-            end
-          end
-        else # それ以外なら1つ前だけ表示
-          if revised_chars.first == '/'
-            @pdf_scores << '読みとり失敗'
-          else
-            @pdf_scores << revised_chars[i-1]
-          end
-        end
+    return unless char == '/'
+
+    # /の前後が数値でなければ対象外
+    int = revised_chars[i + 1].to_i
+    return unless int != 0
+
+    # /の後ろが30(1つ後ろが3 && 2つ後ろが0)なら2つ前と1つ前を表示
+    if revised_chars[i + 1].to_i == 3 && revised_chars[i + 2].to_i.zero?
+      # 01→1, 03→3に修正
+      if revised_chars[i - 2].to_i.zero?
+        @pdf_scores << revised_chars[i - 1].to_i
+      # 26/30は得点ではないので除外
+      elsif revised_chars[i - 2].to_i == 2 && revised_chars[i - 1].to_i == 6
+        @pdf_scores << [revised_chars[i - 2].to_i, revised_chars[i - 1].to_i].join
+        @pdf_scores.pop
+      else
+        # 1/3が31と表示されるので2ケタ以上は1の位のみ表示
+        @pdf_scores << if [revised_chars[i - 2].to_i, revised_chars[i - 1].to_i].join.length == 1
+                         [revised_chars[i - 2].to_i, revised_chars[i - 1].to_i].join
+                       else
+                         revised_chars[i - 1]
+                       end
       end
+    elsif revised_chars.first == '/' # それ以外なら1つ前だけ表示
+      @pdf_scores << '読みとり失敗'
+    else
+      @pdf_scores << revised_chars[i - 1]
     end
   end
 
@@ -93,12 +89,12 @@ class MocaDataController < ApplicationController
     @pdf_scores = []
     File.open('./tmp/txt/sample.txt', 'r') do |f|
       f.each_line do |line|
-        chars = line.strip.split('')
+        chars = line.strip.chars
         revised_chars = one_to_slash(chars)
-        if revised_chars.include?('/')
-          revised_chars.each_with_index do |char, i|
-            score(revised_chars, char, i)
-          end
+        next unless revised_chars.include?('/')
+
+        revised_chars.each_with_index do |char, i|
+          score(revised_chars, char, i)
         end
       end
     end
@@ -122,9 +118,9 @@ class MocaDataController < ApplicationController
     @excel_scores = []
     @excel_data.first.each do |k, v|
       @scales << k
-      @excel_scores << v 
+      @excel_scores << v
     end
-    return @scales, @excel_scores
+    [@scales, @excel_scores]
   end
 
   # PDFデータとExcelデータを照合する
@@ -133,9 +129,9 @@ class MocaDataController < ApplicationController
     @result = []
     pdf_data.each_with_index do |_, i|
       if pdf_data[i].to_i == excel_data[i]
-        result_element = [pdf_data[i], excel_data[i], "一致しています"]
+        result_element = [pdf_data[i], excel_data[i], '一致しています']
       else
-        result_element = [pdf_data[i], excel_data[i], "一致しません"]
+        result_element = [pdf_data[i], excel_data[i], '一致しません']
         @count += 1
       end
       @result << result_element
@@ -177,8 +173,8 @@ class MocaDataController < ApplicationController
       scope: 'https://www.googleapis.com/auth/drive.metadata.readonly',
       redirect_uri: 'http://localhost:3000/moca_result',
       additional_parameters: {
-        'access_type' => 'online',         # online access
-        'include_granted_scopes' => 'true'  # incremental auth
+        'access_type' => 'online', # online access
+        'include_granted_scopes' => 'true' # incremental auth
       }
     )
     if request.params['code'].nil? # 認証コードを持っていなかった場合

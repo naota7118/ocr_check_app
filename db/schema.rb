@@ -12,12 +12,11 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2024_07_07_032400) do
+ActiveRecord::Schema[7.1].define(version: 20_240_707_032_400) do
   create_table 'uploads', charset: 'utf8mb4', collation: 'utf8mb4_0900_ai_ci', force: :cascade do |t|
     t.string 'pdf'
     t.string 'excel'
     t.datetime 'created_at', null: false
     t.datetime 'updated_at', null: false
   end
-
 end
