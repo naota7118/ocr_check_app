@@ -2,9 +2,9 @@ name: Test
 
 on:
   push:
-    branched: [ feature/build-ci ]
+    branched: [ feature/build-cd-pipeline ]
   pull_request:
-    branched: [ feature/build-ci ]
+    branched: [ feature/build-cd-pipeline ]
 
 jobs:
   test:
@@ -26,4 +26,4 @@ jobs:
       run: bundle exec rspec
 
     - name: Run rubocop
-      run: bundle exec rubocop -a
+      run: bundle exec rubocop
