@@ -18,6 +18,8 @@ jobs:
       uses: ruby/setup-ruby@b256bd96bb4867e7d23e92e087d9bb697270b725
       with: 
         ruby-version: '3.3.0'
+
+    - name: Confirm Ruby version
       run: ruby -v
     
     - name: Install dependencies
