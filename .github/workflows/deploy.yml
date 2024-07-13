@@ -50,7 +50,7 @@ jobs:
             echo "takadanobaba" | sudo -S dnf group install -y "Development Tools" &&
             echo "takadanobaba" | sudo -S yum install -y ruby-devel openssl-devel libyaml-devel libffi-devel &&
             echo "takadanobaba" | sudo -S dnf -y localinstall  https://dev.mysql.com/get/mysql80-community-release-el9-1.noarch.rpm &&
-            echo "takadanobaba" | sudo rpm --import https://repo.mysql.com/RPM-GPG-KEY-mysql-2022 &&
+            echo "takadanobaba" | sudo rpm --import https://repo.mysql.com/RPM-GPG-KEY-mysql-2023 &&
             echo "takadanobaba" | sudo -S dnf -y install mysql mysql-community-client &&
             echo "takadanobaba" | sudo dnf -y mysql-devel &&
             rbenv local 3.3.0 &&
