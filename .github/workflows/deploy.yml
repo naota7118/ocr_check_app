@@ -43,5 +43,5 @@ jobs:
             git reset --hard origin/develop &&
             bundle install &&
             lsof -t -i:3000 | xargs --no-run-if-empty kill -9 &&
-            screen -idm bundle exec rails s -b 0.0.0.0
+            screen -dm bundle exec rails s -b 0.0.0.0
             '
