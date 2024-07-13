@@ -46,14 +46,14 @@ jobs:
           echo "$PRIVATE_KEY" > private_key && chmod 600 private_key
           ssh -o StrictHostKeyChecking=no -i private_key ${USER_NAME}@${HOST_NAME} '
             source ~/.bash_profile &&
-            echo "takadanobaba" | sudo -S yum update -y && 
+            echo "takadanobaba" | sudo -S dnf update -y && 
             echo "takadanobaba" | sudo -S dnf group install -y "Development Tools" &&
-            echo "takadanobaba" | sudo -S yum install -y ruby-devel openssl-devel libyaml-devel libffi-devel &&
+            echo "takadanobaba" | sudo -S dnf install -y ruby-devel openssl-devel libyaml-devel libffi-devel &&
             echo "takadanobaba" | sudo -S dnf -y localinstall  https://dev.mysql.com/get/mysql80-community-release-el9-1.noarch.rpm &&
             echo "takadanobaba" | sudo -S rpm --import https://repo.mysql.com/RPM-GPG-KEY-mysql-2023 &&
+            echo "takadanobaba" | sudo dnf -y mysql-devel &&
             echo "takadanobaba" | sudo -S dnf install dnf-command\(mysql-devel\) &&
             echo "takadanobaba" | sudo -S dnf -y install mysql mysql-community-client &&
-            echo "takadanobaba" | sudo dnf -y mysql-devel &&
             rbenv local 3.3.0 &&
             cd /home/naota7118/ocr_check_app &&
             git fetch --all &&
