@@ -42,6 +42,7 @@ jobs:
             sudo yum install -y ruby-devel openssl-devel libyaml-devel libffi-devel &&
             git clone https://github.com/rbenv/rbenv.git ~/.rbenv
             ~/.rbenv/bin/rbenv init &&
+            git clone https://github.com/rbenv/ruby-build.git "$(rbenv root)"/plugins/ruby-build &&
             TMPDIR="${PWD}/tmp" rbenv install -v 3.3.0 &&
             rbenv local 3.1.2 &&
             cd /home/naota7118/ocr_check_app &&
