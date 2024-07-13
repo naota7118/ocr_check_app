@@ -48,7 +48,7 @@ jobs:
             source ~/.bash_profile &&
             echo "takadanobaba" | sudo -S yum update -y && 
             echo "takadanobaba" | sudo -S dnf group install -y "Development Tools" &&
-            echo "takadanobaba" | sudo -S yum install -y ruby-devel openssl-devel libyaml-devel libffi-devel &&
+            echo "takadanobaba" | sudo -S yum install -y ruby-devel openssl-devel libyaml-devel libffi-devel mariadb-devel &&
             rbenv local 3.3.0 &&
             cd /home/naota7118/ocr_check_app &&
             git fetch --all &&
