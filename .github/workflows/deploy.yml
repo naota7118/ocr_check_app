@@ -35,12 +35,13 @@ jobs:
           PRIVATE_KEY: ${{ secrets.AWS_PRIVATE_KEY }}
           HOST_NAME: ${{ secrets.HOST_NAME }}
           USER_NAME: ${{ secrets.USER_NAME }}
+          SUDO_PASS: ${{ secrets.SUDO_PASS }}
         
         run: |
           echo "$PRIVATE_KEY" > private_key && chmod 600 private_key
           ssh -o StrictHostKeyChecking=no -i private_key ${USER_NAME}@${HOST_NAME} '
             source ~/.bash_profile &&
-            echo "takadanobaba" | sudo -S dnf update -y && 
+            echo "$SUDO_PASS" | sudo -S dnf update -y && 
             echo "takadanobaba" | sudo -S dnf group install -y "Development Tools" &&
             echo "takadanobaba" | sudo -S dnf install -y ruby-devel openssl-devel libyaml-devel libffi-devel &&
             rbenv local 3.3.0 &&
