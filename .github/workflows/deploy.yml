@@ -51,6 +51,6 @@ jobs:
             rbenv rehash &&
             lsof -t -i:3000 | xargs --no-run-if-empty kill -9 &&
             screen -dm bundle exec rails s -b 0.0.0.0 &&
-            echo $$ &&
+            echo 'Shell PID: $$' && &&
             ps aux | grep 'rails s' 
             '
