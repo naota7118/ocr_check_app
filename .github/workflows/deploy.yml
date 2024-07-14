@@ -30,6 +30,7 @@ jobs:
       - uses: actions/checkout@v4
 
       - name: Deploy in Amazon EC2
+    
         env:
           PRIVATE_KEY: ${{ secrets.AWS_PRIVATE_KEY }}
           HOST_NAME: ${{ secrets.HOST_NAME }}
@@ -51,3 +52,8 @@ jobs:
             lsof -t -i:3000 | xargs --no-run-if-empty kill -9 &&
             screen -dm bundle exec rails s -b 0.0.0.0
             '
+
+      - name: Confirm process
+        run: |
+          echo $$
+          ps aux | grep 'rails s'  
