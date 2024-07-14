@@ -42,6 +42,7 @@ jobs:
           ssh -o StrictHostKeyChecking=no -i private_key ${USER_NAME}@${HOST_NAME} '
             source ~/.bash_profile &&
             export SUDO_PASS=$SUDO_PASS &&
+            echo 'SUDO_PASS is set to:' \$SUDO_PASS  # デバッグ出力
             echo "$SUDO_PASS" | sudo -S dnf update -y && 
             echo "$SUDO_PASS" | sudo -S dnf group install -y "Development Tools" &&
             echo "$SUDO_PASS" | sudo -S dnf install -y ruby-devel openssl-devel libyaml-devel libffi-devel &&
