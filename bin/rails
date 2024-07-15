@@ -6,7 +6,7 @@ require_relative '../config/boot'
 require 'rails/commands'
 
 development:
-  google_redirect_uri: 'http//localhost:3000/moca_result'
+  google_redirect_uri: 'http://localhost:3000/moca_result'
 
-producion:
+production:
   google_redirect_uri: 'https://ocrcheck.com/moca_result'
