@@ -72,10 +72,10 @@ class MocaDataController < ApplicationController
       else
         # 1/3が31と表示されるので2ケタ以上は1の位のみ表示
         @pdf_scores << if [revised_chars[i - 2].to_i, revised_chars[i - 1].to_i].join.length == 1
-                         [revised_chars[i - 2].to_i, revised_chars[i - 1].to_i].join
-                       else
-                         revised_chars[i - 1]
-                       end
+          [revised_chars[i - 2].to_i, revised_chars[i - 1].to_i].join
+        else
+          revised_chars[i - 1]
+        end
       end
     elsif revised_chars.first == '/' # それ以外なら1つ前だけ表示
       @pdf_scores << '読みとり失敗'
@@ -171,7 +171,7 @@ class MocaDataController < ApplicationController
     auth_client = client_secrets.to_authorization
     auth_client.update!(
       scope: 'https://www.googleapis.com/auth/drive.metadata.readonly',
-      redirect_uri: 'http://localhost:3000/moca_result',
+      redirect_uri: Rails.application.secrets.google_redirect_uri,
       additional_parameters: {
         'access_type' => 'online', # online access
         'include_granted_scopes' => 'true' # incremental auth
