@@ -171,7 +171,7 @@ class MocaDataController < ApplicationController
     auth_client = client_secrets.to_authorization
     auth_client.update!(
       scope: 'https://www.googleapis.com/auth/drive.metadata.readonly',
-      redirect_uri: Rails.application.credentials.google[:redirect_uri],
+      redirect_uri: ENV['GOOGLE_REDIRECT_URI'],
       additional_parameters: {
         'access_type' => 'online', # online access
         'include_granted_scopes' => 'true' # incremental auth
