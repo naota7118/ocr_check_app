@@ -4,11 +4,3 @@
 APP_PATH = File.expand_path('../config/application', __dir__)
 require_relative '../config/boot'
 require 'rails/commands'
-
-development:
-  google:
-    redirect_uri: 'http://localhost:3000/moca_result'
-
-production:
-  google:
-    redirect_uri: 'https://ocrcheck.com/moca_result'
