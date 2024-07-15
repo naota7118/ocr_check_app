@@ -178,9 +178,11 @@ class MocaDataController < ApplicationController
       }
     )
     if request.params['code'].nil? # 認証コードを持っていなかった場合
+      puts 'hello'
       auth_uri = auth_client.authorization_uri.to_s
       redirect_to auth_uri, allow_other_host: true
     else # 認証コードを持っている場合
+      puts 'morning'
       auth_client.code = request.params['code']
       auth_client.fetch_access_token!
       auth_client.client_secret = nil
