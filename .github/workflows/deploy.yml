@@ -51,5 +51,5 @@ jobs:
             bundle install &&
             rbenv rehash &&
             lsof -t -i:3000 | xargs --no-run-if-empty kill -9 &&
-            RAILS_ENV=production bundle exec rails s -b 0.0.0.0 > log/production.log 2>&1 &
+            screen -dm RAILS_ENV=production bundle exec rails s -b 0.0.0.0 > log/production.log 2>&1 &
             "
