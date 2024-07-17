@@ -2,9 +2,9 @@ name: Test
 
 on:
   push:
-    branched: [ feature/build-ci ]
+    branched: [ feature/build-cd-pipeline ]
   pull_request:
-    branched: [ feature/build-ci ]
+    branched: [ feature/build-cd-pipeline ]
 
 jobs:
   test:
@@ -18,6 +18,9 @@ jobs:
       uses: ruby/setup-ruby@b256bd96bb4867e7d23e92e087d9bb697270b725
       with: 
         ruby-version: '3.3.0'
+
+    - name: Confirm Ruby version
+      run: ruby -v
     
     - name: Install dependencies
       run: bundle install
@@ -26,4 +29,4 @@ jobs:
       run: bundle exec rspec
 
     - name: Run rubocop
-      run: bundle exec rubocop -a
+      run: bundle exec rubocop

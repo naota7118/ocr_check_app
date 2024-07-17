@@ -36,3 +36,6 @@
 
 # Google認証情報はGitHubに公開しない
 client_secrets.json
+/config/credentials/development.key
+
+/config/credentials/production.key
