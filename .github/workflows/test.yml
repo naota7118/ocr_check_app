@@ -2,9 +2,9 @@ name: Test
 
 on:
   push:
-    branched: [ feature/build-cd-pipeline ]
+    branched: [ feature/develop ]
   pull_request:
-    branched: [ feature/build-cd-pipeline ]
+    branched: [ feature/develop ]
 
 jobs:
   test:
