@@ -51,6 +51,8 @@ jobs:
             echo 'export PATH="$HOME/.rbenv/bin:$PATH"' >> ~/.bash_profile &&
             echo 'eval "$(rbenv init -)"' >> ~/.bash_profile &&
             git clone https://github.com/rbenv/ruby-build.git ~/.rbenv/plugins/ruby-build &&
+            cat ~/.bash_profile &&
+            cat ~/.bashrc &&
             source ~/.bash_profile &&
             rbenv rehash &&
             rbenv install 3.3.0 &&
