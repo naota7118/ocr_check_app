@@ -51,6 +51,7 @@ jobs:
             echo 'export PATH="$HOME/.rbenv/bin:$PATH"' >> ~/.bash_profile &&
             echo 'eval "$(rbenv init -)"' >> ~/.bash_profile &&
             git clone https://github.com/rbenv/ruby-build.git "$(rbenv root)"/plugins/ruby-build &&
+            rbenv rehash &&
             source ~/.bash_profile &&
             rbenv install 3.3.0 &&
             rbenv local 3.3.0 &&
@@ -58,7 +59,6 @@ jobs:
             git fetch --all &&
             git reset --hard origin/feature/rbenv-install-auto &&
             bundle install &&
-            rbenv rehash &&
             lsof -t -i:3000 | xargs --no-run-if-empty kill -9 &&
             RAILS_ENV=production rails assets:precompile &&
             RAILS_ENV=production screen -dm bundle exec rails s -b 0.0.0.0
