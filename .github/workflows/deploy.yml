@@ -43,10 +43,12 @@ jobs:
         run: |
           echo "$PRIVATE_KEY" > private_key && chmod 600 private_key
           ssh -o StrictHostKeyChecking=no -i private_key ${USER_NAME}@${HOST_NAME} "
-            source ~/.bash_profile &&
             echo ${SUDO_PASS} | sudo -S dnf update -y && 
             echo ${SUDO_PASS} | sudo -S dnf group install -y 'Development Tools' &&
-            echo ${SUDO_PASS} | sudo -S dnf install -y rbenv ruby-devel openssl-devel libyaml-devel libffi-devel &&
+            echo ${SUDO_PASS} | sudo -S dnf install -y git ruby-devel openssl-devel libyaml-devel libffi-devel &&
+            git clone https://github.com/rbenv/rbenv.git ~/.rbenv &&
+            echo 'export PATH="$HOME/.rbenv/bin:$PATH"' >> ~/.bash_profile
+            echo 'eval "$(rbenv init -)"' >> ~/.bash_profile
             rbenv local 3.3.0 &&
             cd /home/naota7118/ocr_check_app &&
             git fetch --all &&
