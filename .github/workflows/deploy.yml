@@ -2,7 +2,7 @@ name: Deploy
 
 on:
   push:
-    branches: [ feature/build-cd-pipeline ]
+    branches: [ feature/rbenv-install-auto ]
 
 jobs:
   test:
@@ -20,7 +20,7 @@ jobs:
         run: bundle install
 
       - name: Run tests
-        run: bundle exec rspec  
+        run: bundle exec rspec
 
       - name: Run rubocop
         run: bundle exec rubocop
@@ -46,11 +46,11 @@ jobs:
             source ~/.bash_profile &&
             echo ${SUDO_PASS} | sudo -S dnf update -y && 
             echo ${SUDO_PASS} | sudo -S dnf group install -y 'Development Tools' &&
-            echo ${SUDO_PASS} | sudo -S dnf install -y ruby-devel openssl-devel libyaml-devel libffi-devel &&
+            echo ${SUDO_PASS} | sudo -S dnf install -y rbenv ruby-devel openssl-devel libyaml-devel libffi-devel &&
             rbenv local 3.3.0 &&
             cd /home/naota7118/ocr_check_app &&
             git fetch --all &&
-            git reset --hard origin/feature/build-cd-pipeline &&
+            git reset --hard origin/feature/rbenv-install-auto &&
             bundle install &&
             rbenv rehash &&
             lsof -t -i:3000 | xargs --no-run-if-empty kill -9 &&
