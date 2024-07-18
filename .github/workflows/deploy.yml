@@ -50,6 +50,7 @@ jobs:
             git clone https://github.com/rbenv/rbenv.git ~/.rbenv &&
             echo 'export PATH="$HOME/.rbenv/bin:$PATH"' >> ~/.bash_profile &&
             echo 'eval "$(rbenv init -)"' >> ~/.bash_profile &&
+            source ~/.bash_profile &&
             rbenv install 3.3.0 &&
             rbenv local 3.3.0 &&
             cd /home/naota7118/ocr_check_app &&
