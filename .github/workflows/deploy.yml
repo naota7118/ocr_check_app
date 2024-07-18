@@ -46,6 +46,7 @@ jobs:
             echo ${SUDO_PASS} | sudo -S dnf update -y && 
             echo ${SUDO_PASS} | sudo -S dnf group install -y 'Development Tools' &&
             echo ${SUDO_PASS} | sudo -S dnf install -y git ruby-devel openssl-devel libyaml-devel libffi-devel &&
+            rm -rf ~/.rbenv &&
             git clone https://github.com/rbenv/rbenv.git ~/.rbenv &&
             echo 'export PATH="$HOME/.rbenv/bin:$PATH"' >> ~/.bash_profile &&
             echo 'eval "$(rbenv init -)"' >> ~/.bash_profile &&
