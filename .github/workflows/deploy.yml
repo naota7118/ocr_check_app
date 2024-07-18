@@ -65,3 +65,7 @@ jobs:
             RAILS_ENV=production rails assets:precompile &&
             RAILS_ENV=production screen -dm bundle exec rails s -b 0.0.0.0
             "
+      
+      - name: Debug PATH
+        run: |
+          echo $PATH
