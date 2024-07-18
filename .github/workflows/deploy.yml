@@ -2,7 +2,7 @@ name: Deploy
 
 on:
   push:
-    branches: [ feature/develop ]
+    branches: [ develop ]
 
 jobs:
   test:
@@ -47,7 +47,7 @@ jobs:
             rbenv local 3.3.0 &&
             cd /home/naota7118/ocr_check_app &&
             git fetch --all &&
-            git reset --hard origin/feature/develop &&
+            git reset --hard origin/develop &&
             bundle install &&
             rbenv rehash &&
             lsof -t -i:3000 | xargs --no-run-if-empty kill -9 &&
