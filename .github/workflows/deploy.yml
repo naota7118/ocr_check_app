@@ -50,9 +50,9 @@ jobs:
             git clone https://github.com/rbenv/rbenv.git ~/.rbenv &&
             echo 'export PATH="$HOME/.rbenv/bin:$PATH"' >> ~/.bash_profile &&
             echo 'eval "$(rbenv init -)"' >> ~/.bash_profile &&
-            git clone https://github.com/rbenv/ruby-build.git "$(rbenv root)"/plugins/ruby-build &&
-            rbenv rehash &&
+            git clone https://github.com/rbenv/ruby-build.git ~/.rbenv/plugins/ruby-build &&
             source ~/.bash_profile &&
+            rbenv rehash &&
             rbenv install 3.3.0 &&
             rbenv local 3.3.0 &&
             cd /home/naota7118/ocr_check_app &&
