@@ -173,10 +173,12 @@ class MocaDataController < ApplicationController
       scope: 'https://www.googleapis.com/auth/drive.metadata.readonly',
       redirect_uri: Rails.application.credentials.dig(:google, :redirect_uri),
       additional_parameters: {
-        'access_type' => 'online', # online access
+        'access_type' => 'offline', # online access
         'include_granted_scopes' => 'true' # incremental auth
       }
     )
+    puts Rails.application.credentials.dig(:google, :redirect_uri)
+    puts "Redirect URI: #{auth_client.redirect_uri}"
     if request.params['code'].nil? # 認証コードを持っていなかった場合
       auth_uri = auth_client.authorization_uri.to_s
       redirect_to auth_uri, allow_other_host: true

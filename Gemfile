@@ -35,6 +35,7 @@ gem 'google-apis-drive_v3'
 # google APIの認証用のgem
 gem 'googleauth'
 # デバッグツール
+gem 'pry'
 gem 'pry-rails'
 # ExcelをCSVのように読み込む
 gem 'roo', '~> 2.10.0'
