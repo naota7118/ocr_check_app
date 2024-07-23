@@ -4,7 +4,7 @@ require 'active_support/core_ext/integer/time'
 
 Rails.application.configure do
   # 独自ドメインのアクセスを許可
-  config.hosts << 'ocrcheck.com'
+  config.hosts << 'rails:3000'
 
   # Settings specified here will take precedence over those in config/application.rb.
 
