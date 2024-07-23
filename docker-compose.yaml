@@ -8,8 +8,7 @@ services:
     volumes:
       - ./apache/conf.d/httpd.conf:/usr/local/apache2/conf/httpd.conf 
     depends_on:
-      rails:
-        condition: service_healthy
+      - rails
     command: httpd-foreground
 
   rails:
@@ -19,8 +18,8 @@ services:
       - 3000:3000
     volumes:
       - .:/ocr_check_app
-    healthcheck:
-      test: ["CMD-SHELL", "curl -f http://localhost:3000 || exit 1"]
-      interval: 30s
-      timeout: 10s
-      retries: 5
+    # healthcheck:
+    #   test: ["CMD-SHELL", "curl -f http://localhost:3000 || exit 1"]
+    #   interval: 30s
+    #   timeout: 10s
+    #   retries: 5
