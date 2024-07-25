@@ -1,7 +1,26 @@
 version: '3'
 
 services:
+  apache:
+    image: httpd:latest
+    ports:
+      - "0.0.0.0:80:80"
+    volumes:
+      - ./apache/conf.d/httpd.conf:/usr/local/apache2/conf/httpd.conf 
+    depends_on:
+      rails:
+        condition: service_healthy
+    command: httpd-foreground
+
   rails:
     build: .
+    command: rails s -b 0.0.0.0
     ports:
       - 3000:3000
+    volumes:
+      - .:/ocr_check_app
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:3000 || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 5

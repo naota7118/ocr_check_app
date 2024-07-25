@@ -4,7 +4,7 @@ require 'active_support/core_ext/integer/time'
 
 Rails.application.configure do
   # 独自ドメインのアクセスを許可
-  config.hosts << 'ocrcheck.com'
+  config.hosts << 'rails:3000'
 
   # Settings specified here will take precedence over those in config/application.rb.
 
@@ -78,4 +78,6 @@ Rails.application.configure do
 
   # Raise error when a before_action's only/except options reference missing actions
   config.action_controller.raise_on_missing_callback_actions = true
+
+  config.web_console.permissions = '0.0.0.0/0'
 end

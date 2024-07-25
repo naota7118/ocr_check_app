@@ -378,6 +378,7 @@ DEPENDENCIES
   googleauth
   importmap-rails
   jbuilder
+  pry
   pry-rails
   puma (>= 5.0)
   rails (~> 7.1.3, >= 7.1.3.2)
