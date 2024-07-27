@@ -42,45 +42,30 @@ class MocaDataController < ApplicationController
   # 116を1/6に変換
   def one_to_slash(chars)
     string = chars.join
-    defects = %w[010 011 012 013 014 015 016 116 112 113 114 115 116 212 213 214 215 216 313 314 315 316 414 415 416 515 516 616]
-    if defects.include?(string)
-      chars = string.chars
-      chars.each do |_|
-        chars[1] = '/'
-      end
+    if string.match?(/^[0-6]{1}1{1}[0-6]{1}$/)
+      string[1] = '/'
     end
-    chars
+
+    if string.chars.include?('/') && string.match?(/^[0-9\/\[]/)
+      string.chars
+    end
   end
 
   # 得点データx/yのうちxだけを取得
-  def score(revised_chars, char, i)
-    return unless char == '/'
-
-    # /の前後が数値でなければ対象外
-    int = revised_chars[i + 1].to_i
-    return unless int != 0
-
-    # /の後ろが30(1つ後ろが3 && 2つ後ろが0)なら2つ前と1つ前を表示
-    if revised_chars[i + 1].to_i == 3 && revised_chars[i + 2].to_i.zero?
-      # 01→1, 03→3に修正
-      if revised_chars[i - 2].to_i.zero?
-        @pdf_scores << revised_chars[i - 1].to_i
-      # 26/30は得点ではないので除外
-      elsif revised_chars[i - 2].to_i == 2 && revised_chars[i - 1].to_i == 6
-        @pdf_scores << [revised_chars[i - 2].to_i, revised_chars[i - 1].to_i].join
-        @pdf_scores.pop
-      else
-        # 1/3が31と表示されるので2ケタ以上は1の位のみ表示
-        @pdf_scores << if [revised_chars[i - 2].to_i, revised_chars[i - 1].to_i].join.length == 1
-          [revised_chars[i - 2].to_i, revised_chars[i - 1].to_i].join
-        else
-          revised_chars[i - 1]
+  def score(revised_chars)
+    if revised_chars.first == '/'
+      @pdf_scores << "読みとり不可"
+    else 
+      revised_chars.each_with_index do |char, i|
+        if char == '/'
+          # ["〇", "〇", "/", "3", "0"]は/の前の2ケタを取得
+          if (revised_chars[i + 1].to_i == 3 && revised_chars[i + 2].to_i == 0) && revised_chars.last == '0'
+            @pdf_scores << [revised_chars[i - 2].to_i, revised_chars[i - 1].to_i].join
+          else
+            @pdf_scores << revised_chars[i - 1]
+          end
         end
       end
-    elsif revised_chars.first == '/' # それ以外なら1つ前だけ表示
-      @pdf_scores << '読みとり失敗'
-    else
-      @pdf_scores << revised_chars[i - 1]
     end
   end
 
@@ -90,14 +75,25 @@ class MocaDataController < ApplicationController
     File.open('./tmp/txt/sample.txt', 'r') do |f|
       f.each_line do |line|
         chars = line.strip.chars
-        revised_chars = one_to_slash(chars)
-        next unless revised_chars.include?('/')
 
-        revised_chars.each_with_index do |char, i|
-          score(revised_chars, char, i)
+        # 空白文字を削除
+        chars.delete_if {|char| char == " "}
+        
+        # スラッシュまたは1が含まれていないものは対象外
+        unless chars.include?('/') || chars.include?('1')
+          chars = nil
+        else
+          # 116→1/6に変換
+          revised_chars = one_to_slash(chars)
+          # nil以外を出力
+          unless revised_chars == nil
+            score(revised_chars)
+          end
         end
+        # score(revised_chars)
       end
     end
+    # @pdf_scores.each_slice(11) {|s| p s}
   end
 
   # エクセルファイルから得点データを取得
@@ -109,10 +105,10 @@ class MocaDataController < ApplicationController
     @excel_data = @xlsx.parse(headers: true, clean: true)
     # ヘッダー行は不要
     @excel_data.shift
-    # 被験者番号から時計までの列は不要
-    6.times { @excel_data.first.shift }
-    # 語想起数は不要
-    @excel_data.delete_at(8)
+    # 照合に必要な列だけ取得
+    @excel_data.map! do |row|
+      row.values_at('被験者番号', "視空間_/5", "命名_/3", "数唱_/2", "ひらがな_/1", "100-7_/3", "復唱_/2", "語想起_/1", "抽象概念_/2", "遅延再生_/2", "見当識_/5", "MoCA合計_/30")
+    end
     # 照合のために必要なデータだけ格納
     @scales = []
     @excel_scores = []
