@@ -93,9 +93,8 @@ class MocaDataController < ApplicationController
       end
     end
     # 1人ずつの配列に区切る
-    @pdf_data = [] 
+    @pdf_data = []
     @pdf_scores.each_slice(11) {|subject| @pdf_data << subject}
-    @pdf_data
   end
 
   # エクセルファイルから得点データを取得
@@ -127,10 +126,15 @@ class MocaDataController < ApplicationController
     excel_data.each_with_index do |subject, sub_i|
       @personal_result = []
       subject.each_with_index do |score, sco_i|
-        if subject[sco_i] == pdf_data[sub_i][sco_i].to_i
-          result_element = [pdf_data[sub_i][sco_i].to_i, subject[sco_i], '一致しています']
+        unless pdf_data[sub_i][sco_i] == '読みとり不可'
+          if subject[sco_i] == pdf_data[sub_i][sco_i].to_i
+            result_element = [pdf_data[sub_i][sco_i].to_i, subject[sco_i], '一致しています']
+          else
+            result_element = [pdf_data[sub_i][sco_i].to_i, subject[sco_i], '一致しません']
+            @count += 1
+          end
         else
-          result_element = [pdf_data[sub_i][sco_i].to_i, subject[sco_i], '一致しません']
+          result_element = [pdf_data[sub_i][sco_i], subject[sco_i], '一致しません']
           @count += 1
         end
         @personal_result << result_element
