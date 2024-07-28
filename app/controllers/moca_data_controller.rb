@@ -90,14 +90,16 @@ class MocaDataController < ApplicationController
             score(revised_chars)
           end
         end
-        # score(revised_chars)
       end
     end
-    # @pdf_scores.each_slice(11) {|s| p s}
+    # 1人ずつの配列に区切る
+    @pdf_data = [] 
+    @pdf_scores.each_slice(11) {|subject| @pdf_data << subject}
+    @pdf_data
   end
 
   # エクセルファイルから得点データを取得
-  def get_id_from_excel
+  def get_scores_from_excel
     # Excelからデータを取得
     Dir.glob(Rails.root.join('public/uploads/*.xlsx').to_s).each do |excel|
       @xlsx = Roo::Excelx.new(excel)
@@ -109,29 +111,32 @@ class MocaDataController < ApplicationController
     @excel_data.map! do |row|
       row.values_at('被験者番号', "視空間_/5", "命名_/3", "数唱_/2", "ひらがな_/1", "100-7_/3", "復唱_/2", "語想起_/1", "抽象概念_/2", "遅延再生_/2", "見当識_/5", "MoCA合計_/30")
     end
-    # 照合のために必要なデータだけ格納
-    @scales = []
-    @excel_scores = []
-    @excel_data.first.each do |k, v|
-      @scales << k
-      @excel_scores << v
+    @subject_numbers = []
+    @excel_data.each do |person|
+      @subject_numbers << person.first
     end
-    [@scales, @excel_scores]
+    @excel_data.each do |person|
+      person.shift
+    end
   end
 
   # PDFデータとExcelデータを照合する
   def verify_suject_id(pdf_data, excel_data)
     @count = 0
-    @result = []
-    pdf_data.each_with_index do |_, i|
-      if pdf_data[i].to_i == excel_data[i]
-        result_element = [pdf_data[i], excel_data[i], '一致しています']
-      else
-        result_element = [pdf_data[i], excel_data[i], '一致しません']
-        @count += 1
+    @result_data = []
+    excel_data.each_with_index do |subject, sub_i|
+      @personal_result = []
+      subject.each_with_index do |score, sco_i|
+        if subject[sco_i] == pdf_data[sub_i][sco_i].to_i
+          result_element = [pdf_data[sub_i][sco_i].to_i, subject[sco_i], '一致しています']
+        else
+          result_element = [pdf_data[sub_i][sco_i].to_i, subject[sco_i], '一致しません']
+        end
+        @personal_result << result_element
       end
-      @result << result_element
+      @result_data << @personal_result
     end
+    @result_data
   end
 
   def index; end
@@ -143,10 +148,10 @@ class MocaDataController < ApplicationController
 
     convert(@drive)
     get_scores_from_text
-    get_id_from_excel
+    get_scores_from_excel
 
     # PDFデータとExcelデータを照合する
-    verify_suject_id(@pdf_scores, @excel_scores)
+    verify_suject_id(@pdf_data, @excel_data)
     # 照合が完了したらファイルを削除する
     delete_files
   end
