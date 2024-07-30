@@ -107,8 +107,6 @@ class MocaDataController < ApplicationController
     @subject_numbers = []
     @excel_data.each do |person|
       @subject_numbers << person.first
-    end
-    @excel_data.each do |person|
       person.shift
     end
   end
