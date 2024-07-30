@@ -2,7 +2,7 @@ name: Deploy
 
 on:
   push:
-    branches: [ develop ]
+    branches: [ feature/deploy-docker-production ]
 
 jobs:
   test:
@@ -50,10 +50,10 @@ jobs:
             rbenv local 3.3.0 &&
             cd /home/naota7118/ocr_check_app &&
             git fetch --all &&
-            git reset --hard origin/develop &&
+            git reset --hard origin/feature/deploy-docker-production &&
             bundle install &&
             rbenv rehash &&
             lsof -t -i:3000 | xargs --no-run-if-empty kill -9 &&
             RAILS_ENV=production rails assets:precompile &&
-            RAILS_ENV=production screen -dm bundle exec rails s -b 0.0.0.0
+            RAILS_ENV=production docker compose up -d --build
             "
