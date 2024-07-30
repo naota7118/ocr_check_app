@@ -42,28 +42,26 @@ class MocaDataController < ApplicationController
   # 116を1/6に変換
   def one_to_slash(chars)
     string = chars.join
-    if string.match?(/^[0-6]{1}1{1}[0-6]{1}$/)
-      string[1] = '/'
-    end
+    string[1] = '/' if string.match?(/^[0-6]{1}1{1}[0-6]{1}$/)
 
-    if string.chars.include?('/') && string.match?(/^[0-9\/\[]/)
-      string.chars
-    end
+    return unless string.chars.include?('/') && string.match?(%r{^[0-9/\[]})
+
+    string.chars
   end
 
   # 得点データx/yのうちxだけを取得
   def score(revised_chars)
     if revised_chars.first == '/'
-      @pdf_scores << "読みとり不可"
-    else 
+      @pdf_scores << '読みとり不可'
+    else
       revised_chars.each_with_index do |char, i|
-        if char == '/'
-          # ["〇", "〇", "/", "3", "0"]は/の前の2ケタを取得
-          if (revised_chars[i + 1].to_i == 3 && revised_chars[i + 2].to_i == 0) && revised_chars.last == '0'
-            @pdf_scores << [revised_chars[i - 2].to_i, revised_chars[i - 1].to_i].join
-          else
-            @pdf_scores << revised_chars[i - 1]
-          end
+        next unless char == '/'
+
+        # ["〇", "〇", "/", "3", "0"]は/の前の2ケタを取得
+        @pdf_scores << if (revised_chars[i + 1].to_i == 3 && revised_chars[i + 2].to_i.zero?) && revised_chars.last == '0'
+          [revised_chars[i - 2].to_i, revised_chars[i - 1].to_i].join
+        else
+          revised_chars[i - 1]
         end
       end
     end
@@ -77,24 +75,20 @@ class MocaDataController < ApplicationController
         chars = line.strip.chars
 
         # 空白文字を削除
-        chars.delete_if {|char| char == " "}
-        
+        chars.delete_if { |char| char == ' ' }
+
         # スラッシュまたは1が含まれていないものは対象外
-        unless chars.include?('/') || chars.include?('1')
-          chars = nil
-        else
+        if chars.include?('/') || chars.include?('1')
           # 116→1/6に変換
           revised_chars = one_to_slash(chars)
           # nil以外を出力
-          unless revised_chars == nil
-            score(revised_chars)
-          end
+          score(revised_chars) unless revised_chars.nil?
         end
       end
     end
     # 1人ずつの配列に区切る
     @pdf_data = []
-    @pdf_scores.each_slice(11) {|subject| @pdf_data << subject}
+    @pdf_scores.each_slice(11) { |subject| @pdf_data << subject }
   end
 
   # エクセルファイルから得点データを取得
@@ -108,7 +102,7 @@ class MocaDataController < ApplicationController
     @excel_data.shift
     # 照合に必要な列だけ取得
     @excel_data.map! do |row|
-      row.values_at('被験者番号', "視空間_/5", "命名_/3", "数唱_/2", "ひらがな_/1", "100-7_/3", "復唱_/2", "語想起_/1", "抽象概念_/2", "遅延再生_/2", "見当識_/5", "MoCA合計_/30")
+      row.values_at('被験者番号', '視空間_/5', '命名_/3', '数唱_/2', 'ひらがな_/1', '100-7_/3', '復唱_/2', '語想起_/1', '抽象概念_/2', '遅延再生_/2', '見当識_/5', 'MoCA合計_/30')
     end
     @subject_numbers = []
     @excel_data.each do |person|
@@ -125,17 +119,15 @@ class MocaDataController < ApplicationController
     @result_data = []
     excel_data.each_with_index do |subject, sub_i|
       @personal_result = []
-      subject.each_with_index do |score, sco_i|
-        unless pdf_data[sub_i][sco_i] == '読みとり不可'
-          if subject[sco_i] == pdf_data[sub_i][sco_i].to_i
-            result_element = [pdf_data[sub_i][sco_i].to_i, subject[sco_i], '一致しています']
+      subject.each_with_index do |_score, sco_i|
+        if pdf_data[sub_i][sco_i] == '読みとり不可'
+          result_element = [pdf_data[sub_i][sco_i], subject[sco_i], '一致しません']
+          @count += 1
+        elsif subject[sco_i] == pdf_data[sub_i][sco_i].to_i
+          result_element = [pdf_data[sub_i][sco_i].to_i, subject[sco_i], '一致しています']
           else
             result_element = [pdf_data[sub_i][sco_i].to_i, subject[sco_i], '一致しません']
             @count += 1
-          end
-        else
-          result_element = [pdf_data[sub_i][sco_i], subject[sco_i], '一致しません']
-          @count += 1
         end
         @personal_result << result_element
       end
