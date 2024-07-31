@@ -44,15 +44,12 @@ jobs:
           echo "$PRIVATE_KEY" > private_key && chmod 600 private_key
           ssh -o StrictHostKeyChecking=no -i private_key ${USER_NAME}@${HOST_NAME} "
             source ~/.bash_profile &&
-            echo ${SUDO_PASS} | sudo -S dnf update -y && 
+            echo ${SUDO_PASS} | sudo -S dnf update -y &&
             echo ${SUDO_PASS} | sudo -S dnf group install -y 'Development Tools' &&
             echo ${SUDO_PASS} | sudo -S dnf install -y ruby-devel openssl-devel libyaml-devel libffi-devel &&
             rbenv local 3.3.0 &&
-            echo ${SUDO_PASS} | sudo -S dnf -y install dnf-plugins-core &&
-            echo ${SUDO_PASS} | sudo -S dnf config-manager --add-repo https://download.docker.com/linux/fedora/docker-ce.repo &&
-            echo ${SUDO_PASS} | sudo -S dnf config-manager --set-enabled docker-ce-nightly &&
-            echo ${SUDO_PASS} | sudo -S dnf install docker-ce docker-ce-cli containerd.io docker-compose-plugin &&
-            echo ${SUDO_PASS} | sudo -S systemctl start docker &&
+            echo ${SUDO_PASS} | sudo -S yum install -y docker &&
+            echo ${SUDO_PASS} | sudo -S service docker start &&
             cd /home/naota7118/ocr_check_app &&
             git fetch --all &&
             git reset --hard origin/feature/deploy-docker-production &&
