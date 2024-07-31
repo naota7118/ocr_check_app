@@ -48,7 +48,6 @@ jobs:
             echo ${SUDO_PASS} | sudo -S dnf group install -y 'Development Tools' &&
             echo ${SUDO_PASS} | sudo -S dnf install -y ruby-devel openssl-devel libyaml-devel libffi-devel &&
             rbenv local 3.3.0 &&
-            echo ${SUDO_PASS} | sudo -S dnf config-manager --set-disabled docker-ce-nightly &&
             echo ${SUDO_PASS} | sudo -S yum install -y docker &&
             echo ${SUDO_PASS} | sudo -S service docker start &&
             echo ${SUDO_PASS} | sudo -S docker ps &&
