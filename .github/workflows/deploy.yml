@@ -49,6 +49,7 @@ jobs:
             echo ${SUDO_PASS} | sudo -S dnf install -y ruby-devel openssl-devel libyaml-devel libffi-devel &&
             rbenv local 3.3.0 &&
             echo ${SUDO_PASS} | sudo -S yum install -y docker &&
+            echo ${SUDO_PASS} | sudo -S dnf install docker-compose-plugin &&
             echo ${SUDO_PASS} | sudo -S service docker start &&
             echo ${SUDO_PASS} | sudo -S docker ps &&
             cd /home/naota7118/ocr_check_app &&
