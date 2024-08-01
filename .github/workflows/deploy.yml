@@ -57,6 +57,6 @@ jobs:
             bundle install &&
             rbenv rehash &&
             lsof -t -i:3000 | xargs --no-run-if-empty kill -9 &&
-            RAILS_ENV=production rails assets:precompile &&
-            RAILS_ENV=production docker compose up -d --build
+            screen -dm  RAILS_ENV=production rails assets:precompile &&
+            RAILS_ENV=production echo ${SUDO_PASS} | sudo -S docker compose up --build
             "
