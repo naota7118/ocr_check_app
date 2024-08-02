@@ -49,9 +49,10 @@ jobs:
             echo ${SUDO_PASS} | sudo -S dnf install -y ruby-devel openssl-devel libyaml-devel libffi-devel &&
             rbenv local 3.3.0 &&
             echo ${SUDO_PASS} | sudo -S dnf install -y docker &&
-            echo ${SUDO_PASS} | sudo -S dnf install -y docker-compose-plugin &&
             echo ${SUDO_PASS} | sudo -S service docker start &&
-            echo ${SUDO_PASS} | sudo -S docker ps &&
+            echo ${SUDO_PASS} | sudo -S systemctl enable docker &&
+            sudo curl -L "https://github.com/docker/compose/releases/download/v2.29.1/docker-compose-darwin-x86_64" -o /usr/bin &&
+            echo ${SUDO_PASS} | sudo -S docker compose -v &&
             cd /home/naota7118/ocr_check_app &&
             git fetch --all &&
             git reset --hard origin/feature/deploy-docker-production &&
@@ -59,5 +60,6 @@ jobs:
             rbenv rehash &&
             lsof -t -i:3000 | xargs --no-run-if-empty kill -9 &&
             screen -dm  RAILS_ENV=production rails assets:precompile &&
-            RAILS_ENV=production echo ${SUDO_PASS} | sudo -S docker compose up --build
+            RAILS_ENV=production echo ${SUDO_PASS} | sudo -S docker compose up --build &&
+            echo ${SUDO_PASS} | sudo -S docker ps
             "
