@@ -61,6 +61,6 @@ jobs:
             rbenv rehash &&
             lsof -t -i:3000 | xargs --no-run-if-empty kill -9 &&
             screen -dm  RAILS_ENV=production rails assets:precompile &&
-            RAILS_ENV=production echo ${SUDO_PASS} | sudo -S docker-compose up --build &&
+            echo ${SUDO_PASS} | sudo -S docker-compose up --build RAILS_ENV=production &&
             echo ${SUDO_PASS} | sudo -S docker ps
             "
