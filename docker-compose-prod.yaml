@@ -4,7 +4,7 @@ services:
   apache:
     image: httpd:latest
     ports:
-      - :8080:80
+      - "8080:80"
     volumes:
       - ./apache/conf.d/httpd.conf:/usr/local/apache2/conf/httpd.conf 
     depends_on:
