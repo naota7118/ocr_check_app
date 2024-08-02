@@ -51,7 +51,7 @@ jobs:
             echo ${SUDO_PASS} | sudo -S dnf install -y docker &&
             echo ${SUDO_PASS} | sudo -S service docker start &&
             echo ${SUDO_PASS} | sudo -S systemctl enable docker &&
-            sudo curl -L "/docker/compose/releases/download/v2.29.1/docker-compose-linux-aarch64" -o /usr/bin/docker-compose &&
+            sudo curl -L "https://github.com/docker/compose/releases/download/v2.29.1/docker-compose-linux-aarch64" -o /usr/bin/docker-compose &&
             echo ${SUDO_PASS} | sudo -S chmod +x /usr/bin/docker-compose &&
             echo ${SUDO_PASS} | sudo -S docker-compose -v &&
             cd /home/naota7118/ocr_check_app &&
