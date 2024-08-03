@@ -61,8 +61,7 @@ jobs:
             rbenv rehash &&
             lsof -t -i:3000 | xargs --no-run-if-empty kill -9 &&
             echo ${SUDO_PASS} | sudo -S docker-compose -f docker-compose.yaml -f docker-compose-prod.yaml down -v &&
-            screen -L -dm echo RAILS_ENV=production ${SUDO_PASS} | sudo -S docker-compose -f docker-compose.yaml -f docker-compose-prod.yaml up -d --build &&
-            cat screenlog.0 &&
+            screen -L -m echo RAILS_ENV=production ${SUDO_PASS} | sudo -S docker-compose -f docker-compose.yaml -f docker-compose-prod.yaml up -d --build &&
             netstat -tuln | grep :80 &&
             echo ${SUDO_PASS} | sudo -S lsof -i :80 &&
             echo ${SUDO_PASS} | sudo -S docker ps
