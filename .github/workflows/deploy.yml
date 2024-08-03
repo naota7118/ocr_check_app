@@ -63,5 +63,5 @@ jobs:
             echo ${SUDO_PASS} | sudo -S docker-compose -f docker-compose.yaml -f docker-compose-prod.yaml down -v &&
             screen -dm echo RAILS_ENV=production ${SUDO_PASS} | sudo -S docker-compose -f docker-compose.yaml -f docker-compose-prod.yaml up -d --build &&
             echo ${SUDO_PASS} | sudo -S docker ps &&
-            netstat -tuln | grep :80 &&
+            netstat -tuln | grep :80
             "
