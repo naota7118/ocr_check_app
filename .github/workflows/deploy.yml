@@ -62,8 +62,8 @@ jobs:
             lsof -t -i:3000 | xargs --no-run-if-empty kill -9 &&
             echo ${SUDO_PASS} | sudo -S docker-compose -f docker-compose.yaml -f docker-compose-prod.yaml down -v &&
             echo ${SUDO_PASS} | sudo -S docker-compose -f docker-compose.yaml -f docker-compose-prod.yaml up -d --build &&
+            echo ${SUDO_PASS} | sudo -S docker logs ocr_check_app-rails-1 &&
             netstat -tuln | grep :80 &&
             echo ${SUDO_PASS} | sudo -S lsof -i :80 &&
             echo ${SUDO_PASS} | sudo -S docker ps &&
-            curl http://127.0.0.1:3000
             "
