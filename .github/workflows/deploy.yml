@@ -63,5 +63,5 @@ jobs:
             echo ${SUDO_PASS} | sudo -S docker logs ocr_check_app-rails-1 &&
             netstat -tuln | grep :80 &&
             echo ${SUDO_PASS} | sudo -S lsof -i :80 &&
-            echo ${SUDO_PASS} | sudo -S docker ps &&
+            echo ${SUDO_PASS} | sudo -S docker ps
             "
