@@ -17,3 +17,5 @@ services:
       - 3000:3000
     volumes:
       - .:/ocr_check_app
+    environment:
+      - RAILS_ENV=production
