@@ -1,0 +1,21 @@
+version: '3'
+
+services:
+  apache:
+    image: httpd:latest
+    ports:
+      - 80:80
+    volumes:
+      - ./apache/conf.d/httpd.conf:/usr/local/apache2/conf/httpd.conf 
+    depends_on:
+      - rails
+    command: httpd-foreground
+  rails:
+    build: .
+    command: bash -c "rm -f tmp/pids/server.pid && rails assets:precompile && rails s -b 0.0.0.0"
+    ports:
+      - 3000:3000
+    volumes:
+      - .:/ocr_check_app
+    environment:
+      - RAILS_ENV=production

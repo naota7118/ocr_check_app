@@ -2,7 +2,7 @@ name: Deploy
 
 on:
   push:
-    branches: [ develop ]
+    branches: [ feature/deploy-docker-production ]
 
 jobs:
   test:
@@ -44,16 +44,24 @@ jobs:
           echo "$PRIVATE_KEY" > private_key && chmod 600 private_key
           ssh -o StrictHostKeyChecking=no -i private_key ${USER_NAME}@${HOST_NAME} "
             source ~/.bash_profile &&
-            echo ${SUDO_PASS} | sudo -S dnf update -y && 
+            echo ${SUDO_PASS} | sudo -S dnf update -y &&
             echo ${SUDO_PASS} | sudo -S dnf group install -y 'Development Tools' &&
             echo ${SUDO_PASS} | sudo -S dnf install -y ruby-devel openssl-devel libyaml-devel libffi-devel &&
             rbenv local 3.3.0 &&
+            echo ${SUDO_PASS} | sudo -S dnf install -y docker &&
+            echo ${SUDO_PASS} | sudo -S service docker start &&
+            echo ${SUDO_PASS} | sudo -S systemctl enable docker &&
+            sudo curl -L "https://github.com/docker/compose/releases/download/v2.29.1/docker-compose-linux-x86_64" -o /usr/bin/docker-compose &&
+            echo ${SUDO_PASS} | sudo -S chmod +x /usr/bin/docker-compose &&
+            echo ${SUDO_PASS} | sudo -S docker-compose -v &&
             cd /home/naota7118/ocr_check_app &&
             git fetch --all &&
-            git reset --hard origin/develop &&
+            git reset --hard origin/feature/deploy-docker-production &&
             bundle install &&
             rbenv rehash &&
             lsof -t -i:3000 | xargs --no-run-if-empty kill -9 &&
-            RAILS_ENV=production rails assets:precompile &&
-            RAILS_ENV=production screen -dm bundle exec rails s -b 0.0.0.0
+            echo ${SUDO_PASS} | sudo -S docker-compose -f docker-compose.yaml -f docker-compose-prod.yaml down -v &&
+            echo ${SUDO_PASS} | sudo -S docker-compose -f docker-compose.yaml -f docker-compose-prod.yaml up -d --build &&
+            echo ${SUDO_PASS} | sudo -S lsof -i :80 &&
+            echo ${SUDO_PASS} | sudo -S docker ps
             "
