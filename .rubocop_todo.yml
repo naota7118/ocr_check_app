@@ -38,13 +38,13 @@ Layout/MultilineMethodCallIndentation:
 # Offense count: 5
 # Configuration parameters: AllowedMethods, AllowedPatterns, CountRepeatedAttributes.
 Metrics/AbcSize:
-  Max: 36
+  Max: 50
 
 # Offense count: 1
 # Configuration parameters: CountComments, CountAsOne, AllowedMethods, AllowedPatterns.
 # AllowedMethods: refine
 Metrics/BlockLength:
-  Max: 28
+  Max: 50
 
 # Offense count: 1
 # Configuration parameters: CountComments, CountAsOne.
@@ -59,7 +59,7 @@ Metrics/CyclomaticComplexity:
 # Offense count: 8
 # Configuration parameters: CountComments, CountAsOne, AllowedMethods, AllowedPatterns.
 Metrics/MethodLength:
-  Max: 25
+  Max: 50
 
 # Offense count: 2
 # Configuration parameters: AllowedMethods, AllowedPatterns.

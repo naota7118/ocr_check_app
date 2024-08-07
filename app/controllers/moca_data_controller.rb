@@ -112,7 +112,7 @@ class MocaDataController < ApplicationController
   end
 
   # PDFデータとExcelデータを照合する
-  def verify_suject_id(pdf_data, excel_data, subject_numbers)
+  def verify_suject_id(pdf_data, excel_data)
     @count = 0
     @result_data = []
     excel_data.each_with_index do |subject, sub_i|
@@ -131,11 +131,6 @@ class MocaDataController < ApplicationController
       end
       @result_data << @personal_result
     end
-    # 被験者番号と照合データをペアにする
-    @result = {}
-    subject_numbers.each_with_index do |subject, i|
-      @result[subject] = @result_data[i]
-    end
   end
 
   def index; end
@@ -150,7 +145,7 @@ class MocaDataController < ApplicationController
     get_scores_from_excel
 
     # PDFデータとExcelデータを照合する
-    verify_suject_id(@pdf_data, @excel_data, @subject_numbers)
+    verify_suject_id(@pdf_data, @excel_data)
     # 照合が完了したらファイルを削除する
     delete_files
   end
@@ -190,7 +185,11 @@ class MocaDataController < ApplicationController
 
       client_opts = JSON.parse(session[:credentials])
       auth_client = Signet::OAuth2::Client.new(client_opts)
-      @drive = Google::Apis::DriveV3::DriveService.new
+      @drive = Google::Apis::DriveV3::DriveService.new.tap do |client|
+        client.client_options.open_timeout_sec = 120
+        client.client_options.read_timeout_sec = 120
+        client.request_options.retries = 3
+      end
       @drive.authorization = auth_client
     end
   end
