@@ -192,8 +192,8 @@ class MocaDataController < ApplicationController
       client_opts = JSON.parse(session[:credentials])
       auth_client = Signet::OAuth2::Client.new(client_opts)
       @drive = Google::Apis::DriveV3::DriveService.new.tap do |client|
-        client.request_options.timeout_sec = 1200
-        client.request_options.open_timeout_sec = 1200
+        client.client_options.open_timeout_sec = 120
+        client.client_options.read_timeout_sec = 120
         client.request_options.retries = 3
       end
       @drive.authorization = auth_client
