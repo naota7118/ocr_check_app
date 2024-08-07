@@ -131,12 +131,7 @@ class MocaDataController < ApplicationController
       end
       @result_data << @personal_result
     end
-    p @result_data
-    # 被験者番号と照合データをペアにする
-    @result = {}
-    subject_numbers.each_with_index do |subject, i|
-      @result[subject] = @result_data[i]
-    end
+
   end
 
   def index; end
