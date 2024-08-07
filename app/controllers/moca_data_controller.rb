@@ -131,12 +131,12 @@ class MocaDataController < ApplicationController
       end
       @result_data << @personal_result
     end
+    p @result_data
     # 被験者番号と照合データをペアにする
     @result = {}
     subject_numbers.each_with_index do |subject, i|
       @result[subject] = @result_data[i]
     end
-    p @result
   end
 
   def index; end
@@ -191,7 +191,11 @@ class MocaDataController < ApplicationController
 
       client_opts = JSON.parse(session[:credentials])
       auth_client = Signet::OAuth2::Client.new(client_opts)
-      @drive = Google::Apis::DriveV3::DriveService.new
+      @drive = Google::Apis::DriveV3::DriveService.new.tap do |client|
+        client.request_options.timeout_sec = 1200
+        client.request_options.open_timeout_sec = 1200
+        client.request_options.retries = 3
+      end
       @drive.authorization = auth_client
     end
   end
