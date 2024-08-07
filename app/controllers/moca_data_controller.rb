@@ -112,7 +112,7 @@ class MocaDataController < ApplicationController
   end
 
   # PDFデータとExcelデータを照合する
-  def verify_suject_id(pdf_data, excel_data, subject_numbers)
+  def verify_suject_id(pdf_data, excel_data)
     @count = 0
     @result_data = []
     excel_data.each_with_index do |subject, sub_i|
@@ -131,7 +131,6 @@ class MocaDataController < ApplicationController
       end
       @result_data << @personal_result
     end
-
   end
 
   def index; end
@@ -146,7 +145,7 @@ class MocaDataController < ApplicationController
     get_scores_from_excel
 
     # PDFデータとExcelデータを照合する
-    verify_suject_id(@pdf_data, @excel_data, @subject_numbers)
+    verify_suject_id(@pdf_data, @excel_data)
     # 照合が完了したらファイルを削除する
     delete_files
   end
