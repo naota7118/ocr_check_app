@@ -136,6 +136,7 @@ class MocaDataController < ApplicationController
     subject_numbers.each_with_index do |subject, i|
       @result[subject] = @result_data[i]
     end
+    p @result
   end
 
   def index; end
