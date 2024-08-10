@@ -26,6 +26,7 @@ URL：
 - バックエンド
   - Ruby 3.3.0
   - Ruby on Rails 7.1.3.2
+  - Apache(プロキシサーバー化)
   - Rubocop
   - Rspec
 - フロントエンド
@@ -34,7 +35,8 @@ URL：
 - インフラ
   - Docker
   - AWS(EC2, VPC, Route53, ACM, ALB)
-  - GitHub Actions
+  - GitHub Actions(CI/CD)
 
 ## インフラ構成図
 ![infra (1)](https://github.com/user-attachments/assets/1096ce46-a96b-4117-b957-7d2af11be465)
+※ロードバランサーでEC2を2つ設置しましたが、GitHub Actionsでコンテナを起動できているのは一方のみです。
