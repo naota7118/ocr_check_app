@@ -38,5 +38,6 @@ https://github.com/user-attachments/assets/0368b8a5-8ccf-4587-bec9-d35a3c51dd34
   - GitHub Actions(CI/CD)
 
 ## インフラ構成図
-![infra (1)](https://github.com/user-attachments/assets/1096ce46-a96b-4117-b957-7d2af11be465)
-※ロードバランサーでEC2を2つ設置しましたが、GitHub Actionsでコンテナを起動できているのは一方のみです。
+![infra (1)](https://github.com/user-attachments/assets/1096ce46-a96b-4117-b957-7d2af11be465)  
+
+※EC2を2つ設置しましたが、GitHub Actionsでコンテナを起動できているのは一方のみです。
