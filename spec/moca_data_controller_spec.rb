@@ -1,8 +1,11 @@
-RSpec.describe '四則演算' do
-  it '1 + 1 は 2 になること' do
-    expect(1 + 1).to eq 2
-  end
-  it '10 - 1 は 9 になること' do
-    expect(10 - 1).to eq 9
+require 'rails_helper'
+
+RSpec.describe MocaDataController, type: :controller do
+  describe "GET #index" do
+    it 'returns a sucessful response' do
+      get :index
+      expect(response).to have_http_status(:success)
+      expect(response).to render_template(:index)
+    end
   end
 end
