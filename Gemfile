@@ -39,6 +39,8 @@ gem 'pry'
 gem 'pry-rails'
 # ExcelをCSVのように読み込む
 gem 'roo', '~> 2.10.0'
+# 静的なページをコントローラなしで表示
+gem 'high_voltage', '~> 4.0.0'
 
 # Use Redis adapter to run Action Cable in production
 # gem "redis", ">= 4.0.1"
