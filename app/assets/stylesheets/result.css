@@ -23,3 +23,7 @@ td {
   padding: 5px 10px;
   color: #333333;
 }
+
+th {
+  padding: 3px;
+}
