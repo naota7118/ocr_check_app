@@ -1,13 +1,15 @@
-<p>PDFファイルとExcelファイルを1つずつ選択してください。</p>
-
-<div>
-  <%= form_with url: "/moca_data", method: :post, enctype: "multipart/form-data", data: { turbo: false } do |form| %>
-    <p>
-      <label for="uploads">ファイルを選択してください：</label>
-      <%= form.file_field :uploads, name: "uploads[]", multiple: true, accept: ".xlsx, .pdf" %>
-    </p>
-    <p>
-      <%= form.submit "送信"%>
-    </p>
-  <% end %>
+<div class="container">
+  <h2>PDFデータとExcelデータの照合</h2>
+  <div>
+    <%= form_with url: "/moca_data", method: :post, enctype: "multipart/form-data", data: { turbo: false } do |form| %>
+      <div class="select-files">
+        <p><label for="uploads">①PDFファイルとExcelファイルを1つずつ選択してください。</label></p>
+        <%= form.file_field :uploads, name: "uploads[]", multiple: true, accept: ".xlsx, .pdf" %>
+      </div>
+      <div class="send-button">
+        <p>②送信ボタンを押してください。</p>
+        <%= form.submit "送信"%>
+      </div>
+    <% end %>
+  </div>
 </div>
