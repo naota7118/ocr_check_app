@@ -46,11 +46,18 @@
 
 .button {
   padding: 5px;
+  margin-bottom: 50px;
 }
 
 .button > a {
   color: white;
-  background-color: #4682B4;
+  background-color: #668AD8;
   padding: 15px;
   border-radius: 5px;
+  border-bottom: solid 4px #627295;
+}
+
+.button:active {
+  transform: translateY(4px);
+  border-bottom: none;
 }
