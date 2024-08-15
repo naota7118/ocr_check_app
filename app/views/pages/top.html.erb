@@ -1,1 +1,50 @@
-<%= link_to '照合画面にいく', moca_data_path %>
+<div class="wrapper">
+  <div class="left-content">
+    <%= image_tag "/OCRCheck.png", size: '150x150' %>
+  </div>
+  <div class="center-content">
+    <section class="commic">
+      <h2 class="commic-title">OCRCheckは何をする？</h2>
+      <div class="frame">
+        <%= image_tag "/4コマ漫画1.png", size: '250x250' %>
+        <a class="left-bubble"></a>
+        <a class="right-bubble"></a>
+        <div class="speech-bubble">
+          <p >膨大な量を一つ一つよく見てチェックするのは大変だわ・・・</p>
+        </div>
+      </div>
+      <div class="frame">
+        <%= image_tag "/4コマ漫画2.png", size: '250x250' %>
+        <a class="left-bubble"></a>
+        <a class="right-bubble"></a>
+        <div class="speech-bubble">
+          <p >ああ、よく見ていたつもりでもこんなに見落としがあるなんて...!!</p>
+        </div>
+      </div>
+      <div class="frame">
+        <%= image_tag "/4コマ漫画3.png", size: '250x250' %>
+        <a class="left-bubble"></a>
+        <a class="right-bubble"></a>
+        <div class="speech-bubble">
+          <p>そんなときはOCR Checkを使うと早く終わらせることができるよ。</p>
+        </div>
+      </div>
+      <div class="frame">
+        <%= image_tag "/4コマ漫画4.png", size: '250x250' %>
+        <a class="left-bubble"></a>
+        <a class="right-bubble"></a>
+        <div class="speech-bubble">
+          <p>修正箇所が一目でわかるからとっても助かるわ。</p>
+        </div>
+      </div>
+    </section>
+    <section class="movie">
+      <h2 class="movie-title">1分でわかる解説動画</h2>
+    </section>
+    <div class="button">
+      <%= link_to 'さっそく使ってみる', moca_data_path %>
+    </div>
+  </div>
+  <div class="right-content">
+  </div>
+</div>

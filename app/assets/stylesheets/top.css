@@ -1,0 +1,56 @@
+.wrapper {
+  display: flex;
+}
+
+.center-content {
+  margin: 0 auto;
+}
+
+.frame {
+  margin-top: 5px;
+  display: flex;
+}
+
+.left-bubble {
+  width: 5px;
+  height: 5px;
+  margin: 60px 0 0 3px;
+  border: 3px solid #DADADA;
+  border-radius: 50%;
+}
+
+.right-bubble {
+  width: 15px;
+  height: 15px;
+  margin: 50px 0 0 1px;
+  border: 3px solid #DADADA;
+  border-radius: 50%;
+}
+
+.speech-bubble {
+  border: 3px solid #DADADA;
+  border-radius: 15px;
+  padding: 10px;
+  margin-top: 20px;
+  margin-left: 5px;
+  display: flex;
+  flex-flow: column;
+  justify-content: center;
+  height: 40px;
+}
+
+.speech-bubble p {
+  margin: 0;
+  padding: 0;
+}
+
+.button {
+  padding: 5px;
+}
+
+.button > a {
+  color: white;
+  background-color: #4682B4;
+  padding: 15px;
+  border-radius: 5px;
+}
