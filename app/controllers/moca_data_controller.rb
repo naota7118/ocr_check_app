@@ -8,6 +8,7 @@ class MocaDataController < ApplicationController
   # ファイルをアップロード
   def create
     uploaded_files = params[:uploads]
+    binding.pry
     uploaded_files.shift # 最初の要素を削除
     uploaded_files.each do |uploaded_file|
       file_path = Rails.root.join("public/uploads/#{uploaded_file.original_filename}")
