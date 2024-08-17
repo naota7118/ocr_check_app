@@ -55,13 +55,14 @@ jobs:
             echo ${SUDO_PASS} | sudo -S chmod +x /usr/bin/docker-compose &&
             echo ${SUDO_PASS} | sudo -S docker-compose -v &&
             cd /home/naota7118/ocr_check_app &&
-            rm -r public/uploads
             git fetch --all &&
             git reset --hard origin/develop &&
+            rm -r public/uploads/*
             bundle install &&
             rbenv rehash &&
             lsof -t -i:3000 | xargs --no-run-if-empty kill -9 &&
-            echo ${SUDO_PASS} | sudo -S docker logs e8df90f6c36f
+            echo ${SUDO_PASS} | sudo -S docker-compose -f docker-compose.yaml -f docker-compose-prod.yaml down -v &&
+            echo ${SUDO_PASS} | sudo -S docker-compose -f docker-compose.yaml -f docker-compose-prod.yaml up -d --build &&
             echo ${SUDO_PASS} | sudo -S lsof -i :80 &&
             echo ${SUDO_PASS} | sudo -S docker ps
             "
