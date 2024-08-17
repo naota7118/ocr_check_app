@@ -1,3 +1,26 @@
+/* body {
+  background-color: #F0F4F8;
+} */
+
+.result-container {
+  padding-top: 20px;
+  margin-left: 150px;
+  display: flex;
+  background-color: #ffffff;
+}
+
+.right-container {
+  margin-left: 10px;
+  padding: 20px;
+}
+
+.guide {
+  position: fixed;
+  background-color: #E9F2FE;
+  border-radius: 15px;
+  padding: 10px;
+}
+
 td {
   padding: 5px 10px;
 }
@@ -12,7 +35,11 @@ td {
 }
 
 .back-btn {
-  margin-top: 10px;
+  margin-top: 250px;
+  position: fixed;
+  a {
+    padding: 10px;
+  }
 }
 
 .btn_back {
@@ -22,4 +49,16 @@ td {
   border-radius: 5px;
   padding: 5px 10px;
   color: #333333;
+}
+
+table {
+  border: 2px solid #888888;
+}
+
+th {
+  padding: 3px;
+}
+
+.pink {
+  background-color: #FFC0CB;
 }

@@ -10,4 +10,5 @@ function color (){
   }
 }
 
+alert("注意：更新ボタンは押さないでください。");
 color();

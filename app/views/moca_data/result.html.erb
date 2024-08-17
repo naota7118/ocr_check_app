@@ -1,99 +1,108 @@
-<p>注意：更新ボタンは押さないでください。<p>
+<div class="result-container">
+  <div class="left-container">
+    <h2>照合結果</h2>
+    <div class="total">
+      不一致の件数は<a class='count'><%= @count %></a>件です。
+    </div>
 
-<div class="total">
-  不一致の件数は<a class='count'><%= @count %></a>件です。
+    <% @result_data.each_with_index do |subject, i| %>
+      <br>
+      <p><%= @subject_numbers[i] %><p>
+      <table border="1" style="border-collapse: collapse">
+        <thead>
+          <tr>
+            <th>評価項目</th>
+            <th>PDF</th>
+            <th>Excel</th>
+            <th>結果</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>視空間_/5</td>
+            <td><%= subject[0][0] %></td>
+            <td><%= subject[0][1] %></td>
+            <td  class="result"><%= subject[0][2] %></td>
+          </tr>
+          <tr>
+            <td>命名_/3</td>
+            <td><%= subject[1][0] %></td>
+            <td><%= subject[1][1] %></td>
+            <td class="result"><%= subject[1][2] %></td>
+          </tr>
+          <tr>
+            <td>数唱_/2</td>
+            <td><%= subject[2][0] %></td>
+            <td><%= subject[2][1] %></td>
+            <td class="result"><%= subject[2][2] %></td>
+          </tr>
+          <tr>
+            <td>ひらがな_/1</td>
+            <td><%= subject[3][0] %></td>
+            <td><%= subject[3][1] %></td>
+            <td class="result"><%= subject[3][2] %></td>
+          </tr>
+          <tr>
+            <td>100-7_/3</td>
+            <td><%= subject[4][0] %></td>
+            <td><%= subject[4][1] %></td>
+            <td class="result"><%= subject[4][2] %></td>
+          </tr>
+          <tr>
+            <td>復唱_/2</td>
+            <td><%= subject[5][0] %></td>
+            <td><%= subject[5][1] %></td>
+            <td class="result"><%= subject[5][2] %></td>
+          </tr>
+          <tr>
+            <td>語想起_/1</td>
+            <td><%= subject[6][0] %></td>
+            <td><%= subject[6][1] %></td>
+            <td class="result"><%= subject[6][2] %></td>
+          </tr>
+          <tr>
+            <td>抽象概念_/2</td>
+            <td><%= subject[7][0] %></td>
+            <td><%= subject[7][1] %></td>
+            <td class="result"><%= subject[7][2] %></td>
+          </tr>
+          <tr>
+            <td>遅延再生_/2</td>
+            <td><%= subject[8][0] %></td>
+            <td><%= subject[8][1] %></td>
+            <td class="result"><%= subject[8][2] %></td>
+          </tr>
+          <tr>
+            <td>見当識_/5</td>
+            <td><%= subject[9][0] %></td>
+            <td><%= subject[9][1] %></td>
+            <td class="result"><%= subject[9][2] %></td>
+          </tr>
+          <tr>
+            <td>MoCA合計_/30</td>
+            <td><%= subject[10][0] %></td>
+            <td><%= subject[10][1] %></td>
+            <td class="result"><%= subject[10][2] %></td>
+          </tr>
+        </tbody>
+      </table>
+      <br>
+    <% end %>
+  </div>
+  <div class="right-container">
+    <div class="guide">
+      <h3>結果の見方</h3>
+      <p>①不一致の件数は修正が必要な数を示しています。</p>
+      <p>②<span class="pink">ピンク色</span>が修正が必要な項目です。PDFとExcelいずれかの値を修正してください。</p>
+    </div>
+    <div class="back-btn">
+      <%= link_to moca_data_path, class: 'btn btn_back' do %>
+        <i class="fa-solid fa-arrow-left"></i>ファイル選択画面に戻る
+      <% end %>
+    </div>
+  </div>
+
+  <script type="module">
+    import "result";
+  </script>
 </div>
-
-<% @result_data.each_with_index do |subject, i| %>
-  <br>
-  <p><%= @subject_numbers[i] %><p>
-  <table border="1" style="border-collapse: collapse">
-    <thead>
-      <tr>
-        <th>評価項目</th>
-        <th>原本</th>
-        <th>Excel</th>
-        <th>結果</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td>視空間_/5</td>
-        <td><%= subject[0][0] %></td>
-        <td><%= subject[0][1] %></td>
-        <td  class="result"><%= subject[0][2] %></td>
-      </tr>
-      <tr>
-        <td>命名_/3</td>
-        <td><%= subject[1][0] %></td>
-        <td><%= subject[1][1] %></td>
-        <td class="result"><%= subject[1][2] %></td>
-      </tr>
-      <tr>
-        <td>数唱_/2</td>
-        <td><%= subject[2][0] %></td>
-        <td><%= subject[2][1] %></td>
-        <td class="result"><%= subject[2][2] %></td>
-      </tr>
-      <tr>
-        <td>ひらがな_/1</td>
-        <td><%= subject[3][0] %></td>
-        <td><%= subject[3][1] %></td>
-        <td class="result"><%= subject[3][2] %></td>
-      </tr>
-      <tr>
-        <td>100-7_/3</td>
-        <td><%= subject[4][0] %></td>
-        <td><%= subject[4][1] %></td>
-        <td class="result"><%= subject[4][2] %></td>
-      </tr>
-      <tr>
-        <td>復唱_/2</td>
-        <td><%= subject[5][0] %></td>
-        <td><%= subject[5][1] %></td>
-        <td class="result"><%= subject[5][2] %></td>
-      </tr>
-      <tr>
-        <td>語想起_/1</td>
-        <td><%= subject[6][0] %></td>
-        <td><%= subject[6][1] %></td>
-        <td class="result"><%= subject[6][2] %></td>
-      </tr>
-      <tr>
-        <td>抽象概念_/2</td>
-        <td><%= subject[7][0] %></td>
-        <td><%= subject[7][1] %></td>
-        <td class="result"><%= subject[7][2] %></td>
-      </tr>
-      <tr>
-        <td>遅延再生_/2</td>
-        <td><%= subject[8][0] %></td>
-        <td><%= subject[8][1] %></td>
-        <td class="result"><%= subject[8][2] %></td>
-      </tr>
-      <tr>
-        <td>見当識_/5</td>
-        <td><%= subject[9][0] %></td>
-        <td><%= subject[9][1] %></td>
-        <td class="result"><%= subject[9][2] %></td>
-      </tr>
-      <tr>
-        <td>MoCA合計_/30</td>
-        <td><%= subject[10][0] %></td>
-        <td><%= subject[10][1] %></td>
-        <td class="result"><%= subject[10][2] %></td>
-      </tr>
-    </tbody>
-  </table>
-  <br>
-<% end %>
-
-<div class="back-btn">
-<%= link_to moca_data_path, class: 'btn btn_back' do %>
-  <i class="fa-solid fa-arrow-left"></i>ファイル選択画面に戻る
-<% end %>
-</div>
-
-<script type="module">
-  import "result";
-</script>

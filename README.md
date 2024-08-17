@@ -40,6 +40,11 @@ https://github.com/user-attachments/assets/0368b8a5-8ccf-4587-bec9-d35a3c51dd34
   - Docker
   - AWS(EC2, VPC, Route53, ACM, ALB)
   - GitHub Actions(CI/CD)
+- ライブラリ
+  - google/apis/drive_v3 PDFからテキスト抽出
+  - google/api_client/client_secrets OAuth認証で必要
+  - roo エクセルからデータ取得
+  - high_voltage 静的なページをコントローラ使わず表示
 
 ## インフラ構成図
 ![infra (1)](https://github.com/user-attachments/assets/1096ce46-a96b-4117-b957-7d2af11be465)  
