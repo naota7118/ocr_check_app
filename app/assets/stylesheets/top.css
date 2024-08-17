@@ -2,6 +2,10 @@
   display: flex;
 }
 
+.left-content {
+  position: fixed;
+}
+
 .center-content {
   margin: 0 auto;
 }
