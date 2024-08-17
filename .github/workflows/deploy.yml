@@ -57,6 +57,7 @@ jobs:
             cd /home/naota7118/ocr_check_app &&
             git fetch --all &&
             git reset --hard origin/develop &&
+            pwd &&
             rm public/uploads/* &&
             bundle install &&
             rbenv rehash &&
