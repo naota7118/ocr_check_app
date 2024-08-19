@@ -17,7 +17,7 @@ OCRアプリを作ろうと考えた背景やユーザーインタビューの�
 [【志望動機】なぜエンジニアになりたいのか？](https://qiita.com/naota7118/private/0a95c145ecaec38e6ee9)
 
 ## 動画
-https://github.com/user-attachments/assets/0368b8a5-8ccf-4587-bec9-d35a3c51dd34
+https://github.com/user-attachments/assets/97b79b85-ff37-49b2-be92-716a7f51181b
 
 ## 特に見ていただきたい点
 
