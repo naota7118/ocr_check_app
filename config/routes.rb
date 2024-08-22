@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 Rails.application.routes.draw do
+  devise_for :users
   resources :subject_data
   resources :moca_data
   # get '/', to: 'moca_data#index'

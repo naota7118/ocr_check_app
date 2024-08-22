@@ -11,7 +11,9 @@ gem 'rails', '~> 7.1.3', '>= 7.1.3.2'
 gem 'sprockets-rails'
 
 # Use sqlite3 as the database for Active Record
-gem 'sqlite3', '~> 1.4'
+# gem 'sqlite3', '~> 1.4'
+# データベースをMySQLに変更
+gem 'mysql2'
 
 gem 'dotenv', groups: [:development, :test]
 
@@ -41,6 +43,8 @@ gem 'pry-rails'
 gem 'roo', '~> 2.10.0'
 # 静的なページをコントローラなしで表示
 gem 'high_voltage', '~> 4.0.0'
+# ユーザーログイン機能を実装するため
+gem 'devise'
 
 # Use Redis adapter to run Action Cable in production
 # gem "redis", ">= 4.0.1"

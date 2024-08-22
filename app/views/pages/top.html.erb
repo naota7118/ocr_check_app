@@ -4,7 +4,17 @@
   </div>
   <div class="center-content">
     <section class="commic">
-      <h2 class="commic-title">OCRCheckは何をする？</h2>
+      <div class="app-guide">
+        <h2 class="commic-title">OCRCheckは何をする？</h2>
+        <div class="button">
+          <% if user_signed_in? %>
+            <%= button_to 'ログアウト', destroy_user_session_path, method: :delete %>
+          <% else %>
+            <%= link_to 'ログイン', new_user_session_path, class: 'post' %>
+            <%= link_to '新規登録', new_user_registration_path, class: 'post' %>
+          <% end %>
+        </div>
+      </div>
       <div class="frame">
         <%= image_tag "/4コマ漫画1.png", size: '250x250' %>
         <a class="left-bubble"></a>
@@ -38,12 +48,6 @@
         </div>
       </div>
     </section>
-    <section class="movie">
-      <h2 class="movie-title">1分でわかる解説動画</h2>
-    </section>
-    <div class="button">
-      <%= link_to 'さっそく使ってみる', moca_data_path %>
-    </div>
   </div>
   <div class="right-content">
   </div>
