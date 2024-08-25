@@ -12,7 +12,7 @@ jobs:
       mysql:
         image: mysql:8.0.39
         env:
-          MYSQL_ROOT_PASSWORD: rootpassword
+          MYSQL_ROOT_PASSWORD: ${{ secrets.MYSQL_ROOT_PASSWORD }}
         ports:
           - 3306:3306
 
@@ -29,9 +29,9 @@ jobs:
 
       - name: Wait for MySQL to be ready
         run: |
-          until mysql -h mysql -u root -ppassword -e 'select 1'; do
+          until mysql -h mysql -u root -p${{ secrets.MYSQL_ROOT_PASSWORD }} -e 'select 1'; do
             echo "Waiting for MySQL..."
-            sleep 20
+            sleep 5
           done
 
       - name: Check running containers
