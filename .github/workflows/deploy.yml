@@ -11,6 +11,9 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - name: Start MySQL
+        run: sudo systemctl start mysql
+
       - name: Check MySQL status
         run: sudo systemctl status mysql
 
