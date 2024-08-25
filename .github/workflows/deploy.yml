@@ -19,7 +19,7 @@ jobs:
 
       - name: Test MySQL connection
         run: |
-          sudo mysql -u root -pr8UpCFkS -e "SHOW DATABASES;"
+          sudo mysql -u root -p'r8UpCFkS' -e "SHOW DATABASES;"
 
       - name: Set up Ruby
         uses: ruby/setup-ruby@b256bd96bb4867e7d23e92e087d9bb697270b725
