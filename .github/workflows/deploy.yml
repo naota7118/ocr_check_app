@@ -11,17 +11,6 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Install MySQL
-        run: sudo apt-get install -y mysql-server
-
-      - name: Start MySQL
-        run: sudo systemctl start mysql
-
-      - name: Set up MySQL root user
-        run: |
-          sudo mysql -e "ALTER USER 'root'@'localhost' IDENTIFIED WITH 'mysql_native_password' BY 'r8UpCFkS';"
-          sudo mysql -e "FLUSH PRIVILEGES;"
-
       - name: Set up Ruby
         uses: ruby/setup-ruby@b256bd96bb4867e7d23e92e087d9bb697270b725
         with: 
