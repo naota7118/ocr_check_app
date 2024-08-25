@@ -16,10 +16,6 @@ jobs:
 
       - name: Check MySQL status
         run: sudo systemctl status mysql
-
-      - name: Reload MySQL privileges
-        run: |
-          sudo mysql -e "FLUSH PRIVILEGES;"
       
       - name: Test MySQL connection
         run: |

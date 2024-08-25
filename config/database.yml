@@ -11,7 +11,7 @@ test:
   encoding: utf8mb4
   database: <%= ENV['DATABASE_NAME_TEST'] %>
   username: <%= ENV['DATABASE_USERNAME'] %>
-  password: <%= ENV['DATABASE_PASSWORD'] %>
+  password: r8UpCFkS
   host: localhost
   socket:  /tmp/mysql.sock
 
