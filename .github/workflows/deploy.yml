@@ -32,9 +32,9 @@ jobs:
     services:
       mysql: 
         image: mysql:8.0.39
-        environment:
-          MYSQL_ROOT_PASSWORD: rootpassword
-
+        options: > 
+          --env MYSQL_ROOT_PASSWORD=rootpassword
+          
     steps:
       - uses: actions/checkout@v4
 
