@@ -17,9 +17,13 @@ jobs:
       - name: Check MySQL status
         run: sudo systemctl status mysql
 
-      - name: Test MySQL connection
+      - name: Verify MySQL root user setup
         run: |
-          sudo mysql -u root -p'r8UpCFkS' -e "SHOW DATABASES;"
+          sudo mysql -e "SELECT user, host, plugin FROM mysql.user WHERE user='root';"
+
+      # - name: Test MySQL connection
+      #   run: |
+      #     sudo mysql -u root -p'r8UpCFkS' -e "SHOW DATABASES;"
 
       - name: Set up Ruby
         uses: ruby/setup-ruby@b256bd96bb4867e7d23e92e087d9bb697270b725
