@@ -16,6 +16,11 @@ jobs:
 
       - name: Check MySQL status
         run: sudo systemctl status mysql
+      
+      - name: Set MySQL root password
+        run: |
+          sudo mysql -e "ALTER USER 'root'@'localhost' IDENTIFIED WITH 'mysql_native_password' BY 'r8UpCFkS';"
+          sudo mysql -e "FLUSH PRIVILEGES;"
 
       - name: Verify MySQL root user setup
         run: |
