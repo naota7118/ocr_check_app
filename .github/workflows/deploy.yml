@@ -24,6 +24,13 @@ jobs:
 
       - name: Install dependencies
         run: bundle install
+
+      - name: Wait for MySQL to be ready
+        run: |
+          until mysql -h mysql -u root -ppassword -e 'select 1'; do
+            echo "Waiting for MySQL..."
+            sleep 5
+          done
       
       - name: Run tests
         run: bundle exec rspec
