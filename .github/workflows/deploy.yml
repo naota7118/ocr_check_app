@@ -29,12 +29,6 @@ jobs:
     needs: test
     runs-on: ubuntu-latest
 
-    services:
-      mysql: 
-        image: mysql:8.0.39
-        options: > 
-          --env MYSQL_ROOT_PASSWORD=rootpassword
-          
     steps:
       - uses: actions/checkout@v4
 
