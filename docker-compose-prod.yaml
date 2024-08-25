@@ -10,6 +10,7 @@ services:
     depends_on:
       - rails
     command: httpd-foreground
+
   rails:
     build: .
     command: bash -c "rm -f tmp/pids/server.pid && rails assets:precompile && rails s -b 0.0.0.0"
@@ -19,3 +20,13 @@ services:
       - .:/ocr_check_app
     environment:
       - RAILS_ENV=production
+    depends_on:
+      - mysql
+
+  mysql:
+    image: mysql:8.0.39
+    platform: linux/x86_64
+    environment:
+      MYSQL_ROOT_PASSWORD: rootpassword
+    volumes:
+      - ./mysql/conf.d/charset.cnf:/etc/mysql/conf.d/charset.cnf

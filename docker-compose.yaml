@@ -10,6 +10,7 @@ services:
     depends_on:
       - rails
     command: httpd-foreground
+
   rails:
     build: .
     command: rails s -b 0.0.0.0
