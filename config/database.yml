@@ -4,7 +4,6 @@ development:
   database: <%= ENV['DATABASE_NAME_DEVELOPMENT'] %>
   username: <%= ENV['DATABASE_USERNAME'] %>
   password: <%= ENV['DATABASE_PASSWORD'] %>
-  socket: /var/run/mysqld/mysqld.sock
   host: localhost
 
 test:
@@ -14,6 +13,7 @@ test:
   username: <%= ENV['DATABASE_USERNAME'] %>
   password: <%= ENV['DATABASE_PASSWORD'] %>
   host: localhost
+  socket:  /tmp/mysql.sock
 
 production:
   adapter: mysql2
