@@ -11,6 +11,9 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - name: Check MySQL status
+        run: sudo systemctl status mysql
+
       - name: Test MySQL connection
         run: |
           sudo mysql -u root -p${{ secrets.MYSQL_ROOT_PASSWORD }} --socket=/tmp/mysql.sock -e "SHOW DATABASES;"
