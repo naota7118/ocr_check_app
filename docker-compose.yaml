@@ -25,6 +25,6 @@ services:
     image: mysql:8.0.39
     platform: linux/x86_64
     environment:
-      MYSQL_ROOT_PASSWORD: rootpassword
+      MYSQL_ROOT_PASSWORD: <%= ENV['DATABASE_PASSWORD'] %>
     volumes:
       - ./mysql/conf.d/charset.cnf:/etc/mysql/conf.d/charset.cnf
