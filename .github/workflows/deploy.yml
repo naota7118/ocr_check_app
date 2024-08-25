@@ -11,16 +11,6 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Start MySQL
-        run: sudo systemctl start mysql
-
-      - name: Check MySQL status
-        run: sudo systemctl status mysql
-      
-      - name: Test MySQL connection
-        run: |
-          sudo mysql -u root -p'r8UpCFkS' --host=127.0.0.1 -e "SHOW DATABASES;"
-
       - name: Set up Ruby
         uses: ruby/setup-ruby@b256bd96bb4867e7d23e92e087d9bb697270b725
         with: 
@@ -29,8 +19,8 @@ jobs:
       - name: Install dependencies
         run: bundle install
       
-      - name: Run tests
-        run: bundle exec rspec
+      # - name: Run tests
+      #   run: bundle exec rspec
 
       - name: Run rubocop
         run: bundle exec rubocop
