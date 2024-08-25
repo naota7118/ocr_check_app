@@ -12,7 +12,7 @@ test:
   database: ocrcheck_test
   username: root
   password: rootpassword
-  host: 54.64.214.168
+  host: mysql
 
 production:
   adapter: mysql2
