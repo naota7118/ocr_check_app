@@ -17,3 +17,13 @@ services:
       - 3000:3000
     volumes:
       - .:/ocr_check_app
+    depends_on:
+      - mysql
+
+  mysql:
+    image: mysql:8.0.39
+    platform: linux/x86_64
+    environment:
+      MYSQL_ROOT_PASSWORD: rootpassword
+    volumes:
+      - ./mysql/conf.d/charset.cnf:/etc/mysql/conf.d/charset.cnf

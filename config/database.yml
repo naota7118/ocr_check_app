@@ -1,29 +1,23 @@
 development:
   adapter: mysql2
-  encoding: utf8
-  database: ocrcheck_development
-  pool: 5
+  encoding: utf8mb4
+  database: ocrcheck
   username: root
-  password: <%= Rails.application.credentials.mysql[:pass] %>
-  host: localhost
-  timeout: 5000
+  password: rootpassword
+  host: mysql
 
 test:
   adapter: mysql2
-  encoding: utf8
-  database: ocrcheck_test
-  pool: 5
+  encoding: utf8mb4
+  database: ocrcheck
   username: root
-  password: <%= Rails.application.credentials.mysql[:pass] %>
-  host: localhost
-  timeout: 5000
+  password: rootpassword
+  host: mysql
 
 production:
   adapter: mysql2
-  encoding: utf8
+  encoding: utf8mb4
   database: ocrcheck_production
-  pool: 5
   username: root
   password: <%= Rails.application.credentials.mysql[:pass] %>
   host: localhost
-  timeout: 5000
