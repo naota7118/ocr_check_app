@@ -4,7 +4,7 @@ development:
   database: <%= ENV['DATABASE_NAME_DEVELOPMENT'] %>
   username: <%= ENV['DATABASE_USERNAME'] %>
   password: <%= ENV['DATABASE_PASSWORD'] %>
-  host: localhost
+  host: mysql
 
 test:
   adapter: mysql2
@@ -13,11 +13,11 @@ test:
   username: <%= ENV['DATABASE_USERNAME'] %>
   password: r8UpCFkS
   host: localhost
-  
+
 production:
   adapter: mysql2
   encoding: utf8mb4
   database: ocrcheck
   username: root
-  password: rootpassword
+  password: <%= ENV['DATABASE_PASSWORD'] %>
   host: mysql
