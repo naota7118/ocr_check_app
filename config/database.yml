@@ -11,8 +11,8 @@ test:
   encoding: utf8mb4
   database: ocrcheck_test
   username: root
-  password: r8UpCFkS
-  host: localhost
+  password: rootpassword
+  host: mysql
 
 production:
   adapter: mysql2
