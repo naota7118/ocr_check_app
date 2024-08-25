@@ -11,6 +11,10 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - name: Test MySQL connection
+        run: |
+          sudo mysql -u root -p${{ secrets.MYSQL_ROOT_PASSWORD }} -e "SHOW DATABASES;"
+
       - name: Set up Ruby
         uses: ruby/setup-ruby@b256bd96bb4867e7d23e92e087d9bb697270b725
         with: 
