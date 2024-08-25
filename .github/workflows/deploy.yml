@@ -27,18 +27,18 @@ jobs:
       - name: Install dependencies
         run: bundle install
 
-      # - name: Wait for MySQL to be ready
-      #   run: |
-      #     until mysql -h mysql -u root -ppassword -e 'select 1'; do
-      #       echo "Waiting for MySQL..."
-      #       sleep 5
-      #     done
+      - name: Wait for MySQL to be ready
+        run: |
+          until mysql -h mysql -u root -ppassword -e 'select 1'; do
+            echo "Waiting for MySQL..."
+            sleep 20
+          done
 
       - name: Check running containers
         run: docker ps 
       
-      # - name: Run tests
-      #   run: bundle exec rspec
+      - name: Run tests
+        run: bundle exec rspec
 
       - name: Run rubocop
         run: bundle exec rubocop
