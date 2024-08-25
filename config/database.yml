@@ -11,7 +11,7 @@ test:
   encoding: utf8mb4
   database: ocrcheck_test
   username: root
-  password: <%= Rails.application.credentials.mysql[:pass] %>
+  password: r8UpCFkS
   host: localhost
 
 production:
