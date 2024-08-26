@@ -15,7 +15,7 @@ gem 'sprockets-rails'
 # データベースをMySQLに変更
 gem 'mysql2'
 
-gem 'dotenv', groups: [:development, :test]
+gem 'dotenv', groups: [:development, :test, :production]
 
 # Use the Puma web server [https://github.com/puma/puma]
 gem 'puma', '>= 5.0'
