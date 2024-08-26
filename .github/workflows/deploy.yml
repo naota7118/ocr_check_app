@@ -53,7 +53,7 @@ jobs:
             echo ${SUDO_PASS} | sudo -S systemctl enable docker &&
             sudo curl -L "https://github.com/docker/compose/releases/download/v2.29.1/docker-compose-linux-x86_64" -o /usr/bin/docker-compose &&
             echo ${SUDO_PASS} | sudo -S chmod +x /usr/bin/docker-compose &&
-            echo ${SUDO_PASS} | sudo -S docker-compose -v --remove-orphans &&
+            echo ${SUDO_PASS} | sudo -S docker-compose --rmi all --volumes --remove-orphans &&
             cd /home/naota7118/ocr_check_app &&
             git fetch --all &&
             git reset --hard origin/feature/user-login &&
