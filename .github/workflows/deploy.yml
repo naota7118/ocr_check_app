@@ -64,6 +64,7 @@ jobs:
             echo $DB_USER &&
             echo $DB_PASSWORD &&
             echo ${SUDO_PASS} | sudo -S docker-compose -f docker-compose.yaml -f docker-compose-prod.yaml up -d --build &&
+            cat .env &&
             echo ${SUDO_PASS} | sudo -S docker-compose -f docker-compose.yaml -f docker-compose-prod.yaml run rails rails db:create &&
             echo ${SUDO_PASS} | sudo -S docker-compose -f docker-compose.yaml -f docker-compose-prod.yaml run rails rails db:migrate &&
             echo ${SUDO_PASS} | sudo -S lsof -i :80 &&
