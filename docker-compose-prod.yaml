@@ -20,4 +20,6 @@ services:
       - RAILS_ENV=production
 
   mysql:
-    command: echo "MySQL conatiner is created in production."
+    deploy:
+      replicas: 0
+    command: /bin/true
