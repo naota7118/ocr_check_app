@@ -1,7 +1,7 @@
 default: &default
   adapter: mysql2
   encoding: utf8mb4
-  username: <%= ENV['DB_USER'] %>
+  username: root
 
 development:
   database: ocrcheck_development
@@ -14,5 +14,6 @@ test:
 production:
   <<: *default
   database: ocrcheck-db
-  password: <%= ENV['DB_PASSWORD'] %>
-  host: <%= ENV['DB_HOST'] %>
+  password: r8UpCFkS
+  host: ocrcheck-db.cr60imog2s6m.ap-northeast-1.rds.amazonaws.com
+  port: 3306
