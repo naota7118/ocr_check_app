@@ -25,6 +25,7 @@ services:
     image: mysql:8.0.39
     platform: linux/x86_64
     environment:
+      DB_HOST: "${DB_HOST}"
       MYSQL_USER: "${DB_USER}"
       MYSQL_ROOT_PASSWORD: "${DB_PASSWORD}"
     volumes:
