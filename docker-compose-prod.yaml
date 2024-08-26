@@ -16,10 +16,10 @@ services:
       - 3000:3000
     volumes:
       - .:/ocr_check_app
-    environment:
-      - RAILS_ENV=production
     depends_on:
       - mysql
+    environment:
+      - RAILS_ENV=production
 
   mysql:
     image: mysql:8.0.39
