@@ -12,6 +12,7 @@ test:
   database: ocrcheck_test
 
 production:
-  database: <%= ENV['DB_NAME'] %>
+  <<: *default
+  database: ocrcheck-db
   password: <%= ENV['DB_PASSWORD'] %>
   host: <%= ENV['DB_HOST'] %>
