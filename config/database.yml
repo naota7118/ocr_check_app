@@ -1,15 +1,18 @@
-default: &default
+development:
   adapter: mysql2
   encoding: utf8mb4
-  username: <%= ENV['DB_USER'] %>
-
-development:
   database: ocrcheck_development
-  password: <%= ENV['DB_PASSWORD'] %>
+  username: root
+  password: r8UpCFkS
   host: localhost
 
 test:
+  adapter: mysql2
+  encoding: utf8mb4
   database: ocrcheck_test
+  username: root
+  password: r8UpCFkS
+  host: localhost
 
 production:
   adapter: mysql2
