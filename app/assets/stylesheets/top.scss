@@ -20,69 +20,85 @@
   }
   .center-content {
     margin: 0 auto;
-    .app-guide {
-      display: flex;
-      .commic-title {
-        color: #3F3F3F;
-        letter-spacing: 1.4px;
-        font-weight:900;
+    .commic {
+      .app-guide {
+        display: flex;
+        .commic-title {
+          color: #3F3F3F;
+          letter-spacing: 1.4px;
+          font-size: 30px;
+        }
+        .button {
+          margin-left: 280px;
+          margin-top: 20px;
+          padding: 5px;
+          margin-bottom: 50px;
+          & > a {
+            @include btn-design;
+            display: inline-block;
+            margin-right: 10px;
+          }
+          & button {
+            @include btn-design;
+            font-size: 16px;
+            cursor: pointer;
+          }
+          & .logout:active {
+            @include btn-active;
+          }
+          & .login:active {
+            @include btn-active;
+          }
+          & .register:active {
+            @include btn-active;
+          }
+        }
       }
-      .button {
-        margin-left: 280px;
-        margin-top: 20px;
-        padding: 5px;
-        margin-bottom: 50px;
-        & > a {
-          @include btn-design;
-          display: inline-block;
-          margin-right: 10px;
+      .frame {
+        margin-bottom: 20px;
+        display: flex;
+        .left-bubble {
+          width: 5px;
+          height: 5px;
+          margin: 60px 0 0 3px;
+          border: 3px solid #DADADA;
+          border-radius: 50%;
         }
-        & button {
-          @include btn-design;
-          font-size: 16px;
-          cursor: pointer;
+        .right-bubble {
+          width: 15px;
+          height: 15px;
+          margin: 50px 0 0 1px;
+          border: 3px solid #DADADA;
+          border-radius: 50%;
         }
-        & .logout:active {
-          @include btn-active;
-        }
-        & .login:active {
-          @include btn-active;
-        }
-        & .register:active {
-          @include btn-active;
+        .speech-bubble {
+          border: 3px solid #DADADA;
+          border-radius: 15px;
+          padding: 10px;
+          margin-top: 20px;
+          margin-left: 5px;
+          display: flex;
+          flex-flow: column;
+          justify-content: center;
+          height: 40px;
+          font-size: 18px;
+          & p {
+            margin: 0;
+            padding: 0;
+          }
         }
       }
     }
-    .frame {
-      margin-top: 5px;
+    .link {
       display: flex;
-      .left-bubble {
-        width: 5px;
-        height: 5px;
-        margin: 60px 0 0 3px;
-        border: 3px solid #DADADA;
-        border-radius: 50%;
-      }
-      .right-bubble {
-        width: 15px;
-        height: 15px;
-        margin: 50px 0 0 1px;
-        border: 3px solid #DADADA;
-        border-radius: 50%;
-      }
-      .speech-bubble {
-        border: 3px solid #DADADA;
-        border-radius: 15px;
-        padding: 10px;
-        margin-top: 20px;
-        margin-left: 5px;
-        display: flex;
-        flex-flow: column;
-        justify-content: center;
-        height: 40px;
-        & p {
-          margin: 0;
-          padding: 0;
+      justify-content: center;
+      margin: 20px 0 100px 0;
+      .use-btn {
+        @include btn-design;
+        display: inline-block;
+        font-size: 20px;
+        &:active {
+          @include btn-active;
         }
       }
     }
