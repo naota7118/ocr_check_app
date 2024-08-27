@@ -4,6 +4,7 @@ default: &default
   username: <%= ENV['DB_USER'] %>
 
 development:
+  <<: *default
   database: ocrcheck_development
   password: <%= ENV['DB_PASSWORD'] %>
   host: localhost
