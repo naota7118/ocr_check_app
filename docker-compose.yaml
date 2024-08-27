@@ -16,8 +16,8 @@ services:
       - 3000:3000
     volumes:
       - .:/ocr_check_app
-    depends_on:
-      - mysql
+    # depends_on:
+    #   - mysql
 
   # mysql:
   #   image: mysql:8.0.39
