@@ -67,9 +67,12 @@ jobs:
             echo ${SUDO_PASS} | sudo -S docker-compose -f docker-compose.yaml -f docker-compose-prod.yaml down -v --remove-orphans &&
             echo ${SUDO_PASS} | sudo -S docker-compose -f docker-compose.yaml -f docker-compose-prod.yaml up -d --build &&
             export DB_NAME=${DB_NAME} &&
+            echo "${DB_NAME}" &&
             export DB_USER=${DB_USER} &&
             export DB_PASSWORD=${DB_PASSWORD} &&
+            echo "${DB_PASSWORD}" &&
             export DB_HOST=${DB_HOST} &&
+            echo "${DB_HOST}" &&
             echo ${SUDO_PASS} | sudo -S docker-compose -f docker-compose.yaml -f docker-compose-prod.yaml run rails rails db:create &&
             echo ${SUDO_PASS} | sudo -S docker-compose -f docker-compose.yaml -f docker-compose-prod.yaml run rails rails db:migrate &&
             echo ${SUDO_PASS} | sudo -S lsof -i :80 &&
