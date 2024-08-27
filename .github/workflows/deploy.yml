@@ -2,7 +2,7 @@ name: Deploy
 
 on:
   push:
-    branches: [ feature/user-login ]
+    branches: [ feature/modify-frontend ]
 
 jobs:
   test:
@@ -39,10 +39,6 @@ jobs:
           HOST_NAME: ${{ secrets.HOST_NAME }}
           USER_NAME: ${{ secrets.USER_NAME }}
           SUDO_PASS: ${{ secrets.SUDO_PASS }}
-          DB_NAME: ${{ secrets.DB_NAME }}
-          DB_USER: ${{ secrets.DB_USER }}
-          DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
-          DB_HOST: ${{ secrets.DB_HOST }}
         
         run: |
           echo "$PRIVATE_KEY" > private_key && chmod 600 private_key
@@ -60,7 +56,7 @@ jobs:
             echo ${SUDO_PASS} | sudo -S docker-compose -v &&
             cd /home/naota7118/ocr_check_app &&
             git fetch --all &&
-            git reset --hard origin/feature/user-login &&
+            git reset --hard origin/feature/modify-frontend &&
             bundle install &&
             rbenv rehash &&
             lsof -t -i:3000 | xargs --no-run-if-empty kill -9 &&
