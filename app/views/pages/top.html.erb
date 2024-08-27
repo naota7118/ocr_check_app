@@ -8,10 +8,10 @@
         <h2 class="commic-title">OCRCheckは何をする？</h2>
         <div class="button">
           <% if user_signed_in? %>
-            <%= button_to 'ログアウト', destroy_user_session_path, method: :delete %>
+            <%= button_to 'ログアウト', destroy_user_session_path, method: :delete, class: 'logout' %>
           <% else %>
-            <%= link_to 'ログイン', new_user_session_path, class: 'post' %>
-            <%= link_to '新規登録', new_user_registration_path, class: 'post' %>
+            <%= link_to 'ログイン', new_user_session_path, class: 'login' %>
+            <%= link_to '新規登録', new_user_registration_path, class: 'register' %>
           <% end %>
         </div>
       </div>
