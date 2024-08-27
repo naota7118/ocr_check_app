@@ -18,3 +18,5 @@ services:
       - .:/ocr_check_app
     environment:
       - RAILS_ENV=production
+    env_file:
+      - prod.env
