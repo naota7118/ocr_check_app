@@ -1,3 +1,13 @@
+@mixin btn-design {
+  color: white;
+  background-color: #3F3F3F;
+  padding: 15px;
+  border-radius: 5px;
+  border-bottom: solid 4px #1A1E25;
+  font-weight: bold;
+  text-decoration: none;
+}
+
 @mixin btn-active {
   transform: translateY(4px);
   border-bottom: none;
@@ -12,8 +22,10 @@
     margin: 0 auto;
     .app-guide {
       display: flex;
-      .comic-title {
-        color: aquamarine;
+      .commic-title {
+        color: #3F3F3F;
+        letter-spacing: 1.4px;
+        font-weight:900;
       }
       .button {
         margin-left: 280px;
@@ -21,27 +33,23 @@
         padding: 5px;
         margin-bottom: 50px;
         & > a {
-          color: white;
-          background-color: #3F3F3F;
-          padding: 15px;
-          border-radius: 5px;
-          border-bottom: solid 4px #627295;
-          font-weight: bold;
-          text-decoration: none;
+          @include btn-design;
+          display: inline-block;
+          margin-right: 10px;
         }
         & button {
-          color: white;
-          background-color: #668AD8;
-          padding: 15px;
-          border: none;
-          border-radius: 5px;
-          border-bottom: solid 4px #627295;
-          text-decoration: underline;
+          @include btn-design;
           font-size: 16px;
           cursor: pointer;
         }
-        &.login:active {
-          @include btn-active
+        & .logout:active {
+          @include btn-active;
+        }
+        & .login:active {
+          @include btn-active;
+        }
+        & .register:active {
+          @include btn-active;
         }
       }
     }
@@ -79,19 +87,4 @@
       }
     }
   }
-}
-
-.logout:active {
-  transform: translateY(4px);
-  border-bottom: none;
-}
-
-// .login:active {
-//   transform: translateY(4px);
-//   border-bottom: none;
-// }
-
-.register:active {
-  transform: translateY(4px);
-  border-bottom: none;
 }
