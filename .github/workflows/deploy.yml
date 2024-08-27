@@ -39,6 +39,10 @@ jobs:
           HOST_NAME: ${{ secrets.HOST_NAME }}
           USER_NAME: ${{ secrets.USER_NAME }}
           SUDO_PASS: ${{ secrets.SUDO_PASS }}
+          DB_NAME: ${{ secrets.DB_NAME }}
+          DB_USER: ${{ secrets.DB_USER }}
+          DB_PASSWORD: ${{ secrets.PASSWORD }}
+          DB_HOST: ${{ secrets.DB_HOST }}
         
         run: |
           echo "$PRIVATE_KEY" > private_key && chmod 600 private_key
@@ -62,6 +66,10 @@ jobs:
             lsof -t -i:3000 | xargs --no-run-if-empty kill -9 &&
             echo ${SUDO_PASS} | sudo -S docker-compose -f docker-compose.yaml -f docker-compose-prod.yaml down -v --remove-orphans &&
             echo ${SUDO_PASS} | sudo -S docker-compose -f docker-compose.yaml -f docker-compose-prod.yaml up -d --build &&
+            export DB_NAME=${DB_NAME} &&
+            export DB_USER=${DB_USER} &&
+            export DB_PASSWORD=${DB_PASSWORD} &&
+            export DB_HOST=${DB_HOST} &&
             echo ${SUDO_PASS} | sudo -S docker-compose -f docker-compose.yaml -f docker-compose-prod.yaml run rails rails db:create &&
             echo ${SUDO_PASS} | sudo -S docker-compose -f docker-compose.yaml -f docker-compose-prod.yaml run rails rails db:migrate &&
             echo ${SUDO_PASS} | sudo -S lsof -i :80 &&
