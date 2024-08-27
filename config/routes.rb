@@ -2,9 +2,6 @@
 
 Rails.application.routes.draw do
   devise_for :users
-  resources :subject_data
   resources :moca_data
-  # get '/', to: 'moca_data#index'
-  get '/result', to: 'subject_data#result'
   get '/moca_result', to: 'moca_data#result'
 end
