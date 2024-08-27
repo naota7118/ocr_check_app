@@ -1,5 +1,3 @@
-version: '3'
-
 services:
   apache:
     image: httpd:latest
@@ -10,6 +8,7 @@ services:
     depends_on:
       - rails
     command: httpd-foreground
+
   rails:
     build: .
     command: rails s -b 0.0.0.0
@@ -17,3 +16,14 @@ services:
       - 3000:3000
     volumes:
       - .:/ocr_check_app
+    # depends_on:
+    #   - mysql
+
+  # mysql:
+  #   image: mysql:8.0.39
+  #   platform: linux/x86_64
+  #   environment:
+  #     MYSQL_USER: "${DB_USER}"
+  #     MYSQL_ROOT_PASSWORD: "${DB_PASSWORD}"
+  #   volumes:
+  #     - ./mysql/conf.d/charset.cnf:/etc/mysql/conf.d/charset.cnf
