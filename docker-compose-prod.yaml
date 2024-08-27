@@ -18,8 +18,3 @@ services:
       - .:/ocr_check_app
     environment:
       - RAILS_ENV=production
-
-  mysql:
-    deploy:
-      replicas: 0
-    command: /bin/true
