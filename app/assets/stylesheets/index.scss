@@ -1,3 +1,5 @@
+@import "top"; 
+
 body {
   background-color: #F0F4F8;
 }
@@ -13,14 +15,22 @@ body {
     border-bottom: 1px solid #C4C7C5;
   }
   .select-form {
-    form > div {
+    .select-files {
       margin-top: 50px;
+      input[type="file"] {
+        &::file-selector-button {
+          @include btn-design;
+          cursor: pointer;
+          font-size: 18px;
+          padding: 12px;
+          &:active {
+            @include btn-active;
+          }
+        }
+      }
     }
     .select-files > p {
       font-size: 18px;
-    }
-    .select-files > #uploads {
-      font-size: 16px;
     }
   }
   .send-button {
@@ -28,7 +38,13 @@ body {
       font-size: 18px;
     }
     & > .submit {
-      font-size: 16px;
+      @include btn-design;
+      font-size: 18px;
+      padding: 12px;
+      cursor: pointer;
+      &:active {
+        @include btn-active;
+      }
     }
   }
   .certification {
