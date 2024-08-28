@@ -1,68 +1,86 @@
-/* body {
-  background-color: #F0F4F8;
-} */
+@import 'top';
 
-.center-content {
-  margin-left: 200px;
-}
-
-.result-container {
-  padding-top: 20px;
-  margin-left: 150px;
-  display: flex;
-  background-color: #ffffff;
-}
-
-.right-container {
-  margin-left: 10px;
-  padding: 20px;
-}
-
-.guide {
-  position: fixed;
-  background-color: #E9F2FE;
-  border-radius: 15px;
-  padding: 10px;
-}
-
-td {
-  padding: 5px 10px;
-}
-
-.count {
-  font-size: large;
-  font-weight: bold;
-}
-
-.total {
-  margin-bottom: 10px;
-}
-
-.back-btn {
-  margin-top: 250px;
-  position: fixed;
-  a {
-    padding: 10px;
+.left-content {
+  .back-btn {
+    margin-top: 15px;
+    & a {
+      padding: 10px;
+    }
+    .btn_back {
+      @include btn-design;
+    }
+    .btn_back:active {
+      @include btn-active;
+    }
   }
 }
-
-.btn_back {
-  background-color: #E5E5E5;
-  text-decoration: none;
-  border: 1px solid black;
-  border-radius: 5px;
-  padding: 5px 10px;
-  color: #333333;
-}
-
-table {
-  border: 2px solid #888888;
-}
-
-th {
-  padding: 3px;
-}
-
-.pink {
-  background-color: #FFC0CB;
+.center-content.result-page {
+  margin: 0;
+  margin-left: 350px;
+  .result-container {
+    margin-top: 15px;
+    padding: 20px;
+    display: flex;
+    background-color: #ffffff;
+    border-radius: 30px;
+    .left-container {
+      & > h2 {
+        margin: 0 0 10px 0;
+        font-size: 30px;
+      }
+      .total {
+        margin-bottom: 10px;
+        font-size: 18px;
+        .count {
+          font-size: 24px;
+          font-weight: bold;
+        }
+      }
+      .personal-result {
+        margin-top: 20px;
+        border-top: 2px solid #C4C7C5;
+        & > p {
+          margin: 20px 0 5px 0;
+        }
+        .subject-id {
+          font-weight: bold;
+        }
+        table {
+          border: 2px solid #888888;
+          thead {
+            tr {
+              th {
+                padding: 3px;
+              }
+            }
+          }
+          tbody {
+            tr {
+              td {
+                padding: 5px 10px;
+              }
+            }
+          }
+        }
+      }
+    }
+    .right-container {
+      position: fixed;
+      margin-top: 120px;
+      margin-left: 500px;
+      padding: 20px;
+      .guide {
+        background-color: #fff;
+        border: 3px solid #DADADA;
+        border-radius: 15px;
+        padding: 10px;
+        & > p {
+          margin: 0;
+        }
+        .pink {
+          background-color: #FFC0CB;
+        }
+      }
+    }
+  }
 }

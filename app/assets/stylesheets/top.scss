@@ -9,6 +9,7 @@
 }
 
 @mixin btn-active {
+  display: inline-block;
   transform: translateY(4px);
   border-bottom: none;
 }
