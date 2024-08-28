@@ -1,15 +1,28 @@
-<div class="index-container">
-  <h2>PDFデータとExcelデータの照合</h2>
-  <div>
-    <%= form_with url: "/moca_data", method: :post, enctype: "multipart/form-data", data: { turbo: false } do |form| %>
-      <div class="select-files">
-        <p><label for="uploads">①PDFファイルとExcelファイルを1つずつ選択してください。</label></p>
-        <%= form.file_field :uploads, name: "uploads[]", multiple: true, accept: ".xlsx, .pdf" %>
+<div class="wrapper">
+  <div class="left-content">
+    <%= image_tag "/OCRCheck1.png", size: '150x150' %>
+  </div>
+  <div class="center-content">
+    <div class="usage-content">
+      <h2 class="usage">OCRCheckの使い方</h2>
+      <div class="select-form">
+        <%= form_with url: "/moca_data", method: :post, enctype: "multipart/form-data", data: { turbo: false } do |form| %>
+          <div class="select-files">
+            <p><label for="uploads">1. PDFファイルとExcelファイルを1つずつ選択してください。</label></p>
+            <%= form.file_field :uploads, name: "uploads[]", multiple: true, accept: ".xlsx, .pdf" %>
+          </div>
+          <div class="send-button">
+            <p>2. 送信ボタンを押してください。</p>
+            <%= form.submit "送信", class: "submit" %>
+          </div>
+          <div class="certification">
+            <p>3. Google認証画面であなたのアカウントを選択してください。</p>
+          </div>
+          <div class="completion">
+            <p>4. 照合結果が表示されます。</p>
+          </div>
+        <% end %>
       </div>
-      <div class="send-button">
-        <p>②送信ボタンを押してください。</p>
-        <%= form.submit "送信"%>
-      </div>
-    <% end %>
+    </div>
   </div>
 </div>
