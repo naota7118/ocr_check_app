@@ -1,0 +1,115 @@
+@mixin btn-design {
+  color: white;
+  background-color: #3F3F3F;
+  padding: 15px;
+  border-radius: 5px;
+  border-bottom: solid 4px #1A1E25;
+  font-weight: bold;
+  text-decoration: none;
+}
+
+@mixin btn-active {
+  display: inline-block;
+  transform: translateY(4px);
+  border-bottom: none;
+}
+
+.wrapper {
+  display: flex;
+  .left-content {
+    position: fixed;
+  }
+  .center-content {
+    margin: 0 auto;
+    .commic {
+      .app-guide {
+        display: flex;
+        .commic-title {
+          color: #3F3F3F;
+          letter-spacing: 1.2px;
+          font-size: 30px;
+        }
+        .button {
+          margin-left: 280px;
+          margin-top: 20px;
+          padding: 5px;
+          margin-bottom: 50px;
+          & > a {
+            @include btn-design;
+            display: inline-block;
+            margin-right: 10px;
+          }
+          & button {
+            @include btn-design;
+            font-size: 16px;
+            cursor: pointer;
+          }
+          & .logout:active {
+            @include btn-active;
+          }
+          & .login:active {
+            @include btn-active;
+          }
+          & .register:active {
+            @include btn-active;
+          }
+        }
+      }
+      .frame {
+        margin-bottom: 20px;
+        display: flex;
+        .left-bubble {
+          width: 5px;
+          height: 5px;
+          margin: 60px 0 0 3px;
+          border: 3px solid #DADADA;
+          border-radius: 50%;
+          background-color: #fff;
+        }
+        .right-bubble {
+          width: 15px;
+          height: 15px;
+          margin: 50px 0 0 1px;
+          border: 3px solid #DADADA;
+          border-radius: 50%;
+          background-color: #fff;
+        }
+        .speech-bubble {
+          border: 3px solid #DADADA;
+          border-radius: 15px;
+          padding: 10px;
+          margin-top: 20px;
+          margin-left: 5px;
+          display: flex;
+          flex-flow: column;
+          justify-content: center;
+          height: 40px;
+          font-size: 18px;
+          background-color: #fff;
+          & p {
+            margin: 0;
+            padding: 0;
+          }
+        }
+      }
+    }
+    .link {
+      display: flex;
+      justify-content: center;
+      margin: 20px 0 100px 0;
+      .use-btn {
+        @include btn-design;
+        display: inline-block;
+        font-size: 20px;
+        &:hover {
+          color: #3F3F3F;
+          background-color: white;
+          border: 2px solid #3F3F3F;
+        }
+        &:active {
+          @include btn-active;
+        }
+      }
+    }
+  }
+}

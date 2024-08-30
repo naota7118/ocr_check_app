@@ -1,0 +1,60 @@
+@import "top"; 
+
+body {
+  background-color: #F0F4F8;
+}
+.usage-content {
+  background-color: #fff;
+  padding: 30px;
+  border-radius: 30px;
+  margin-top: 30px;
+  .usage {
+    font-size: 30px;
+    letter-spacing: 1.2px;
+    margin: 0;
+    border-bottom: 1px solid #C4C7C5;
+  }
+  .select-form {
+    .select-files {
+      margin-top: 50px;
+      input[type="file"] {
+        &::file-selector-button {
+          @include btn-design;
+          cursor: pointer;
+          font-size: 18px;
+          padding: 12px;
+          &:active {
+            @include btn-active;
+          }
+        }
+      }
+    }
+    .select-files > p {
+      font-size: 18px;
+    }
+  }
+  .send-button {
+    & > p {
+      font-size: 18px;
+    }
+    & > .submit {
+      @include btn-design;
+      font-size: 18px;
+      padding: 12px;
+      cursor: pointer;
+      &:active {
+        @include btn-active;
+      }
+    }
+  }
+  .certification {
+    & > p {
+      font-size: 18px;
+    }
+  }
+  .completion {
+    & > p {
+      font-size: 18px;
+    }
+  }
+}

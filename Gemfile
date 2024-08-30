@@ -17,6 +17,8 @@ gem 'mysql2'
 
 gem 'dotenv-rails', groups: [:development, :test]
 
+gem 'sassc-rails'
+
 # Use the Puma web server [https://github.com/puma/puma]
 gem 'puma', '>= 5.0'
 
