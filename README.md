@@ -5,16 +5,12 @@
 OCR技術を活用して、照合作業の効率化およびミス防止のためのアプリです。
 
 ## トップページ
-![トップページ](https://github.com/user-attachments/assets/002a0549-8738-4d46-bf31-a172e9c319d1)
+![トップページ](https://github.com/user-attachments/assets/2f007153-77e6-4e00-afa4-6814d645da81)
 
 ## 解説記事(Qiita)
 OCRアプリを作ろうと考えた背景やユーザーインタビューの内容は、こちらの記事で詳しく解説しています。
 
 [OCR Check開発の背景・ユーザーインタビュー・技術を選んだ理由・進捗管理・アウトプット](https://qiita.com/naota7118/private/1790c44202a52e992170)
-
-また、エンジニアになりたい理由についてはこちらの記事で詳しく書いております。
-
-[【志望動機】なぜエンジニアになりたいのか？](https://qiita.com/naota7118/private/0a95c145ecaec38e6ee9)
 
 ## 動画
 https://github.com/user-attachments/assets/97b79b85-ff37-49b2-be92-716a7f51181b
