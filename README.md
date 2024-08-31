@@ -1,14 +1,18 @@
 # OCR Check
 
-現在の仕事で、紙データとエクセルデータの照合で時間がかかる問題を抱えていました。  
+現在の仕事で、紙データとエクセルデータの照合作業に時間がかかる問題を抱えていました。  
 
-OCR技術を活用して、照合作業の効率化およびミス防止のためのアプリです。
+そこで、OCR技術を活用して、照合作業を効率化するアプリ「OCR Check」を開発しました。
+
+![OCR Check説明資料](https://github.com/user-attachments/assets/ab58a5cb-d9d7-4f07-a7ec-a0c19f1a6678)
+
+具体的には、PDFから得点データを抽出し、Excelデータと一致しているかを確認します。
 
 ## トップページ
 ![トップページ](https://github.com/user-attachments/assets/2f007153-77e6-4e00-afa4-6814d645da81)
 
 ## 解説記事(Qiita)
-OCRアプリを作ろうと考えた背景やユーザーインタビューの内容は、こちらの記事で詳しく解説しています。
+OCR Checkを作ろうと考えた背景やユーザーインタビューの内容は、こちらの記事で詳しく解説しています。
 
 [OCR Check開発の背景・ユーザーインタビュー・技術を選んだ理由・進捗管理・アウトプット](https://qiita.com/naota7118/private/1790c44202a52e992170)
 
@@ -37,8 +41,8 @@ https://github.com/user-attachments/assets/97b79b85-ff37-49b2-be92-716a7f51181b
   - JavaScript
 - インフラ
   - Docker
-  - AWS(EC2, VPC, Route53, ACM, ALB)
-  - GitHub Actions(CI/CD)
+  - AWS(EC2, VPC, Route53, ACM, ALB, WAF)
+  - GitHub Actions CI/CDを自動化
 - ライブラリ
   - google/apis/drive_v3 PDFからテキスト抽出
   - google/api_client/client_secrets OAuth認証で必要
