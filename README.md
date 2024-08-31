@@ -16,7 +16,9 @@ OCR Checkを作ろうと考えた背景やユーザーインタビューの内�
 
 [OCR Check開発の背景・ユーザーインタビュー・技術を選んだ理由](https://qiita.com/naota7118/private/1790c44202a52e992170)
 
-## 動画
+## 説明動画
+動画で実際にどのように照合が行われているか説明しています。
+
 https://github.com/user-attachments/assets/97b79b85-ff37-49b2-be92-716a7f51181b
 
 ## 特に見ていただきたい点
@@ -50,4 +52,4 @@ https://github.com/user-attachments/assets/97b79b85-ff37-49b2-be92-716a7f51181b
   - high_voltage 静的なページをコントローラ使わず表示
 
 ## インフラ構成図
-![ocrcheck_infra](https://github.com/user-attachments/assets/37f2009f-596a-43ab-bbac-39d5b67effc6)
+![ocrcheck_infra](https://github.com/user-attachments/assets/63c14598-eee1-46cc-a935-9bf8d3fc64f3)
