@@ -52,4 +52,4 @@ https://github.com/user-attachments/assets/97b79b85-ff37-49b2-be92-716a7f51181b
   - high_voltage 静的なページをコントローラ使わず表示
 
 ## インフラ構成図
-![ocrcheck_infra](https://github.com/user-attachments/assets/63c14598-eee1-46cc-a935-9bf8d3fc64f3)
+![ocrcheck_infra](https://github.com/user-attachments/assets/403c1d0d-68b3-44a7-91a1-ebcc806b55f4)
