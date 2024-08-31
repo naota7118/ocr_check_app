@@ -14,7 +14,7 @@
 ## 解説記事(Qiita)
 OCR Checkを作ろうと考えた背景やユーザーインタビューの内容は、こちらの記事で詳しく解説しています。
 
-[OCR Check開発の背景・ユーザーインタビュー・技術を選んだ理由・進捗管理・アウトプット](https://qiita.com/naota7118/private/1790c44202a52e992170)
+[OCR Check開発の背景・ユーザーインタビュー・技術を選んだ理由](https://qiita.com/naota7118/private/1790c44202a52e992170)
 
 ## 動画
 https://github.com/user-attachments/assets/97b79b85-ff37-49b2-be92-716a7f51181b
@@ -50,6 +50,4 @@ https://github.com/user-attachments/assets/97b79b85-ff37-49b2-be92-716a7f51181b
   - high_voltage 静的なページをコントローラ使わず表示
 
 ## インフラ構成図
-![infra (1)](https://github.com/user-attachments/assets/1096ce46-a96b-4117-b957-7d2af11be465)  
-
-※EC2を2つ設置しましたが、GitHub Actionsでコンテナを起動できているのは一方のみです。
+![ocrcheck_infra](https://github.com/user-attachments/assets/37f2009f-596a-43ab-bbac-39d5b67effc6)
