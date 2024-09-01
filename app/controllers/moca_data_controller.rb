@@ -101,7 +101,7 @@ class MocaDataController < ApplicationController
     @excel_data.shift
     # 照合に必要な列だけ取得
     @excel_data.map! do |row|
-      row.values_at('被験者番号', '視空間_/5', '命名_/3', '数唱_/2', 'ひらがな_/1', '100-7_/3', '復唱_/2', '語想起_/1', '抽象概念_/2', '遅延再生_/2', '見当識_/5', 'MoCA合計_/30')
+      row.values_at('被験者番号', '視空間_/5', '命名_/3', '数唱_/2', 'ひらがな_/1', '100-7_/3', '復唱_/2', '語想起_/1', '抽象概念_/2', '遅延再生_/5', '見当識_/6', 'MoCA合計_/30')
     end
     @subject_numbers = []
     @excel_data.each do |person|
