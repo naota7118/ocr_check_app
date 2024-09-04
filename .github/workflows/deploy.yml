@@ -62,6 +62,6 @@ jobs:
             lsof -t -i:3000 | xargs --no-run-if-empty kill -9 &&
             echo ${SUDO_PASS} | sudo -S docker logs 949a7aad24ff &&
             echo ${SUDO_PASS} | sudo -S lsof -i :80 &&
-            echo ${SUDO_PASS} | sudo -S docker ps
-            echo ${RAILS_ENV} &&
+            echo ${SUDO_PASS} | sudo -S docker ps &&
+            echo ${RAILS_ENV}
             "
