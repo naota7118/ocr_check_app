@@ -60,8 +60,10 @@ jobs:
             bundle install &&
             rbenv rehash &&
             lsof -t -i:3000 | xargs --no-run-if-empty kill -9 &&
-            echo ${SUDO_PASS} | sudo -S docker logs 62ec02029cde &&
-            echo ${SUDO_PASS} | sudo -S docker logs f3972131a253 &&
+            echo ${SUDO_PASS} | sudo -S docker-compose -f docker-compose.yaml -f docker-compose-prod.yaml down -v --remove-orphans &&
+            echo ${SUDO_PASS} | sudo -S docker-compose -f docker-compose.yaml -f docker-compose-prod.yaml up -d --build &&
+            echo ${SUDO_PASS} | sudo -S docker-compose -f docker-compose.yaml -f docker-compose-prod.yaml run rails rails db:create &&
+            echo ${SUDO_PASS} | sudo -S docker-compose -f docker-compose.yaml -f docker-compose-prod.yaml run rails rails db:migrate &&
             echo ${SUDO_PASS} | sudo -S lsof -i :80 &&
             echo ${SUDO_PASS} | sudo -S docker ps
             "
