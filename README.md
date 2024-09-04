@@ -17,7 +17,9 @@ OCR Checkを作ろうと考えた背景やユーザーインタビューの内�
 [OCR Check開発の背景・ユーザーインタビュー・技術を選んだ理由](https://qiita.com/naota7118/private/1790c44202a52e992170)
 
 ## 説明動画
-動画で実際にどのように照合が行われているか説明しています。
+動画で実際にどのように照合が行われているか説明しています。  
+下の画像をクリックしていただくと、YouTube動画が再生されます。  
+※1.25倍速をおすすめします。
 
 [![OCRCheckの説明動画](https://img.youtube.com/vi/8EbsyVoQ1HA/0.jpg)](https://www.youtube.com/watch?v=8EbsyVoQ1HA)
 
