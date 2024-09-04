@@ -21,7 +21,7 @@ OCR Checkを作ろうと考えた背景やユーザーインタビューの内�
 下の画像をクリックしていただくと、YouTube動画が再生されます。  
 ※1.25倍速をおすすめします。
 
-[![OCRCheckの説明動画](https://img.youtube.com/vi/8EbsyVoQ1HA/0.jpg)](https://www.youtube.com/watch?v=8EbsyVoQ1HA)
+[![OCRCheckの説明動画](https://github.com/user-attachments/assets/254085b1-15fd-4fa5-a239-1f11d59dfcc9)](https://www.youtube.com/watch?v=8EbsyVoQ1HA)
 
 ## 特に見ていただきたい点
 
