@@ -19,7 +19,7 @@ OCR Checkを作ろうと考えた背景やユーザーインタビューの内�
 ## 説明動画
 動画で実際にどのように照合が行われているか説明しています。
 
-[![OCRCheckの説明動画](https://img.youtube.com/vi/MbrXuW9smVM/0.jpg)](https://www.youtube.com/watch?v=MbrXuW9smVM)
+[![OCRCheckの説明動画](https://img.youtube.com/vi/8EbsyVoQ1HA/0.jpg)](https://www.youtube.com/watch?v=8EbsyVoQ1HA)
 
 ## 特に見ていただきたい点
 
