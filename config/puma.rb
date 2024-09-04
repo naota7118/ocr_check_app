@@ -24,6 +24,9 @@ end
 # terminating a worker in development environments.
 worker_timeout 3600 if ENV.fetch('RAILS_ENV', 'development') == 'development'
 
+# 本番環境のタイムアウトを設定
+worker_timeout 300 if ENV.fetch('RAILS_ENV', 'production') == 'production'
+
 # Specifies the `port` that Puma will listen on to receive requests; default is 3000.
 port ENV.fetch('PORT', 3000)
 
