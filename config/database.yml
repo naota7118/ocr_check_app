@@ -10,6 +10,8 @@ development:
   host: localhost
 
 test:
+  <<: *default
+  password: <%= ENV['DB_PASSWORD'] %>
   database: ocrcheck_test
 
 production:
