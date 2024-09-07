@@ -12,7 +12,7 @@ development:
 test:
   <<: *default
   database: ocrcheck_test
-  password: 'r8UpCFkS'
+  password: '<%= ENV['DB_PASSWORD'] %>'
   host: localhost
 
 production:
