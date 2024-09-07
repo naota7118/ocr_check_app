@@ -11,8 +11,9 @@ development:
 
 test:
   <<: *default
-  password: <%= ENV['DB_PASSWORD'] %>
   database: ocrcheck_test
+  password: <%= ENV['DB_PASSWORD'] %>
+  host: localhost
 
 production:
   adapter: mysql2
