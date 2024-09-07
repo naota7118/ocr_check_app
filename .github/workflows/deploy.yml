@@ -14,7 +14,8 @@ jobs:
         ports:
           - 3306:3306
         env:
-          MYSQL_ROOT_PASSWORD: r8UpCFkS
+          MYSQL_DATABASE: ${{ secrets.DB_NAME }}
+          MYSQL_ROOT_PASSWORD: ${{ secrets.DB_PASSWORD }}
 
     steps:
       - uses: actions/checkout@v4
@@ -26,6 +27,13 @@ jobs:
 
       - name: Install dependencies
         run: bundle install
+      
+      - name: Set up DB
+        env:
+          RAILS_ENV: test
+        run: |
+          rails db:create
+          rails db:schema:load
       
       - name: Run tests
         run: bundle exec rspec
