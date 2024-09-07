@@ -27,6 +27,13 @@ jobs:
 
       - name: Install dependencies
         run: bundle install
+
+      - name: Wait for MySQL
+        run: |
+          until nc -z mysql 3306; do
+            echo "Waiting for MySQL...";
+            sleep 1;
+          done
       
       - name: Set up DB
         env:
