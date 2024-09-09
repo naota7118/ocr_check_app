@@ -14,8 +14,8 @@ jobs:
         ports:
           - 3306:3306
         env:
-          MYSQL_DATABASE: ${{ secrets.DB_NAME }}
-          MYSQL_ROOT_PASSWORD: ${{ secrets.DB_PASSWORD }}
+          MYSQL_DATABASE: ocrcheck_test
+          MYSQL_ROOT_PASSWORD: r8UpCFkS
         options: >-
           --health-cmd "mysqladmin ping"
           --health-interval 10s
@@ -38,6 +38,8 @@ jobs:
           RAILS_ENV: test
           MYSQL_HOST: localhost
           MYSQL_PORT: 3306
+          MYSQL_DATABASE: ocrcheck_test
+          MYSQL_ROOT_PASSWORD: r8UpCFkS
         run: |
           rails db:create
           rails db:schema:load
