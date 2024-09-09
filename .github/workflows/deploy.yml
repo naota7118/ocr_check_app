@@ -34,7 +34,6 @@ jobs:
       - name: Wait for MySQL
         run: |
           until nc -z mysql 3306; do
-            ping -c 4 mysql;
             echo "Waiting for MySQL...";
             sleep 1;
           done
