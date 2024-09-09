@@ -13,7 +13,7 @@ test:
   <<: *default
   database: ocrcheck_test
   password: '<%= ENV['DB_PASSWORD'] %>'
-  host: mysql
+  host: localhost
 
 production:
   adapter: mysql2
