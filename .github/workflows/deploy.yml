@@ -28,15 +28,8 @@ jobs:
       - name: Install dependencies
         run: bundle install
 
-      # - name: MySQL logs
-      #   run: docker logs $(docker ps -q --filter "ancestor=mysql:8.0")
-
-      - name: Wait for MySQL
-        run: |
-          until nc -z mysql 3306; do
-            echo "Waiting for MySQL...";
-            sleep 1;
-          done
+      - name: MySQL logs
+        run: docker ps
       
       - name: Set up DB
         env:
