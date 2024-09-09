@@ -37,6 +37,7 @@ jobs:
           RAILS_ENV: test
           MYSQL_HOST: localhost
           MYSQL_PORT: 3306
+          DB_USER: ${{ secrets.DB_USER }}
           DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
         run: |
           rails db:create
