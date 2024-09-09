@@ -15,8 +15,7 @@ jobs:
           - 3306:3306
         env:
           MYSQL_DATABASE: ${{ secrets.DB_NAME }}
-          MYSQL_ROOT_PASSWORD:
-          MYSQL_ALLOW_EMPTY_PASSWORD: "yes"
+          MYSQL_ROOT_PASSWORD: r8UpCFkS
         options: >-
           --health-cmd "mysqladmin ping"
           --health-interval 10s
