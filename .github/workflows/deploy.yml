@@ -16,7 +16,6 @@ jobs:
         env:
           MYSQL_DATABASE: ${{ secrets.DB_NAME }}
           MYSQL_ROOT_PASSWORD: ${{ secrets.DB_PASSWORD }}
-          MYSQL_ALLOW_EMPTY_PASSWORD: "yes"
         options: >-
           --health-cmd "mysqladmin ping"
           --health-interval 10s
@@ -33,13 +32,12 @@ jobs:
 
       - name: Install dependencies
         run: bundle install
-
-      - name: MySQL logs
-        run: docker ps
       
       - name: Set up DB
         env:
           RAILS_ENV: test
+          MYSQL_HOST: localhost
+          MYSQL_PORT: 3306
         run: |
           rails db:create
           rails db:schema:load
