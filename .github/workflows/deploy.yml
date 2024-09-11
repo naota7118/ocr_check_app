@@ -51,6 +51,9 @@ jobs:
 
       - name: Run rubocop
         run: bundle exec rubocop
+
+      - name: Confirm Docker
+        run: docker ps
   
   deploy:
     needs: test
