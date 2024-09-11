@@ -2,7 +2,7 @@ name: Deploy
 
 on:
   push:
-    branches: [ feature/pass_deploy_test ]
+    branches: [ develop ]
 
 jobs:
   test:
@@ -81,7 +81,7 @@ jobs:
             echo ${SUDO_PASS} | sudo -S docker-compose -v &&
             cd /home/naota7118/ocr_check_app &&
             git fetch --all &&
-            git reset --hard origin/feature/pass_deploy_test &&
+            git reset --hard origin/develop &&
             bundle install &&
             rbenv rehash &&
             lsof -t -i:3000 | xargs --no-run-if-empty kill -9 &&
