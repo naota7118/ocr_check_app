@@ -2,11 +2,24 @@ name: Deploy
 
 on:
   push:
-    branches: [ develop ]
+    branches: [ feature/pass_deploy_test ]
 
 jobs:
   test:
     runs-on: ubuntu-latest
+
+    services:
+      mysql:
+        image: mysql:8.0
+        ports:
+          - 3306:3306
+        env:
+          MYSQL_ROOT_PASSWORD: ${{ secrets.DB_PASSWORD }}
+        options: >-
+          --health-cmd "mysqladmin ping"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
 
     steps:
       - uses: actions/checkout@v4
@@ -19,8 +32,20 @@ jobs:
       - name: Install dependencies
         run: bundle install
       
-      # - name: Run tests
-      #   run: bundle exec rspec
+      - name: Set up DB
+        env:
+          RAILS_ENV: test
+          DB_USER: ${{ secrets.DB_USER }}
+          DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
+        run: |
+          rails db:create
+          rails db:schema:load
+      
+      - name: Run tests
+        env:
+          DB_USER: ${{ secrets.DB_USER }}
+          DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
+        run: bundle exec rspec
 
       - name: Run rubocop
         run: bundle exec rubocop
@@ -56,7 +81,7 @@ jobs:
             echo ${SUDO_PASS} | sudo -S docker-compose -v &&
             cd /home/naota7118/ocr_check_app &&
             git fetch --all &&
-            git reset --hard origin/develop &&
+            git reset --hard origin/feature/pass_deploy_test &&
             bundle install &&
             rbenv rehash &&
             lsof -t -i:3000 | xargs --no-run-if-empty kill -9 &&
