@@ -7,7 +7,7 @@ development:
   <<: *default
   database: ocrcheck_development
   password: <%= ENV['DB_PASSWORD'] %>
-  host: localhost
+  host: mysql
 
 test:
   <<: *default
