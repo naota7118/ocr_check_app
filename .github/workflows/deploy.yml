@@ -44,6 +44,9 @@ jobs:
           rails db:schema:load
       
       - name: Run tests
+        env:
+          DB_USER: ${{ secrets.DB_USER }}
+          DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
         run: bundle exec rspec
 
       - name: Run rubocop
