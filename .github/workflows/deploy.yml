@@ -35,6 +35,7 @@ jobs:
       - name: Set up DB
         env:
           RAILS_ENV: test
+          MYSQL_HOST: mysql
           DB_USER: ${{ secrets.DB_USER }}
           DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
         run: |
