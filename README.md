@@ -49,14 +49,13 @@ OCR Checkを使うと、今まで2人合わせて1時間20分かかっていた�
 [![OCRCheckの説明動画](https://github.com/user-attachments/assets/254085b1-15fd-4fa5-a239-1f11d59dfcc9)](https://www.youtube.com/watch?v=8EbsyVoQ1HA)
 
 ## 特に見ていただきたい点
+![検査用紙から得点データを抽出する流れ](https://github.com/user-attachments/assets/5c62996a-58c8-4ce6-acc2-6bbaeac05bb7)
+①検査用紙のテキストデータ(txtファイル)から得点を抽出するロジックを考え実装しました。
+  
+![PDFデータとExcelデータを照合する流れ](https://github.com/user-attachments/assets/32e39a9d-219f-4d50-af67-1a12d42014da)
+②PDFデータ（検査用紙データ）とエクセルの得点データを照合する処理を考え実装しました。
 
-- バックエンド
-  - 自分でメソッドを作り連携させて照合を実現している
-  - 公式ドキュメントなどを参考にOAuth認証を実現した
-- インフラ
-  - DockerとGitHub Actionsを使って本番環境でのテストおよびデプロイを自動化している
-- その他
-  - 職場の上司にヒアリングしてから開発を始め、ユーザーインタビューを行い改善している
+③職場の上司にヒアリングしてから開発を始め、ユーザーインタビューを行い改善しています。
 
 ## 使用した技術
 - バックエンド
