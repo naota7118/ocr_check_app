@@ -50,7 +50,7 @@ OCR Checkを使うと、今まで2人合わせて1時間20分かかっていた�
 
 ## 特に見ていただきたい点
 ![検査用紙から得点データを抽出する流れ](https://github.com/user-attachments/assets/5c62996a-58c8-4ce6-acc2-6bbaeac05bb7)
-①検査用紙のテキストデータ(txtファイル)から得点を抽出するロジックを考え実装しました。
+①検査用紙のテキストデータ(txtファイル)から得点を抽出する処理を考え実装しました。
   
 ![PDFデータとExcelデータを照合する流れ](https://github.com/user-attachments/assets/32e39a9d-219f-4d50-af67-1a12d42014da)
 ②PDFデータ（検査用紙データ）とエクセルの得点データを照合する処理を考え実装しました。
@@ -72,10 +72,17 @@ OCR Checkを使うと、今まで2人合わせて1時間20分かかっていた�
   - AWS(EC2, VPC, Route53, ACM, ALB, WAF)
   - GitHub Actions CI/CDを自動化
 - ライブラリ
-  - google/apis/drive_v3 PDFからテキスト抽出
-  - google/api_client/client_secrets OAuth認証で必要
-  - roo エクセルからデータ取得
-  - high_voltage 静的なページをコントローラ使わず表示
+  - google/apis/drive_v3  
+    PDFからテキストデータを抽出するために使いました。  
+    具体的には、PDFをGoogleドキュメント形式に変換し、Googleドキュメントからテキストファイルを出力することで、テキスト部分のみ抽出しています。
+  - google/api_client/client_secrets  
+    Google Drive APIのOCRを活用するにはGoogle認証を通す必要がありました。
+  - roo  
+    エクセルから得点データを取得するために使いました。  
+    指定した列の値のみ配列に格納するようにしました。
+  - high_voltage  
+    トップページを表示するために使いました。
+    静的なページをコントローラを作らず表示できないか調べていて見つけました。
 
 ## インフラ構成図
 ![ocrcheck_infra](https://github.com/user-attachments/assets/403c1d0d-68b3-44a7-91a1-ebcc806b55f4)
