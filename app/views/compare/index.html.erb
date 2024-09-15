@@ -1,0 +1,35 @@
+<div class="wrapper">
+  <div class="left-content">
+    <%= image_tag "/OCRCheck.png", size: '150x150' %>
+  </div>
+  <div class="center-content">
+    <div class="usage-content">
+      <h2 class="usage">OCRCheckの使い方</h2>
+      <% if user_signed_in? %>
+        <div class="select-form">
+          <%= form_with url: "/compare", method: :post, enctype: "multipart/form-data", data: { turbo: false } do |form| %>
+            <div class="select-files">
+              <p><label for="uploads">1. PDFファイルとExcelファイルを1つずつ選択してください。</label></p>
+              <%= form.file_field :uploads, name: "uploads[]", multiple: true, accept: ".xlsx, .pdf" %>
+            </div>
+            <div class="send-button">
+              <p>2. 送信ボタンを押してください。</p>
+              <%= form.submit "送信", class: "submit" %>
+            </div>
+            <div class="certification">
+              <p>3. Google認証画面であなたのアカウントを選択してください。</p>
+            </div>
+            <div class="completion">
+              <p>4. 照合結果が表示されます。</p>
+            </div>
+          <% end %>
+        </div>
+      <% else %>
+        <div class="guide-to-loggin">
+          <p>まだログインしていない方は<%= link_to 'こちら', new_user_session_path, class: 'login' %>からログインしてください。</p>
+          <p>まだ登録していない方は<%= link_to 'こちら', new_user_registration_path, class: 'register' %>から登録してください。</p>
+        </div>
+      <% end %>
+    </div>
+  </div>
+</div>
