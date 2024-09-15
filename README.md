@@ -51,9 +51,12 @@
 ![エクセル得点表を印刷した紙のサンプル](https://github.com/user-attachments/assets/8b1e7fee-3792-4cf2-9ae9-719c68362f21)
 このように、一致していたらマーカーやチェックを入れて照合の結果を残していました。  
   
-![アプリを使うとどうなる？](https://github.com/user-attachments/assets/3b6876f1-1c29-4177-922c-713e706ce2c1)
+## アプリを使うとどう変わるか？
+![OCR Checkで照合作業はどう変わる？](https://github.com/user-attachments/assets/502170ff-b6b0-4cf8-8de1-3e3202014e1f)
 OCR Checkを使うと、今まで2人合わせて1時間20分かかっていた作業が15分で完了します。  
-また、チームメンバーの心理的負担を軽減することができます。
+  
+![OCR Checkを使う３つのメリット](https://github.com/user-attachments/assets/80d94fb3-517c-4a86-9aef-3262cd45305d)
+照合作業が効率化されるだけでなく、ヒューマンエラーの防止や検査員の業務パフォーマンス向上が期待できます。
 
 ### 具体的にどのようなデータを照合するのか？
 具体的には、PDFから得点データを抽出し、Excelデータと一致しているかを確認します。
@@ -68,7 +71,7 @@ OCR Checkを使うと、今まで2人合わせて1時間20分かかっていた�
 
 [![OCRCheckの説明動画](https://github.com/user-attachments/assets/254085b1-15fd-4fa5-a239-1f11d59dfcc9)](https://www.youtube.com/watch?v=8EbsyVoQ1HA)
 
-## 特に見ていただきたい点
+## 工夫したところ
 ![検査用紙から得点データを抽出する流れ](https://github.com/user-attachments/assets/5c62996a-58c8-4ce6-acc2-6bbaeac05bb7)
 ①検査用紙のテキストデータ(txtファイル)から得点を抽出する処理を考え実装しました。
   
