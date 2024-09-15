@@ -69,7 +69,7 @@ OCR Checkを使うと、今まで2人合わせて1時間20分かかっていた�
 下の画像をクリックしていただくと、YouTube動画が再生されます。  
 ※2倍速での視聴をおすすめします。
 
-![OCR Check動画サムネイル](https://github.com/user-attachments/assets/1861b642-a520-4859-92a0-22fb31cfc86b)
+[![OCR Check動画サムネイル](https://github.com/user-attachments/assets/1861b642-a520-4859-92a0-22fb31cfc86b)](https://www.youtube.com/watch?v=8EbsyVoQ1HA)
 
 ## 工夫したところ
 ![工夫したところ1](https://github.com/user-attachments/assets/a73cf884-322c-4196-8f23-cd496ca7d347)
