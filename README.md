@@ -72,7 +72,11 @@ OCR Checkを使うと、今まで2人合わせて1時間20分かかっていた�
 
 ※2倍速での視聴をおすすめします。
 
-[![OCR Check動画サムネイル](https://github.com/user-attachments/assets/1861b642-a520-4859-92a0-22fb31cfc86b)](https://www.youtube.com/watch?v=8EbsyVoQ1HA)
+[![OCR Check動画サムネイル (1)](https://github.com/user-attachments/assets/de807982-d870-4080-9286-2c11e7c2dfa7)](https://www.youtube.com/watch?v=8EbsyVoQ1HA)
+
+### 照合結果画面
+修正すべき不一致の件数と修正箇所が一目でわかります。
+<img width="1256" alt="スクリーンショット 2024-09-15 午後8 42 11" src="https://github.com/user-attachments/assets/a9f2b629-d0df-4a93-918d-01f49756adef">
 
 ## 工夫したところ
 ![工夫したところ1](https://github.com/user-attachments/assets/a73cf884-322c-4196-8f23-cd496ca7d347)
