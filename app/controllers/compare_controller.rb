@@ -62,17 +62,23 @@ class CompareController < ApplicationController
     # /^1{1[0-6]{1}$/にマッチしたら'読みとり不可'と表示する
     elsif revised_chars.join.match?(/^1{1}[0-6]{1}$/)
       @pdf_scores << '読みとり不可'
+    # elsif revised_chars.join.match?(/[0-9]\/28$/)
+    #   @pdf_scores << revised_chars[0]
+    # elsif revised_chars.join.match?(/[0-9][0-9]\/28$/)
+    #   @pdf_scores << "#{revised_chars[0]}#{revised_chars[1]}"
     else
       revised_chars.each_with_index do |char, i|
+        # /のときのみ続きの処理を実行する
         next unless char == '/'
 
         # ["〇", "〇", "/", "2", "8"]は/の前の2ケタを取得
         # '9128'が89と表示されてしまう問題が生じた
-        @pdf_scores << if (revised_chars[i + 1].to_i == 2 && revised_chars[i + 2].to_i == 8) && revised_chars.last == '8'
-          [revised_chars[i - 2].to_i, revised_chars[i - 1].to_i].join
+        if (revised_chars[i + 1].to_i == 2 && revised_chars[i + 2].to_i == 8) && revised_chars.last == '8'
+          @pdf_scores << [revised_chars[i - 2].to_i, revised_chars[i - 1].to_i].join
         else
-          revised_chars[i - 1]
+          @pdf_scores << revised_chars[i - 1]
         end
+
       end
     end
   end
