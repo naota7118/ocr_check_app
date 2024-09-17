@@ -74,7 +74,11 @@ class CompareController < ApplicationController
         # ["〇", "〇", "/", "2", "8"]は/の前の2ケタを取得
         # '9128'が89と表示されてしまう問題が生じた
         if (revised_chars[i + 1].to_i == 2 && revised_chars[i + 2].to_i == 8) && revised_chars.last == '8'
-          @pdf_scores << [revised_chars[i - 2].to_i, revised_chars[i - 1].to_i].join
+          if revised_chars.length == 5
+            @pdf_scores << [revised_chars[i - 2].to_i, revised_chars[i - 1].to_i].join
+          else
+            @pdf_scores << revised_chars[i - 1]
+          end
         else
           @pdf_scores << revised_chars[i - 1]
         end
