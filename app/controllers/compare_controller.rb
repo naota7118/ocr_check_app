@@ -62,27 +62,16 @@ class CompareController < ApplicationController
     # /^1{1[0-6]{1}$/にマッチしたら'読みとり不可'と表示する
     elsif revised_chars.join.match?(/^1{1}[0-6]{1}$/)
       @pdf_scores << '読みとり不可'
-    # elsif revised_chars.join.match?(/[0-9]\/28$/)
-    #   @pdf_scores << revised_chars[0]
-    # elsif revised_chars.join.match?(/[0-9][0-9]\/28$/)
-    #   @pdf_scores << "#{revised_chars[0]}#{revised_chars[1]}"
-    else
+    elsif revised_chars.join.match?(/[0-9]\/28$/) && revised_chars.join.length == 4 # 1桁の場合
+      @pdf_scores << revised_chars[0]
+    elsif revised_chars.join.match?(/[0-9][0-9]\/28$/) && revised_chars.join.length == 5 #2桁の場合
+      @pdf_scores << revised_chars.join[0, 2]
+    elsif revised_chars.include?('/')
+      # スラッシュの前の数字を取得
       revised_chars.each_with_index do |char, i|
-        # /のときのみ続きの処理を実行する
-        next unless char == '/'
-
-        # ["〇", "〇", "/", "2", "8"]は/の前の2ケタを取得
-        # '9128'が89と表示されてしまう問題が生じた
-        if (revised_chars[i + 1].to_i == 2 && revised_chars[i + 2].to_i == 8) && revised_chars.last == '8'
-          if revised_chars.length == 5
-            @pdf_scores << [revised_chars[i - 2].to_i, revised_chars[i - 1].to_i].join
-          else
-            @pdf_scores << revised_chars[i - 1]
-          end
-        else
+        if char == '/'
           @pdf_scores << revised_chars[i - 1]
         end
-
       end
     end
   end
@@ -108,7 +97,6 @@ class CompareController < ApplicationController
     end
     # 1人ずつの配列に区切る
     @pdf_data = []
-    p @pdf_scores
     @pdf_scores.each_slice(11) { |subject| @pdf_data << subject }
   end
 
@@ -158,6 +146,8 @@ class CompareController < ApplicationController
 
   # 照合して結果を表示
   def result
+    start_time = Time.now
+
     pass_authentication
     return if performed?
 
@@ -169,6 +159,8 @@ class CompareController < ApplicationController
     verify_suject_id(@pdf_data, @excel_data)
     # 照合が完了したらファイルを削除する
     delete_files
+
+    p "照合処理にかかる時間 #{Time.now - start_time}s"
   end
 
   # ローカルからファイルを削除する
