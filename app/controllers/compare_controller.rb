@@ -48,7 +48,7 @@ class CompareController < ApplicationController
       string.gsub!(/128/, '/28')
     end
     
-    if string.match?(%r{^[0-9/\[]})
+    if string.match?(%r{^[0-9/]})
       string.chars
     end
   end
