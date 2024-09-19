@@ -23,7 +23,11 @@ class CompareController < ApplicationController
     metadata = Google::Apis::DriveV3::File.new(title: 'My document')
     # PDFファイルのパス取得してupload_sourceに代入
     Dir.glob(Rails.root.join('public/uploads/*.pdf').to_s).each do |pdf|
-      metadata = drive.create_file(metadata, upload_source: pdf, content_type: 'application/pdf')
+      begin
+        metadata = drive.create_file(metadata, upload_source: pdf, content_type: 'application/pdf')
+      rescue => exception
+        return exception.message
+      end
     end
 
     # Googleドキュメント形式に変換
@@ -150,14 +154,19 @@ class CompareController < ApplicationController
     pass_authentication
     return if performed?
 
-    convert(@drive)
-    get_scores_from_text
-    get_scores_from_excel
+    if convert(@drive) == "fileIdInUse: A file already exists with the provided ID."
+      redirect_to compare_index_path
+      return
+    else
+      get_scores_from_text
+      get_scores_from_excel
+  
+      # PDFデータとExcelデータを照合する
+      verify_suject_id(@pdf_data, @excel_data)
+      # 照合が完了したらファイルを削除する
+      delete_files
+    end
 
-    # PDFデータとExcelデータを照合する
-    verify_suject_id(@pdf_data, @excel_data)
-    # 照合が完了したらファイルを削除する
-    delete_files
 
     p "照合処理にかかる時間 #{Time.now - start_time}s"
   end
