@@ -2,7 +2,7 @@
 
 require 'rails_helper'
 
-RSpec.describe MocaDataController, type: :controller do
+RSpec.describe CompareController, type: :controller do
   describe 'GET #index' do
     it 'returns a sucessful response' do
       get :index
