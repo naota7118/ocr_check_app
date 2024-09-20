@@ -48,6 +48,10 @@ gem 'high_voltage', '~> 4.0.0'
 # ユーザーログイン機能を実装するため
 gem 'devise'
 
+# フラッシュメッセージ実装のためにboostrapを導入
+gem 'jquery-rails'
+gem 'bootstrap', '~> 4.1.1'
+
 # Use Redis adapter to run Action Cable in production
 # gem "redis", ">= 4.0.1"
 

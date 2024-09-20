@@ -26,7 +26,7 @@ class CompareController < ApplicationController
       begin
         metadata = drive.create_file(metadata, upload_source: pdf, content_type: 'application/pdf')
       rescue => exception
-        flash.now[:alert] = "2つともPDFが送られています。PDFとエクセルを1つずつ選択してください。"
+        flash[:alert] = "2つともPDFが送られています。PDFとエクセルを1つずつ選択してください。"
         return exception.message
       end
     end
