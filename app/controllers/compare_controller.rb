@@ -156,6 +156,7 @@ class CompareController < ApplicationController
     return if performed?
 
     if convert(@drive) == "fileIdInUse: A file already exists with the provided ID."
+      FileUtils.rm_r(Dir.glob(Rails.root.join('public/uploads/*.pdf').to_s))
       redirect_to compare_index_path
       return
     else
