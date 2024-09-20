@@ -25,9 +25,9 @@ class CompareController < ApplicationController
     Dir.glob(Rails.root.join('public/uploads/*.pdf').to_s).each do |pdf|
       begin
         metadata = drive.create_file(metadata, upload_source: pdf, content_type: 'application/pdf')
-      rescue => exception
-        flash[:alert] = "2つともPDFが送られています。PDFとエクセルを1つずつ選択してください。"
-        return exception.message
+      rescue => e
+        flash[:alert] = '2つともPDFが送られています。PDFとエクセルを1つずつ選択してください。'
+        return e.message
       end
     end
 
@@ -155,7 +155,7 @@ class CompareController < ApplicationController
     pass_authentication
     return if performed?
 
-    if convert(@drive) == "fileIdInUse: A file already exists with the provided ID."
+    if convert(@drive) == 'fileIdInUse: A file already exists with the provided ID.'
       FileUtils.rm_r(Dir.glob(Rails.root.join('public/uploads/*.pdf').to_s))
       redirect_to compare_index_path
       return
@@ -168,7 +168,6 @@ class CompareController < ApplicationController
       # 照合が完了したらファイルを削除する
       delete_files
     end
-
 
     p "照合処理にかかる時間 #{Time.now - start_time}s"
   end
