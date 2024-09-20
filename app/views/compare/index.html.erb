@@ -3,6 +3,7 @@
     <%= image_tag "/OCRCheck.png", size: '150x150' %>
   </div>
   <div class="center-content">
+    <%= flash[:alert] %>
     <div class="usage-content">
       <h2 class="usage">OCRCheckの使い方</h2>
       <% if user_signed_in? %>
