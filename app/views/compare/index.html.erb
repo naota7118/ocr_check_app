@@ -3,6 +3,12 @@
     <%= image_tag "/OCRCheck.png", size: '150x150' %>
   </div>
   <div class="center-content">
+    <%# PDFファイルが2つ送られた場合にアラート表示 %>
+    <% if flash[:alert] %>
+      <div class="alert alert-warning">
+        <%= flash[:alert] %>
+      </div>
+    <% end %>
     <div class="usage-content">
       <h2 class="usage">OCRCheckの使い方</h2>
       <% if user_signed_in? %>
