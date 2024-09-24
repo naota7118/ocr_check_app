@@ -46,7 +46,7 @@ class CompareController < ApplicationController
   # 116を1/6に変換
   def one_to_slash(chars)
     string = chars.join
-    string[1] = '/' if string.match?(/^[0-6]{1}1{1}[0-6]{1}$/)
+    string[1] = '/' if string.match?(/^[0-6]1[0-6]$/)
 
     # 0から9の数値に続いて'128'を見つけたら1を/に変換する
     if string.match?(/[0-9]128$/)
