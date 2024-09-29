@@ -3,6 +3,7 @@
 require 'google/apis/drive_v3'
 require 'google/api_client/client_secrets'
 require 'roo'
+require 'rubyXL'
 
 class CompareController < ApplicationController
   # ファイルをアップロード
@@ -108,7 +109,8 @@ class CompareController < ApplicationController
   def get_scores_from_excel
     # Excelからデータを取得
     Dir.glob(Rails.root.join('public/uploads/*.xlsx').to_s).each do |excel|
-      @xlsx = Roo::Excelx.new(excel)
+      p workbook = RubyXL::Parser.parse(excel)
+      # @xlsx = Roo::Excelx.new(excel)
     end
     @excel_data = @xlsx.parse(headers: true, clean: true)
     # ヘッダー行は不要

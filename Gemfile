@@ -48,8 +48,7 @@ gem 'high_voltage', '~> 4.0.0'
 # ユーザーログイン機能を実装するため
 gem 'devise'
 # エクセルに書き込むため
-gem 'caxlsx'
-gem 'caxlsx_rails'
+gem 'rubyXL'
 # Use Redis adapter to run Action Cable in production
 # gem "redis", ">= 4.0.1"
 
