@@ -15,8 +15,8 @@
         <div class="select-form">
           <%= form_with url: "/compare", method: :post, enctype: "multipart/form-data", data: { turbo: false } do |form| %>
             <div class="select-files">
-              <p><label for="uploads">1. PDFファイルとExcelファイルを1つずつ選択してください。</label></p>
-              <%= form.file_field :uploads, name: "uploads[]", multiple: true, accept: ".xlsx, .pdf" %>
+              <p><label for="upload">1. PDFファイルとExcelファイルを1つずつ選択してください。</label></p>
+              <%= form.file_field :upload, name: "upload", accept: ".pdf" %>
             </div>
             <div class="send-button">
               <p>2. 送信ボタンを押してください。</p>

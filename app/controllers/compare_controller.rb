@@ -8,29 +8,20 @@ require 'rubyXL'
 class CompareController < ApplicationController
   # ファイルをアップロード
   def create
-    uploaded_files = params[:uploads]
-    uploaded_files.shift # 最初の要素を削除
-    uploaded_files.each do |uploaded_file|
-      file_path = Rails.root.join("public/uploads/#{uploaded_file.original_filename}")
-      File.binwrite(file_path, uploaded_file.read)
-    end
-
+    uploaded_file = params[:upload]
+    file_path = Rails.root.join("public/uploads/#{uploaded_file.original_filename}")
+    File.binwrite(file_path, uploaded_file.read)
+    binding.pry
     redirect_to compare_result_path
   end
 
   # PDFファイルからテキストファイルに変換
   def convert(drive)
     # Google Driveにファイルをアップロード
-    metadata = Google::Apis::DriveV3::File.new(title: 'My document')
-    # PDFファイルのパス取得してupload_sourceに代入
-    Dir.glob(Rails.root.join('public/uploads/*.pdf').to_s).each do |pdf|
-      begin
-        metadata = drive.create_file(metadata, upload_source: pdf, content_type: 'application/pdf')
-      rescue => e
-        flash[:alert] = '2つともPDFが送られています。PDFとエクセルを1つずつ選択してください。'
-        return e.message
-      end
-    end
+    # metadata = Google::Apis::DriveV3::File.new(title: 'My document')
+    file_path = Dir.glob(Rails.root.join('public/uploads/*.pdf').to_s)
+    metadata = drive.create_file(metadata, upload_source: file_path.first, content_type: '/pdf')
+    binding.pry
 
     # Googleドキュメント形式に変換
     converted_file = drive.copy_file(metadata.id, Google::Apis::DriveV3::File.new(mime_type: 'application/vnd.google-apps.document'))
