@@ -11,7 +11,6 @@ class CompareController < ApplicationController
     uploaded_file = params[:upload]
     file_path = Rails.root.join("public/uploads/#{uploaded_file.original_filename}")
     File.binwrite(file_path, uploaded_file.read)
-    binding.pry
     redirect_to compare_result_path
   end
 
@@ -21,7 +20,6 @@ class CompareController < ApplicationController
     # metadata = Google::Apis::DriveV3::File.new(title: 'My document')
     file_path = Dir.glob(Rails.root.join('public/uploads/*.pdf').to_s)
     metadata = drive.create_file(metadata, upload_source: file_path.first, content_type: '/pdf')
-    binding.pry
 
     # Googleドキュメント形式に変換
     converted_file = drive.copy_file(metadata.id, Google::Apis::DriveV3::File.new(mime_type: 'application/vnd.google-apps.document'))
@@ -96,13 +94,48 @@ class CompareController < ApplicationController
     @pdf_scores.each_slice(11) { |subject| @pdf_data << subject }
   end
 
-  # エクセルファイルから得点データを取得
-  def get_scores_from_excel
+  # エクセルファイルに得点を出力
+  def export_to_excel(pdf_data)
+
     # Excelからデータを取得
-    Dir.glob(Rails.root.join('public/uploads/*.xlsx').to_s).each do |excel|
-      p workbook = RubyXL::Parser.parse(excel)
-      # @xlsx = Roo::Excelx.new(excel)
+    workbook = RubyXL::Workbook.new
+    worksheet = workbook[0]
+    worksheet.add_cell(0, 0, '')
+    worksheet.add_cell(0, 1, '被験者番号')
+    worksheet.add_cell(0, 2, 'trail /1')
+    worksheet.add_cell(0, 3, 'cube /1')
+    worksheet.add_cell(0, 4, 'clock /3')
+    worksheet.add_cell(0, 5, '空間把握 /5')
+    worksheet.add_cell(0, 6, '名前 /2')
+    worksheet.add_cell(0, 7, '加算 /2')
+    worksheet.add_cell(0, 8, 'いろ /1')
+    worksheet.add_cell(0, 9, '50-8 /4')
+    worksheet.add_cell(0, 10, '暗唱 /2')
+    worksheet.add_cell(0, 11, '種類 /1')
+    worksheet.add_cell(0, 12, '種類 想起数')
+    worksheet.add_cell(0, 13, '類似 /2')
+    worksheet.add_cell(0, 14, '想起 /5')
+    worksheet.add_cell(0, 15, '日時 /4')
+    worksheet.add_cell(0, 16, '合計 /28')
+
+  
+    pdf_data.each_with_index do |subject_data, sub_i|
+      worksheet.add_cell(sub_i+1, 0, 'CHIBA001')
+      worksheet.add_cell(sub_i+1, 1, pdf_data[sub_i][0])
+      worksheet.add_cell(sub_i+1, 2, pdf_data[sub_i][1])
+      worksheet.add_cell(sub_i+1, 3, pdf_data[sub_i][2])
+      worksheet.add_cell(sub_i+1, 4, pdf_data[sub_i][3])
+      worksheet.add_cell(sub_i+1, 5, pdf_data[sub_i][4])
+      worksheet.add_cell(sub_i+1, 6, pdf_data[sub_i][5])
+      worksheet.add_cell(sub_i+1, 7, pdf_data[sub_i][6])
+      worksheet.add_cell(sub_i+1, 8, pdf_data[sub_i][7])
+      worksheet.add_cell(sub_i+1, 9, pdf_data[sub_i][8])
+      worksheet.add_cell(sub_i+1, 10, pdf_data[sub_i][9])
+      worksheet.add_cell(sub_i+1, 11, pdf_data[sub_i][10])
     end
+
+    workbook.write('example.xlsx')
+    binding.pry
     @excel_data = @xlsx.parse(headers: true, clean: true)
     # ヘッダー行は不要
     @excel_data.shift
@@ -154,7 +187,7 @@ class CompareController < ApplicationController
       return
     else
       get_scores_from_text
-      get_scores_from_excel
+      export_to_excel(@pdf_data)
   
       # PDFデータとExcelデータを照合する
       verify_suject_id(@pdf_data, @excel_data)
