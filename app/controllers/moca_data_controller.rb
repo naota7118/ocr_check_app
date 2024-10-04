@@ -131,7 +131,7 @@ class MocaDataController < ApplicationController
     @excel_data.shift
     # 照合に必要な列だけ取得
     @excel_data.map! do |row|
-      row.values_at('被験者番号', '視空間_/5', '命名_/3', '数唱_/2', 'ひらがな_/1', '100-7_/3', '復唱_/2', '語想起_/1', '抽象概念_/2', '遅延再生_/5', '見当識_/6', 'MoCA合計_/30')
+      row.values_at('被験者番号', '視空間 /5', '命名 /3', '数唱 /2', 'ひらがな /1', '100-7 /3', '復唱 /2', '語想起 /1', '抽象概念 /2', '遅延再生 /5', '見当識 /6', 'MoCA合計 /30')
     end
     @subject_numbers = []
     @excel_data.each do |person|
@@ -148,12 +148,12 @@ class MocaDataController < ApplicationController
       @personal_result = []
       subject.each_with_index do |_score, sco_i|
         if pdf_data[sub_i][sco_i] == '読みとり不可'
-          result_element = [pdf_data[sub_i][sco_i], subject[sco_i], '一致しません']
+          result_element = [pdf_data[sub_i][sco_i], subject[sco_i], '読み取れていません']
           @count += 1
-        elsif subject[sco_i] == pdf_data[sub_i][sco_i].to_i
-          result_element = [pdf_data[sub_i][sco_i].to_i, subject[sco_i], '一致しています']
+        elsif excel_data[sub_i][sco_i].to_i == pdf_data[sub_i][sco_i].to_i
+          result_element = [pdf_data[sub_i][sco_i].to_i, excel_data[sub_i][sco_i].to_i, '一致しています']
           else
-            result_element = [pdf_data[sub_i][sco_i].to_i, subject[sco_i], '一致しません']
+            result_element = [pdf_data[sub_i][sco_i].to_i, excel_data[sub_i][sco_i].to_i, '一致しません']
             @count += 1
         end
         @personal_result << result_element
@@ -182,7 +182,7 @@ class MocaDataController < ApplicationController
 
   # ローカルからファイルを削除する
   def delete_files
-    FileUtils.rm_r(Dir.glob(Rails.root.join('public/uploads/*.xlsx').to_s))
+    FileUtils.rm_r(Dir.glob(Rails.root.join('*.xlsx').to_s))
     FileUtils.rm_r(Dir.glob(Rails.root.join('public/uploads/*.pdf').to_s))
     FileUtils.rm_r(Dir.glob(Rails.root.join('tmp/txt/*.txt').to_s))
   end
