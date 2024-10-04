@@ -98,15 +98,32 @@ class MocaDataController < ApplicationController
     worksheet.add_cell(0, 6, '100-7 /3')
     worksheet.add_cell(0, 7, '復唱 /2')
     worksheet.add_cell(0, 8, '語想起 /1')
-    worksheet.add_cell(0, 9, '語想起 想起数')
-    worksheet.add_cell(0, 10, '抽象概念 /2')
-    worksheet.add_cell(0, 11, '遅延再生 /5')
-    worksheet.add_cell(0, 12, '見当識 /6')
-    worksheet.add_cell(0, 13, 'MoCA合計 /30')
-    workbook.write('example.xlsx')
-    binding.pry
+    worksheet.add_cell(0, 9, '抽象概念 /2')
+    worksheet.add_cell(0, 10, '遅延再生 /5')
+    worksheet.add_cell(0, 11, '見当識 /6')
+    worksheet.add_cell(0, 12, 'MoCA合計 /30')
+
+    pdf_data.each_with_index do |subject_data, sub_i|
+      worksheet.add_cell(sub_i+1, 0, sub_i+1)
+      worksheet.add_cell(sub_i+1, 1, "CHIBA#{sub_i+1}")
+      worksheet.add_cell(sub_i+1, 2, pdf_data[sub_i][0])
+      worksheet.add_cell(sub_i+1, 3, pdf_data[sub_i][1])
+      worksheet.add_cell(sub_i+1, 4, pdf_data[sub_i][2])
+      worksheet.add_cell(sub_i+1, 5, pdf_data[sub_i][3])
+      worksheet.add_cell(sub_i+1, 6, pdf_data[sub_i][4])
+      worksheet.add_cell(sub_i+1, 7, pdf_data[sub_i][5])
+      worksheet.add_cell(sub_i+1, 8, pdf_data[sub_i][6])
+      worksheet.add_cell(sub_i+1, 9, pdf_data[sub_i][7])
+      worksheet.add_cell(sub_i+1, 10, pdf_data[sub_i][8])
+      worksheet.add_cell(sub_i+1, 11, pdf_data[sub_i][9])
+      worksheet.add_cell(sub_i+1, 12, pdf_data[sub_i][10])
+    end
+    workbook.write('MoCA得点書き出し.xlsx')
+  end
+
+  def get_scores_from_excel
     # Excelからデータを取得
-    Dir.glob(Rails.root.join('public/uploads/*.xlsx').to_s).each do |excel|
+    Dir.glob(Rails.root.join('*.xlsx').to_s).each do |excel|
       @xlsx = Roo::Excelx.new(excel)
     end
     @excel_data = @xlsx.parse(headers: true, clean: true)
@@ -155,6 +172,7 @@ class MocaDataController < ApplicationController
     convert(@drive)
     get_scores_from_text
     export_to_excel(@pdf_data)
+    get_scores_from_excel
 
     # PDFデータとExcelデータを照合する
     verify_suject_id(@pdf_data, @excel_data)
