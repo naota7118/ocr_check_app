@@ -118,12 +118,12 @@ class MocaDataController < ApplicationController
       worksheet.add_cell(sub_i+1, 11, pdf_data[sub_i][9])
       worksheet.add_cell(sub_i+1, 12, pdf_data[sub_i][10])
     end
-    workbook.write('MoCA得点書き出し.xlsx')
+    workbook.write(Rails.root.join('public', 'uploads', 'sample.xlsx'))
   end
 
   def get_scores_from_excel
     # Excelからデータを取得
-    Dir.glob(Rails.root.join('*.xlsx').to_s).each do |excel|
+    Dir.glob(Rails.root.join('public/uploads/*.xlsx').to_s).each do |excel|
       @xlsx = Roo::Excelx.new(excel)
     end
     @excel_data = @xlsx.parse(headers: true, clean: true)
@@ -182,7 +182,7 @@ class MocaDataController < ApplicationController
 
   # ローカルからファイルを削除する
   def delete_files
-    FileUtils.rm_r(Dir.glob(Rails.root.join('*.xlsx').to_s))
+    FileUtils.rm_r(Dir.glob(Rails.root.join('public/uploads/*.xlsx').to_s))
     FileUtils.rm_r(Dir.glob(Rails.root.join('public/uploads/*.pdf').to_s))
     FileUtils.rm_r(Dir.glob(Rails.root.join('tmp/txt/*.txt').to_s))
   end
