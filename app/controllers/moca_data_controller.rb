@@ -3,28 +3,22 @@
 require 'google/apis/drive_v3'
 require 'google/api_client/client_secrets'
 require 'roo'
+require 'rubyXL'
 
 class MocaDataController < ApplicationController
   # ファイルをアップロード
   def create
-    uploaded_files = params[:uploads]
-    uploaded_files.shift # 最初の要素を削除
-    uploaded_files.each do |uploaded_file|
-      file_path = Rails.root.join("public/uploads/#{uploaded_file.original_filename}")
-      File.binwrite(file_path, uploaded_file.read)
-    end
-
+    uploaded_file = params[:upload]
+    file_path = Rails.root.join("public/uploads/#{uploaded_file.original_filename}")
+    File.binwrite(file_path, uploaded_file.read)
     redirect_to moca_result_path
   end
 
   # PDFファイルからテキストファイルに変換
   def convert(drive)
-    # Google Driveにファイルをアップロード
-    metadata = Google::Apis::DriveV3::File.new(title: 'My document')
-    # PDFファイルのパス取得してupload_sourceに代入
-    Dir.glob(Rails.root.join('public/uploads/*.pdf').to_s).each do |pdf|
-      metadata = drive.create_file(metadata, upload_source: pdf, content_type: 'application/pdf')
-    end
+    file_path = Dir.glob(Rails.root.join('public/uploads/*.pdf').to_s)
+    # PDFファイルをGoogleドライブにアップロード
+    metadata = drive.create_file(metadata, upload_source: file_path.first, content_type: '/pdf')
 
     # Googleドキュメント形式に変換
     converted_file = drive.copy_file(metadata.id, Google::Apis::DriveV3::File.new(mime_type: 'application/vnd.google-apps.document'))
@@ -90,7 +84,43 @@ class MocaDataController < ApplicationController
     @pdf_scores.each_slice(11) { |subject| @pdf_data << subject }
   end
 
-  # エクセルファイルから得点データを取得
+  # エクセルファイルに得点を出力
+  def export_to_excel(pdf_data)
+    # Excelからデータを取得
+    workbook = RubyXL::Workbook.new
+    worksheet = workbook[0]
+    worksheet.add_cell(0, 0, '')
+    worksheet.add_cell(0, 1, '被験者番号')
+    worksheet.add_cell(0, 2, '視空間 /5')
+    worksheet.add_cell(0, 3, '命名 /3')
+    worksheet.add_cell(0, 4, '数唱 /2')
+    worksheet.add_cell(0, 5, 'ひらがな /1')
+    worksheet.add_cell(0, 6, '100-7 /3')
+    worksheet.add_cell(0, 7, '復唱 /2')
+    worksheet.add_cell(0, 8, '語想起 /1')
+    worksheet.add_cell(0, 9, '抽象概念 /2')
+    worksheet.add_cell(0, 10, '遅延再生 /5')
+    worksheet.add_cell(0, 11, '見当識 /6')
+    worksheet.add_cell(0, 12, 'MoCA合計 /30')
+
+    pdf_data.each_with_index do |subject_data, sub_i|
+      worksheet.add_cell(sub_i+1, 0, sub_i+1)
+      worksheet.add_cell(sub_i+1, 1, "CHIBA#{sub_i+1}")
+      worksheet.add_cell(sub_i+1, 2, pdf_data[sub_i][0])
+      worksheet.add_cell(sub_i+1, 3, pdf_data[sub_i][1])
+      worksheet.add_cell(sub_i+1, 4, pdf_data[sub_i][2])
+      worksheet.add_cell(sub_i+1, 5, pdf_data[sub_i][3])
+      worksheet.add_cell(sub_i+1, 6, pdf_data[sub_i][4])
+      worksheet.add_cell(sub_i+1, 7, pdf_data[sub_i][5])
+      worksheet.add_cell(sub_i+1, 8, pdf_data[sub_i][6])
+      worksheet.add_cell(sub_i+1, 9, pdf_data[sub_i][7])
+      worksheet.add_cell(sub_i+1, 10, pdf_data[sub_i][8])
+      worksheet.add_cell(sub_i+1, 11, pdf_data[sub_i][9])
+      worksheet.add_cell(sub_i+1, 12, pdf_data[sub_i][10])
+    end
+    workbook.write(Rails.root.join('public', 'uploads', 'sample.xlsx'))
+  end
+
   def get_scores_from_excel
     # Excelからデータを取得
     Dir.glob(Rails.root.join('public/uploads/*.xlsx').to_s).each do |excel|
@@ -101,7 +131,7 @@ class MocaDataController < ApplicationController
     @excel_data.shift
     # 照合に必要な列だけ取得
     @excel_data.map! do |row|
-      row.values_at('被験者番号', '視空間_/5', '命名_/3', '数唱_/2', 'ひらがな_/1', '100-7_/3', '復唱_/2', '語想起_/1', '抽象概念_/2', '遅延再生_/5', '見当識_/6', 'MoCA合計_/30')
+      row.values_at('被験者番号', '視空間 /5', '命名 /3', '数唱 /2', 'ひらがな /1', '100-7 /3', '復唱 /2', '語想起 /1', '抽象概念 /2', '遅延再生 /5', '見当識 /6', 'MoCA合計 /30')
     end
     @subject_numbers = []
     @excel_data.each do |person|
@@ -118,12 +148,12 @@ class MocaDataController < ApplicationController
       @personal_result = []
       subject.each_with_index do |_score, sco_i|
         if pdf_data[sub_i][sco_i] == '読みとり不可'
-          result_element = [pdf_data[sub_i][sco_i], subject[sco_i], '一致しません']
+          result_element = [pdf_data[sub_i][sco_i], subject[sco_i], '読み取れていません']
           @count += 1
-        elsif subject[sco_i] == pdf_data[sub_i][sco_i].to_i
-          result_element = [pdf_data[sub_i][sco_i].to_i, subject[sco_i], '一致しています']
+        elsif excel_data[sub_i][sco_i].to_i == pdf_data[sub_i][sco_i].to_i
+          result_element = [pdf_data[sub_i][sco_i].to_i, excel_data[sub_i][sco_i].to_i, '一致しています']
           else
-            result_element = [pdf_data[sub_i][sco_i].to_i, subject[sco_i], '一致しません']
+            result_element = [pdf_data[sub_i][sco_i].to_i, excel_data[sub_i][sco_i].to_i, '一致しません']
             @count += 1
         end
         @personal_result << result_element
@@ -141,6 +171,7 @@ class MocaDataController < ApplicationController
 
     convert(@drive)
     get_scores_from_text
+    export_to_excel(@pdf_data)
     get_scores_from_excel
 
     # PDFデータとExcelデータを照合する
