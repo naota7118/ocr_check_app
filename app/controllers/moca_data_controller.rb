@@ -198,7 +198,7 @@ class MocaDataController < ApplicationController
       scope: 'https://www.googleapis.com/auth/drive',
       redirect_uri: Rails.application.credentials.dig(:google, :redirect_uri),
       additional_parameters: {
-        'access_type' => 'offline', # online access
+        'access_type' => 'online',
         'include_granted_scopes' => 'true' # incremental auth
       }
     )
