@@ -7,7 +7,7 @@ require 'rubyXL'
 
 class MocaDataController < ApplicationController
   # ファイルをアップロード
-  def create
+  def upload
     uploaded_file = params[:upload]
     file_path = Rails.root.join("public/uploads/#{uploaded_file.original_filename}")
     File.binwrite(file_path, uploaded_file.read)
