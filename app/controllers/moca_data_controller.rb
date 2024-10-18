@@ -6,8 +6,32 @@ require 'roo'
 require 'rubyXL'
 
 class MocaDataController < ApplicationController
+  # ファイルアップロード用のビューを返す
+  def index; end
+
+  # 照合結果を表示
+  def result
+    # Google認証
+    pass_authentication
+    return if performed?
+
+    # Google Drive APIを用いてPDF→Googleドキュメント→テキストに変換
+    convert(@drive)
+    # テキストファイルからスラッシュを目印に得点データを取得
+    get_scores_from_text
+    # 得点データをエクセルに出力
+    export_to_excel(@pdf_data)
+    # エクセルから得点を取得
+    get_scores_from_excel
+
+    # PDFデータとExcelデータを照合
+    verify_suject_id(@pdf_data, @excel_data)
+    # 照合が完了したらファイルを削除
+    delete_files
+  end
+
   # ファイルをアップロード
-  def create
+  def upload
     uploaded_file = params[:upload]
     file_path = Rails.root.join("public/uploads/#{uploaded_file.original_filename}")
     File.binwrite(file_path, uploaded_file.read)
@@ -160,24 +184,6 @@ class MocaDataController < ApplicationController
       end
       @result_data << @personal_result
     end
-  end
-
-  def index; end
-
-  # 照合して結果を表示
-  def result
-    pass_authentication
-    return if performed?
-
-    convert(@drive)
-    get_scores_from_text
-    export_to_excel(@pdf_data)
-    get_scores_from_excel
-
-    # PDFデータとExcelデータを照合する
-    verify_suject_id(@pdf_data, @excel_data)
-    # 照合が完了したらファイルを削除する
-    delete_files
   end
 
   # ローカルからファイルを削除する
