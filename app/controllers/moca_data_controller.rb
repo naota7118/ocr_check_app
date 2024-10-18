@@ -9,7 +9,15 @@ class MocaDataController < ApplicationController
   # ファイルアップロード用のビューを返す
   def index; end
 
-  # 照合結果を表示
+  # フォームで送られたPDFファイルを格納しresult関数を呼び出す
+  def upload
+    uploaded_file = params[:upload]
+    file_path = Rails.root.join("public/uploads/#{uploaded_file.original_filename}")
+    File.binwrite(file_path, uploaded_file.read)
+    redirect_to moca_result_path
+  end
+
+  # PDFとエクセルの得点データを照合し、結果を返す
   def result
     # Google認証
     pass_authentication
@@ -28,14 +36,6 @@ class MocaDataController < ApplicationController
     verify_suject_id(@pdf_data, @excel_data)
     # 照合が完了したらファイルを削除
     delete_files
-  end
-
-  # ファイルをアップロード
-  def upload
-    uploaded_file = params[:upload]
-    file_path = Rails.root.join("public/uploads/#{uploaded_file.original_filename}")
-    File.binwrite(file_path, uploaded_file.read)
-    redirect_to moca_result_path
   end
 
   # PDFファイルからテキストファイルに変換
