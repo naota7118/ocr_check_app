@@ -56,7 +56,8 @@ class MocaDataController < ApplicationController
     drive.delete_file(converted_file.id)
   end
 
-  # 116を1/6に変換
+  # Google Drive OCRでスラッシュが誤って1と読み取られた場合、1を/に変換する
+  # スラッシュを目印に得点を取得しており、得点を取得のためのデータ加工処理
   def one_to_slash(chars)
     string = chars.join
     string[1] = '/' if string.match?(/^[0-6]{1}1{1}[0-6]{1}$/)
@@ -128,19 +129,20 @@ class MocaDataController < ApplicationController
     worksheet.add_cell(0, 12, 'MoCA合計 /30')
 
     pdf_data.each_with_index do |subject_data, sub_i|
-      worksheet.add_cell(sub_i+1, 0, sub_i+1)
-      worksheet.add_cell(sub_i+1, 1, "CHIBA#{sub_i+1}")
-      worksheet.add_cell(sub_i+1, 2, pdf_data[sub_i][0])
-      worksheet.add_cell(sub_i+1, 3, pdf_data[sub_i][1])
-      worksheet.add_cell(sub_i+1, 4, pdf_data[sub_i][2])
-      worksheet.add_cell(sub_i+1, 5, pdf_data[sub_i][3])
-      worksheet.add_cell(sub_i+1, 6, pdf_data[sub_i][4])
-      worksheet.add_cell(sub_i+1, 7, pdf_data[sub_i][5])
-      worksheet.add_cell(sub_i+1, 8, pdf_data[sub_i][6])
-      worksheet.add_cell(sub_i+1, 9, pdf_data[sub_i][7])
-      worksheet.add_cell(sub_i+1, 10, pdf_data[sub_i][8])
-      worksheet.add_cell(sub_i+1, 11, pdf_data[sub_i][9])
-      worksheet.add_cell(sub_i+1, 12, pdf_data[sub_i][10])
+      subject_number = sub_i + 1
+      worksheet.add_cell(subject_number, 0, subject_number)
+      worksheet.add_cell(subject_number, 1, "CHIBA#{subject_number}")
+      worksheet.add_cell(subject_number, 2, pdf_data[sub_i][0])
+      worksheet.add_cell(subject_number, 3, pdf_data[sub_i][1])
+      worksheet.add_cell(subject_number, 4, pdf_data[sub_i][2])
+      worksheet.add_cell(subject_number, 5, pdf_data[sub_i][3])
+      worksheet.add_cell(subject_number, 6, pdf_data[sub_i][4])
+      worksheet.add_cell(subject_number, 7, pdf_data[sub_i][5])
+      worksheet.add_cell(subject_number, 8, pdf_data[sub_i][6])
+      worksheet.add_cell(subject_number, 9, pdf_data[sub_i][7])
+      worksheet.add_cell(subject_number, 10, pdf_data[sub_i][8])
+      worksheet.add_cell(subject_number, 11, pdf_data[sub_i][9])
+      worksheet.add_cell(subject_number, 12, pdf_data[sub_i][10])
     end
     workbook.write(Rails.root.join('public', 'uploads', 'sample.xlsx'))
   end
@@ -188,7 +190,7 @@ class MocaDataController < ApplicationController
 
   # ローカルからファイルを削除する
   def delete_files
-    FileUtils.rm_r(Dir.glob(Rails.root.join('public/uploads/*.xlsx').to_s))
+    # FileUtils.rm_r(Dir.glob(Rails.root.join('public/uploads/*.xlsx').to_s))
     FileUtils.rm_r(Dir.glob(Rails.root.join('public/uploads/*.pdf').to_s))
     FileUtils.rm_r(Dir.glob(Rails.root.join('tmp/txt/*.txt').to_s))
   end

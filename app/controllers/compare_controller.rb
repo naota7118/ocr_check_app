@@ -120,18 +120,18 @@ class CompareController < ApplicationController
 
   
     pdf_data.each_with_index do |subject_data, sub_i|
-      worksheet.add_cell(sub_i+1, 0, 'CHIBA001')
-      worksheet.add_cell(sub_i+1, 1, pdf_data[sub_i][0])
-      worksheet.add_cell(sub_i+1, 2, pdf_data[sub_i][1])
-      worksheet.add_cell(sub_i+1, 3, pdf_data[sub_i][2])
-      worksheet.add_cell(sub_i+1, 4, pdf_data[sub_i][3])
-      worksheet.add_cell(sub_i+1, 5, pdf_data[sub_i][4])
-      worksheet.add_cell(sub_i+1, 6, pdf_data[sub_i][5])
-      worksheet.add_cell(sub_i+1, 7, pdf_data[sub_i][6])
-      worksheet.add_cell(sub_i+1, 8, pdf_data[sub_i][7])
-      worksheet.add_cell(sub_i+1, 9, pdf_data[sub_i][8])
-      worksheet.add_cell(sub_i+1, 10, pdf_data[sub_i][9])
-      worksheet.add_cell(sub_i+1, 11, pdf_data[sub_i][10])
+      worksheet.add_cell(subject_number, 0, 'CHIBA001')
+      worksheet.add_cell(subject_number, 1, pdf_data[sub_i][0])
+      worksheet.add_cell(subject_number, 2, pdf_data[sub_i][1])
+      worksheet.add_cell(subject_number, 3, pdf_data[sub_i][2])
+      worksheet.add_cell(subject_number, 4, pdf_data[sub_i][3])
+      worksheet.add_cell(subject_number, 5, pdf_data[sub_i][4])
+      worksheet.add_cell(subject_number, 6, pdf_data[sub_i][5])
+      worksheet.add_cell(subject_number, 7, pdf_data[sub_i][6])
+      worksheet.add_cell(subject_number, 8, pdf_data[sub_i][7])
+      worksheet.add_cell(subject_number, 9, pdf_data[sub_i][8])
+      worksheet.add_cell(subject_number, 10, pdf_data[sub_i][9])
+      worksheet.add_cell(subject_number, 11, pdf_data[sub_i][10])
     end
 
     workbook.write('example.xlsx')
