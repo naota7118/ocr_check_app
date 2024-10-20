@@ -12,9 +12,11 @@ class TestScoresController < ApplicationController
   # フォームで送られたPDFファイルを格納しresult関数を呼び出す
   def create
     uploaded_file = params[:upload]
-    file_path = Rails.root.join("public/uploads/#{uploaded_file.original_filename}")
-    File.binwrite(file_path, uploaded_file.read)
-    redirect_to test_scores_result_path
+    if uploaded_file
+      file_path = Rails.root.join("public/uploads/#{uploaded_file.original_filename}")
+      File.binwrite(file_path, uploaded_file.read)
+      redirect_to test_scores_result_path
+    end
   end
 
   # PDFとエクセルの得点データを照合し、結果を返す
