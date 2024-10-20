@@ -5,7 +5,7 @@ require 'google/api_client/client_secrets'
 require 'roo'
 require 'rubyXL'
 
-class MocaDataController < ApplicationController
+class TestScoresController < ApplicationController
   # ファイルアップロード用のビューを返す
   def index; end
 
@@ -14,7 +14,7 @@ class MocaDataController < ApplicationController
     uploaded_file = params[:upload]
     file_path = Rails.root.join("public/uploads/#{uploaded_file.original_filename}")
     File.binwrite(file_path, uploaded_file.read)
-    redirect_to moca_result_path
+    redirect_to test_scores_result_path
   end
 
   # PDFとエクセルの得点データを照合し、結果を返す

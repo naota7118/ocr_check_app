@@ -3,7 +3,7 @@
 require 'test_helper'
 require 'base64'
 
-class MocaDataControllerTest < ActionDispatch::IntegrationTest
+class TestScoresControllerTest < ActionDispatch::IntegrationTest
   test "should get index" do
     get moca_data_url
     assert_response :success

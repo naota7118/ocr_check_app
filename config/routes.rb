@@ -2,7 +2,6 @@
 
 Rails.application.routes.draw do
   devise_for :users
-  resources :moca_data, only: [:index]
-  post '/moca_data', to: 'moca_data#create'
-  get '/moca_result', to: 'moca_data#result'
+  resources :test_scores, only: [:index, :create]
+  get '/test_scores_result', to: 'test_scores#result'
 end
