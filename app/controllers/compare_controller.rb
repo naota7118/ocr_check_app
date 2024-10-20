@@ -90,12 +90,12 @@ class CompareController < ApplicationController
       end
     end
     # 1人ずつの配列に区切る
-    @pdf_data = []
-    @pdf_scores.each_slice(11) { |subject| @pdf_data << subject }
+    @pdf_scores = []
+    @pdf_scores.each_slice(11) { |subject| @pdf_scores << subject }
   end
 
   # エクセルファイルに得点を出力
-  def export_to_excel(pdf_data)
+  def export_to_excel(pdf_scores)
 
     # Excelからデータを取得
     workbook = RubyXL::Workbook.new
@@ -119,51 +119,51 @@ class CompareController < ApplicationController
     worksheet.add_cell(0, 16, '合計 /28')
 
   
-    pdf_data.each_with_index do |subject_data, sub_i|
+    pdf_scores.each_with_index do |subject_data, sub_i|
       worksheet.add_cell(subject_number, 0, 'CHIBA001')
-      worksheet.add_cell(subject_number, 1, pdf_data[sub_i][0])
-      worksheet.add_cell(subject_number, 2, pdf_data[sub_i][1])
-      worksheet.add_cell(subject_number, 3, pdf_data[sub_i][2])
-      worksheet.add_cell(subject_number, 4, pdf_data[sub_i][3])
-      worksheet.add_cell(subject_number, 5, pdf_data[sub_i][4])
-      worksheet.add_cell(subject_number, 6, pdf_data[sub_i][5])
-      worksheet.add_cell(subject_number, 7, pdf_data[sub_i][6])
-      worksheet.add_cell(subject_number, 8, pdf_data[sub_i][7])
-      worksheet.add_cell(subject_number, 9, pdf_data[sub_i][8])
-      worksheet.add_cell(subject_number, 10, pdf_data[sub_i][9])
-      worksheet.add_cell(subject_number, 11, pdf_data[sub_i][10])
+      worksheet.add_cell(subject_number, 1, pdf_scores[sub_i][0])
+      worksheet.add_cell(subject_number, 2, pdf_scores[sub_i][1])
+      worksheet.add_cell(subject_number, 3, pdf_scores[sub_i][2])
+      worksheet.add_cell(subject_number, 4, pdf_scores[sub_i][3])
+      worksheet.add_cell(subject_number, 5, pdf_scores[sub_i][4])
+      worksheet.add_cell(subject_number, 6, pdf_scores[sub_i][5])
+      worksheet.add_cell(subject_number, 7, pdf_scores[sub_i][6])
+      worksheet.add_cell(subject_number, 8, pdf_scores[sub_i][7])
+      worksheet.add_cell(subject_number, 9, pdf_scores[sub_i][8])
+      worksheet.add_cell(subject_number, 10, pdf_scores[sub_i][9])
+      worksheet.add_cell(subject_number, 11, pdf_scores[sub_i][10])
     end
 
     workbook.write('example.xlsx')
     binding.pry
-    @excel_data = @xlsx.parse(headers: true, clean: true)
+    @excel_scores = @xlsx.parse(headers: true, clean: true)
     # ヘッダー行は不要
-    @excel_data.shift
+    @excel_scores.shift
     # 照合に必要な列だけ取得
-    @excel_data.map! do |row|
+    @excel_scores.map! do |row|
       row.values_at('被験者番号', '空間把握_/5', '名前_/2', '加算_/2', 'いろ_/1', '50-8_/4', '暗唱_/2', '種類_/1', '類似_/2', '想起_/5', '日時_/4', '合計_/28')
     end
     @subject_numbers = []
-    @excel_data.each do |person|
+    @excel_scores.each do |person|
       @subject_numbers << person.first
       person.shift
     end
   end
 
   # PDFデータとExcelデータを照合する
-  def verify_suject_id(pdf_data, excel_data)
+  def verify_suject_id(pdf_scores, excel_scores)
     @count = 0
     @result_data = []
-    excel_data.each_with_index do |subject, sub_i|
+    excel_scores.each_with_index do |subject, sub_i|
       @personal_result = []
       subject.each_with_index do |_score, sco_i|
-        if pdf_data[sub_i][sco_i] == '読みとり不可'
-          result_element = [pdf_data[sub_i][sco_i], subject[sco_i], '一致しません']
+        if pdf_scores[sub_i][sco_i] == '読みとり不可'
+          result_element = [pdf_scores[sub_i][sco_i], subject[sco_i], '一致しません']
           @count += 1
-        elsif subject[sco_i] == pdf_data[sub_i][sco_i].to_i
-          result_element = [pdf_data[sub_i][sco_i].to_i, subject[sco_i], '一致しています']
+        elsif subject[sco_i] == pdf_scores[sub_i][sco_i].to_i
+          result_element = [pdf_scores[sub_i][sco_i].to_i, subject[sco_i], '一致しています']
           else
-            result_element = [pdf_data[sub_i][sco_i].to_i, subject[sco_i], '一致しません']
+            result_element = [pdf_scores[sub_i][sco_i].to_i, subject[sco_i], '一致しません']
             @count += 1
         end
         @personal_result << result_element
@@ -187,10 +187,10 @@ class CompareController < ApplicationController
       return
     else
       get_scores_from_text
-      export_to_excel(@pdf_data)
+      export_to_excel(@pdf_scores)
   
       # PDFデータとExcelデータを照合する
-      verify_suject_id(@pdf_data, @excel_data)
+      verify_suject_id(@pdf_scores, @excel_scores)
       # 照合が完了したらファイルを削除する
       delete_files
     end

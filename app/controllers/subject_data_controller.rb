@@ -57,10 +57,10 @@ class SubjectDataController < ApplicationController
     Dir.glob(Rails.root.join('public/uploads/*.xlsx').to_s).each do |excel|
       @xlsx = Roo::Excelx.new(excel)
     end
-    @excel_data = @xlsx.parse(headers: true, clean: true)
+    @excel_scores = @xlsx.parse(headers: true, clean: true)
 
     # Excelからidだけ取得
-    @excel_id = @excel_data.map do |hash|
+    @excel_id = @excel_scores.map do |hash|
       hash['被験者番号']
     end
     # 配列の先頭はidではないので削除
@@ -68,15 +68,15 @@ class SubjectDataController < ApplicationController
   end
 
   # PDFデータとExcelデータを照合する
-  def verify_suject_id(pdf_data, excel_data)
+  def verify_suject_id(pdf_scores, excel_scores)
     # 不一致の件数をカウントする
     @count = 0
     @result = []
-    pdf_data.each_with_index do |_, i|
+    pdf_scores.each_with_index do |_, i|
       result_element = []
-      result_element << pdf_data[i]
-      result_element << excel_data[i]
-      if pdf_data[i] == excel_data[i]
+      result_element << pdf_scores[i]
+      result_element << excel_scores[i]
+      if pdf_scores[i] == excel_scores[i]
         result_element << '一致しています'
         @result << result_element
       else
