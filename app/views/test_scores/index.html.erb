@@ -7,9 +7,9 @@
       <h2 class="usage">OCRCheckの使い方</h2>
       <% if user_signed_in? %>
         <div class="select-form">
-          <%= form_with url: "/moca_data", method: :post, enctype: "multipart/form-data", data: { turbo: false } do |form| %>
+          <%= form_with url: "/test_scores", method: :post, enctype: "multipart/form-data", data: { turbo: false } do |form| %>
             <div class="select-files">
-              <p><label for="upload">1. PDFファイルとExcelファイルを1つずつ選択してください。</label></p>
+              <p><label for="upload">1. PDFファイルを1つ選択してください。</label></p>
               <%= form.file_field :upload, name: "upload", accept: ".pdf" %>
             </div>
             <div class="send-button">

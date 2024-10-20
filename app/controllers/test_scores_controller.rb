@@ -5,16 +5,18 @@ require 'google/api_client/client_secrets'
 require 'roo'
 require 'rubyXL'
 
-class MocaDataController < ApplicationController
+class TestScoresController < ApplicationController
   # ファイルアップロード用のビューを返す
   def index; end
 
   # フォームで送られたPDFファイルを格納しresult関数を呼び出す
-  def upload
+  def create
     uploaded_file = params[:upload]
-    file_path = Rails.root.join("public/uploads/#{uploaded_file.original_filename}")
-    File.binwrite(file_path, uploaded_file.read)
-    redirect_to moca_result_path
+    if uploaded_file
+      file_path = Rails.root.join("public/uploads/#{uploaded_file.original_filename}")
+      File.binwrite(file_path, uploaded_file.read)
+      redirect_to test_scores_result_path
+    end
   end
 
   # PDFとエクセルの得点データを照合し、結果を返す
@@ -24,22 +26,22 @@ class MocaDataController < ApplicationController
     return if performed?
 
     # Google Drive APIを用いてPDF→Googleドキュメント→テキストに変換
-    convert(@drive)
+    convert_pdf_into_text(@drive)
     # テキストファイルからスラッシュを目印に得点データを取得
     get_scores_from_text
     # 得点データをエクセルに出力
-    export_to_excel(@pdf_data)
+    export_to_excel(@pdf_scores)
     # エクセルから得点を取得
     get_scores_from_excel
 
     # PDFデータとExcelデータを照合
-    verify_suject_id(@pdf_data, @excel_data)
+    compare(@pdf_scores, @excel_scores)
     # 照合が完了したらファイルを削除
     delete_files
   end
 
-  # PDFファイルからテキストファイルに変換
-  def convert(drive)
+  # PDFから照合処理に必要なテキストのみ抽出（Google Drive APIのOCR技術使用）
+  def convert_pdf_into_text(drive)
     file_path = Dir.glob(Rails.root.join('public/uploads/*.pdf').to_s)
     # PDFファイルをGoogleドライブにアップロード
     metadata = drive.create_file(metadata, upload_source: file_path.first, content_type: '/pdf')
@@ -56,7 +58,8 @@ class MocaDataController < ApplicationController
     drive.delete_file(converted_file.id)
   end
 
-  # 116を1/6に変換
+  # Google Drive OCRでスラッシュが誤って1と読み取られた場合、1を/に変換する
+  # スラッシュを目印に得点を取得しており、得点を取得のためのデータ加工処理
   def one_to_slash(chars)
     string = chars.join
     string[1] = '/' if string.match?(/^[0-6]{1}1{1}[0-6]{1}$/)
@@ -69,16 +72,18 @@ class MocaDataController < ApplicationController
   # 得点データx/yのうちxだけを取得
   def score(revised_chars)
     if revised_chars.first == '/'
-      @pdf_scores << '読みとり不可'
-    else
+      @all_pdf_scores << '読みとり不可'
+    elsif revised_chars.join.match?(/^1{1}[0-6]{1}$/)
+      @all_pdf_scores << '読みとり不可'
+    elsif revised_chars.join.match?(/[0-9]\/30$/) && revised_chars.join.length == 4 # 1桁の場合
+      @all_pdf_scores << revised_chars[0]
+    elsif revised_chars.join.match?(/[0-9][0-9]\/30$/) && revised_chars.join.length == 5 #2桁の場合
+      @all_pdf_scores << revised_chars.join[0, 2]
+    elsif revised_chars.include?('/')
+      # スラッシュの前の数字を取得
       revised_chars.each_with_index do |char, i|
-        next unless char == '/'
-
-        # ["〇", "〇", "/", "3", "0"]は/の前の2ケタを取得
-        @pdf_scores << if (revised_chars[i + 1].to_i == 3 && revised_chars[i + 2].to_i.zero?) && revised_chars.last == '0'
-          [revised_chars[i - 2].to_i, revised_chars[i - 1].to_i].join
-        else
-          revised_chars[i - 1]
+        if char == '/'
+          @all_pdf_scores << revised_chars[i - 1]
         end
       end
     end
@@ -86,7 +91,7 @@ class MocaDataController < ApplicationController
 
   # テキストファイルから得点データを取得
   def get_scores_from_text
-    @pdf_scores = []
+    @all_pdf_scores = []
     File.open('./tmp/txt/sample.txt', 'r') do |f|
       f.each_line do |line|
         chars = line.strip.chars
@@ -104,43 +109,37 @@ class MocaDataController < ApplicationController
       end
     end
     # 1人ずつの配列に区切る
-    @pdf_data = []
-    @pdf_scores.each_slice(11) { |subject| @pdf_data << subject }
+    @pdf_scores = []
+    @all_pdf_scores.each_slice(11) { |subject| @pdf_scores << subject }
   end
 
-  # エクセルファイルに得点を出力
-  def export_to_excel(pdf_data)
-    # Excelからデータを取得
+  # PDFから取得した得点をExcelに書き出す
+  def export_to_excel(pdf_scores)
     workbook = RubyXL::Workbook.new
     worksheet = workbook[0]
-    worksheet.add_cell(0, 0, '')
-    worksheet.add_cell(0, 1, '被験者番号')
-    worksheet.add_cell(0, 2, '視空間 /5')
-    worksheet.add_cell(0, 3, '命名 /3')
-    worksheet.add_cell(0, 4, '数唱 /2')
-    worksheet.add_cell(0, 5, 'ひらがな /1')
-    worksheet.add_cell(0, 6, '100-7 /3')
-    worksheet.add_cell(0, 7, '復唱 /2')
-    worksheet.add_cell(0, 8, '語想起 /1')
-    worksheet.add_cell(0, 9, '抽象概念 /2')
-    worksheet.add_cell(0, 10, '遅延再生 /5')
-    worksheet.add_cell(0, 11, '見当識 /6')
-    worksheet.add_cell(0, 12, 'MoCA合計 /30')
 
-    pdf_data.each_with_index do |subject_data, sub_i|
-      worksheet.add_cell(sub_i+1, 0, sub_i+1)
-      worksheet.add_cell(sub_i+1, 1, "CHIBA#{sub_i+1}")
-      worksheet.add_cell(sub_i+1, 2, pdf_data[sub_i][0])
-      worksheet.add_cell(sub_i+1, 3, pdf_data[sub_i][1])
-      worksheet.add_cell(sub_i+1, 4, pdf_data[sub_i][2])
-      worksheet.add_cell(sub_i+1, 5, pdf_data[sub_i][3])
-      worksheet.add_cell(sub_i+1, 6, pdf_data[sub_i][4])
-      worksheet.add_cell(sub_i+1, 7, pdf_data[sub_i][5])
-      worksheet.add_cell(sub_i+1, 8, pdf_data[sub_i][6])
-      worksheet.add_cell(sub_i+1, 9, pdf_data[sub_i][7])
-      worksheet.add_cell(sub_i+1, 10, pdf_data[sub_i][8])
-      worksheet.add_cell(sub_i+1, 11, pdf_data[sub_i][9])
-      worksheet.add_cell(sub_i+1, 12, pdf_data[sub_i][10])
+    excel_column_titles = %w(\  被験者番号 視空間\ /5 命名\ /3 数唱\ /2 ひらがな\ /1 100-7\ /3 復唱\ /2 語想起\ /1 抽象概念\ /2 遅延再生\ /5 見当識\ /6 MoCA合計\ /30)
+
+    # Excelの1行目に項目名を書き出す
+    excel_column_titles.each_with_index do |title, i|
+      worksheet.add_cell(0, i, title)
+    end
+
+    # 照合用の配列とは別にExcel書き出し用の配列を生成
+    pdf_scores_with_id = pdf_scores.deep_dup
+
+    # 1人ずつ格納されている得点配列に行番号と被験者番号を追加
+    pdf_scores_with_id.map.with_index do |subject_data, i|
+      subject_data.unshift(i)
+      subject_data.insert(1, "CHIBA#{i}")
+    end
+
+    # PDFから取得した得点を行ごとにExcelに書き出す（1行ごとに1人分の得点が格納されている）
+    pdf_scores_with_id.each_with_index do |subject_data, subject_i|
+      subject_num = subject_i + 1
+      subject_data.each_with_index do |score, score_i|
+        worksheet.add_cell(subject_num, score_i, score)
+      end
     end
     workbook.write(Rails.root.join('public', 'uploads', 'sample.xlsx'))
   end
@@ -150,34 +149,34 @@ class MocaDataController < ApplicationController
     Dir.glob(Rails.root.join('public/uploads/*.xlsx').to_s).each do |excel|
       @xlsx = Roo::Excelx.new(excel)
     end
-    @excel_data = @xlsx.parse(headers: true, clean: true)
+    @excel_scores = @xlsx.parse(headers: true, clean: true)
     # ヘッダー行は不要
-    @excel_data.shift
+    @excel_scores.shift
     # 照合に必要な列だけ取得
-    @excel_data.map! do |row|
+    @excel_scores.map! do |row|
       row.values_at('被験者番号', '視空間 /5', '命名 /3', '数唱 /2', 'ひらがな /1', '100-7 /3', '復唱 /2', '語想起 /1', '抽象概念 /2', '遅延再生 /5', '見当識 /6', 'MoCA合計 /30')
     end
     @subject_numbers = []
-    @excel_data.each do |person|
+    @excel_scores.each do |person|
       @subject_numbers << person.first
       person.shift
     end
   end
 
   # PDFデータとExcelデータを照合する
-  def verify_suject_id(pdf_data, excel_data)
+  def compare(pdf_scores, excel_scores)
     @count = 0
     @result_data = []
-    excel_data.each_with_index do |subject, sub_i|
+    excel_scores.each_with_index do |subject, sub_i|
       @personal_result = []
       subject.each_with_index do |_score, sco_i|
-        if pdf_data[sub_i][sco_i] == '読みとり不可'
-          result_element = [pdf_data[sub_i][sco_i], subject[sco_i], '読み取れていません']
+        if pdf_scores[sub_i][sco_i] == '読みとり不可'
+          result_element = [pdf_scores[sub_i][sco_i], subject[sco_i], '読み取れていません']
           @count += 1
-        elsif excel_data[sub_i][sco_i].to_i == pdf_data[sub_i][sco_i].to_i
-          result_element = [pdf_data[sub_i][sco_i].to_i, excel_data[sub_i][sco_i].to_i, '一致しています']
+        elsif excel_scores[sub_i][sco_i].to_i == pdf_scores[sub_i][sco_i].to_i
+          result_element = [pdf_scores[sub_i][sco_i].to_i, excel_scores[sub_i][sco_i].to_i, '一致しています']
           else
-            result_element = [pdf_data[sub_i][sco_i].to_i, excel_data[sub_i][sco_i].to_i, '一致しません']
+            result_element = [pdf_scores[sub_i][sco_i].to_i, excel_scores[sub_i][sco_i].to_i, '一致しません']
             @count += 1
         end
         @personal_result << result_element
