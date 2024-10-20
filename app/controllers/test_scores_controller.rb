@@ -26,7 +26,7 @@ class TestScoresController < ApplicationController
     return if performed?
 
     # Google Drive APIを用いてPDF→Googleドキュメント→テキストに変換
-    convert(@drive)
+    convert_pdf_into_text(@drive)
     # テキストファイルからスラッシュを目印に得点データを取得
     get_scores_from_text
     # 得点データをエクセルに出力
@@ -40,8 +40,8 @@ class TestScoresController < ApplicationController
     delete_files
   end
 
-  # PDFファイルからテキストファイルに変換
-  def convert(drive)
+  # PDFから照合処理に必要なテキストのみ抽出（Google Drive APIのOCR技術使用）
+  def convert_pdf_into_text(drive)
     file_path = Dir.glob(Rails.root.join('public/uploads/*.pdf').to_s)
     # PDFファイルをGoogleドライブにアップロード
     metadata = drive.create_file(metadata, upload_source: file_path.first, content_type: '/pdf')
