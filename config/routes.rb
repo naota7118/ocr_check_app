@@ -3,7 +3,7 @@
 Rails.application.routes.draw do
   devise_for :users
   resources :moca_data, only: [:index]
-  post '/moca_data', to: 'moca_data#upload'
+  post '/moca_data', to: 'moca_data#create'
   get '/moca_result', to: 'moca_data#result'
   # resources :compare
   # get '/compare_result', to: 'compare#result'

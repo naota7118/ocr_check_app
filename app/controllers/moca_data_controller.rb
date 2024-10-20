@@ -10,7 +10,7 @@ class MocaDataController < ApplicationController
   def index; end
 
   # フォームで送られたPDFファイルを格納しresult関数を呼び出す
-  def upload
+  def create
     uploaded_file = params[:upload]
     file_path = Rails.root.join("public/uploads/#{uploaded_file.original_filename}")
     File.binwrite(file_path, uploaded_file.read)
