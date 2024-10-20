@@ -33,7 +33,7 @@ class MocaDataController < ApplicationController
     get_scores_from_excel
 
     # PDFデータとExcelデータを照合
-    verify_suject_id(@pdf_scores, @excel_scores)
+    compare(@pdf_scores, @excel_scores)
     # 照合が完了したらファイルを削除
     delete_files
   end
@@ -71,15 +71,17 @@ class MocaDataController < ApplicationController
   def score(revised_chars)
     if revised_chars.first == '/'
       @all_pdf_scores << '読みとり不可'
-    else
+    elsif revised_chars.join.match?(/^1{1}[0-6]{1}$/)
+      @all_pdf_scores << '読みとり不可'
+    elsif revised_chars.join.match?(/[0-9]\/30$/) && revised_chars.join.length == 4 # 1桁の場合
+      @all_pdf_scores << revised_chars[0]
+    elsif revised_chars.join.match?(/[0-9][0-9]\/30$/) && revised_chars.join.length == 5 #2桁の場合
+      @all_pdf_scores << revised_chars.join[0, 2]
+    elsif revised_chars.include?('/')
+      # スラッシュの前の数字を取得
       revised_chars.each_with_index do |char, i|
-        next unless char == '/'
-
-        # ["〇", "〇", "/", "3", "0"]は/の前の2ケタを取得
-        @all_pdf_scores << if (revised_chars[i + 1].to_i == 3 && revised_chars[i + 2].to_i.zero?) && revised_chars.last == '0'
-          [revised_chars[i - 2].to_i, revised_chars[i - 1].to_i].join
-        else
-          revised_chars[i - 1]
+        if char == '/'
+          @all_pdf_scores << revised_chars[i - 1]
         end
       end
     end
@@ -160,7 +162,7 @@ class MocaDataController < ApplicationController
   end
 
   # PDFデータとExcelデータを照合する
-  def verify_suject_id(pdf_scores, excel_scores)
+  def compare(pdf_scores, excel_scores)
     @count = 0
     @result_data = []
     excel_scores.each_with_index do |subject, sub_i|

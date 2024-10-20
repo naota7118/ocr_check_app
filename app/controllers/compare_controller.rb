@@ -151,7 +151,7 @@ class CompareController < ApplicationController
   end
 
   # PDFデータとExcelデータを照合する
-  def verify_suject_id(pdf_scores, excel_scores)
+  def compare(pdf_scores, excel_scores)
     @count = 0
     @result_data = []
     excel_scores.each_with_index do |subject, sub_i|
@@ -190,7 +190,7 @@ class CompareController < ApplicationController
       export_to_excel(@pdf_scores)
   
       # PDFデータとExcelデータを照合する
-      verify_suject_id(@pdf_scores, @excel_scores)
+      compare(@pdf_scores, @excel_scores)
       # 照合が完了したらファイルを削除する
       delete_files
     end

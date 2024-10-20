@@ -68,7 +68,7 @@ class SubjectDataController < ApplicationController
   end
 
   # PDFデータとExcelデータを照合する
-  def verify_suject_id(pdf_scores, excel_scores)
+  def compare(pdf_scores, excel_scores)
     # 不一致の件数をカウントする
     @count = 0
     @result = []
@@ -99,7 +99,7 @@ class SubjectDataController < ApplicationController
     get_id_from_excel
 
     # PDFデータとExcelデータを照合する
-    verify_suject_id(@pdf_id, @excel_id)
+    compare(@pdf_id, @excel_id)
     # 照合が完了したらファイルを削除する
     delete_files
   end
