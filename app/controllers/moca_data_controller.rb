@@ -109,40 +109,33 @@ class MocaDataController < ApplicationController
     @pdf_scores.each_slice(11) { |subject| @pdf_data << subject }
   end
 
-  # エクセルファイルに得点を出力
+  # PDFから取得した得点をExcelに書き出す
   def export_to_excel(pdf_data)
-    # Excelからデータを取得
     workbook = RubyXL::Workbook.new
     worksheet = workbook[0]
-    worksheet.add_cell(0, 0, '')
-    worksheet.add_cell(0, 1, '被験者番号')
-    worksheet.add_cell(0, 2, '視空間 /5')
-    worksheet.add_cell(0, 3, '命名 /3')
-    worksheet.add_cell(0, 4, '数唱 /2')
-    worksheet.add_cell(0, 5, 'ひらがな /1')
-    worksheet.add_cell(0, 6, '100-7 /3')
-    worksheet.add_cell(0, 7, '復唱 /2')
-    worksheet.add_cell(0, 8, '語想起 /1')
-    worksheet.add_cell(0, 9, '抽象概念 /2')
-    worksheet.add_cell(0, 10, '遅延再生 /5')
-    worksheet.add_cell(0, 11, '見当識 /6')
-    worksheet.add_cell(0, 12, 'MoCA合計 /30')
 
-    pdf_data.each_with_index do |subject_data, sub_i|
-      subject_number = sub_i + 1
-      worksheet.add_cell(subject_number, 0, subject_number)
-      worksheet.add_cell(subject_number, 1, "CHIBA#{subject_number}")
-      worksheet.add_cell(subject_number, 2, pdf_data[sub_i][0])
-      worksheet.add_cell(subject_number, 3, pdf_data[sub_i][1])
-      worksheet.add_cell(subject_number, 4, pdf_data[sub_i][2])
-      worksheet.add_cell(subject_number, 5, pdf_data[sub_i][3])
-      worksheet.add_cell(subject_number, 6, pdf_data[sub_i][4])
-      worksheet.add_cell(subject_number, 7, pdf_data[sub_i][5])
-      worksheet.add_cell(subject_number, 8, pdf_data[sub_i][6])
-      worksheet.add_cell(subject_number, 9, pdf_data[sub_i][7])
-      worksheet.add_cell(subject_number, 10, pdf_data[sub_i][8])
-      worksheet.add_cell(subject_number, 11, pdf_data[sub_i][9])
-      worksheet.add_cell(subject_number, 12, pdf_data[sub_i][10])
+    excel_column_titles = %w(\  被験者番号 視空間\ /5 命名\ /3 数唱\ /2 ひらがな\ /1 100-7\ /3 復唱\ /2 語想起\ /1 抽象概念\ /2 遅延再生\ /5 見当識\ /6 MoCA合計\ /30)
+
+    # Excelの1行目に項目名を書き出す
+    excel_column_titles.each_with_index do |title, i|
+      worksheet.add_cell(0, i, title)
+    end
+
+    # 照合用の配列とは別にExcel書き出し用の配列を生成
+    pdf_scores_with_id = pdf_data.deep_dup
+
+    # 1人ずつ格納されている得点配列に行番号と被験者番号を追加
+    pdf_scores_with_id.map.with_index do |subject_data, i|
+      subject_data.unshift(i)
+      subject_data.insert(1, "CHIBA#{i}")
+    end
+
+    # PDFから取得した得点を行ごとにExcelに書き出す（1行ごとに1人分の得点が格納されている）
+    pdf_scores_with_id.each_with_index do |subject_data, subject_i|
+      subject_num = subject_i + 1
+      subject_data.each_with_index do |score, score_i|
+        worksheet.add_cell(subject_num, score_i, score)
+      end
     end
     workbook.write(Rails.root.join('public', 'uploads', 'sample.xlsx'))
   end
