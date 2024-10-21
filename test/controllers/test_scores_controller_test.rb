@@ -4,17 +4,21 @@ require 'test_helper'
 require 'base64'
 
 class TestScoresControllerTest < ActionDispatch::IntegrationTest
+
   test "should get index" do
-    get moca_data_url
+    get test_scores_path
     assert_response :success
   end
   
-  test "should post index" do
-    # PDFファイルをPOSTリクエストで送る
-    post moca_data_url, params: { upload: file_fixture_upload('sample.pdf', 'application/pdf') }
-
-    # 違うURLに遷移する（Google認証画面に遷移）
+  test "should post index and file upload" do
+    post test_scores_path, params: { upload: file_fixture_upload('sample.pdf', 'application/pdf') }
     assert_response :redirect
+  end
+
+  # 
+  test "should get result" do
+    get test_scores_result_path
+    assert_response :success
   end
 
 end
