@@ -49,6 +49,9 @@ gem 'high_voltage', '~> 4.0.0'
 gem 'devise'
 # エクセルに書き込むため
 gem 'rubyXL'
+# Google認証のテストで使用する
+gem 'omniauth'
+gem "omniauth-rails_csrf_protection"
 # Use Redis adapter to run Action Cable in production
 # gem "redis", ">= 4.0.1"
 
