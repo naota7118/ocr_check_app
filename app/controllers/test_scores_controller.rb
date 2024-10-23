@@ -60,7 +60,7 @@ class TestScoresController < ApplicationController
 
   # Google Drive OCRでスラッシュが誤って1と読み取られた場合、1を/に変換する
   # スラッシュを目印に得点を取得しており、得点を取得のためのデータ加工処理
-  def one_to_slash(chars)
+  def convert_one_into_slash(chars)
     string = chars.join
     string[1] = '/' if string.match?(/^[0-6]{1}1{1}[0-6]{1}$/)
 
@@ -102,7 +102,7 @@ class TestScoresController < ApplicationController
         # スラッシュまたは1が含まれていないものは対象外
         if chars.include?('/') || chars.include?('1')
           # 116→1/6に変換
-          revised_chars = one_to_slash(chars)
+          revised_chars = convert_one_into_slash(chars)
           # nil以外を出力
           score(revised_chars) unless revised_chars.nil?
         end
@@ -187,7 +187,7 @@ class TestScoresController < ApplicationController
 
   # ローカルからファイルを削除する
   def delete_files
-    FileUtils.rm_r(Dir.glob(Rails.root.join('public/uploads/*.xlsx').to_s))
+    # FileUtils.rm_r(Dir.glob(Rails.root.join('public/uploads/*.xlsx').to_s))
     FileUtils.rm_r(Dir.glob(Rails.root.join('public/uploads/*.pdf').to_s))
     FileUtils.rm_r(Dir.glob(Rails.root.join('tmp/txt/*.txt').to_s))
   end
