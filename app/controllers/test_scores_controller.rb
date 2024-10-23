@@ -62,13 +62,11 @@ class TestScoresController < ApplicationController
 
   # Google Drive OCRでスラッシュが誤って1と読み取られた場合、1を/に変換する
   # スラッシュを目印に得点を取得しており、得点を取得のためのデータ加工処理
-  def convert_one_into_slash(chars)
-    string = chars.join
-    string[1] = '/' if string.match?(/^[0-6]{1}1{1}[0-6]{1}$/)
-
-    return unless string.chars.include?('/') && string.match?(%r{^[0-9/\[]})
-
-    string.chars
+  def convert_one_into_slash(chars_by_line)
+    string_by_line = chars_by_line.join
+    # 「1/6」がOCRで「116」と誤って読み取られているのを「1/6」に修正
+    string_by_line[1] = '/' if string_by_line.match?(/^[0-6]1[0-6]$/)
+    string_by_line unless string_by_line.nil?
   end
 
   # 得点データx/yのうちxだけを取得
@@ -119,8 +117,9 @@ class TestScoresController < ApplicationController
 
         # スラッシュまたは1を目印に得点を取得
         if chars_by_line.include?('/') || chars_by_line.include?('1')
-          # 116→1/6に変換
-          revised_chars = convert_one_into_slash(chars_by_line)
+          # 「1/6」がOCRで「116」として誤って読み取られたのを「1/6」に変換
+          p string_with_slash = convert_one_into_slash(chars_by_line)
+          revised_chars = string_with_slash.chars
           # nil以外を出力
           score(revised_chars) unless revised_chars.nil?
         end
@@ -146,7 +145,7 @@ class TestScoresController < ApplicationController
     # 照合用の配列とは別にExcel書き出し用の配列を生成
     pdf_scores_with_id = pdf_scores.deep_dup
 
-    # 1人ずつ格納されている得点配列に行番号と被験者番号を追加
+    # 1人ずつ格納されている得点配列に行番号と被験者IDを追加
     pdf_scores_with_id.map.with_index do |subject_data, i|
       subject_data.unshift(i+1)
       subject_data.insert(1, subject_ids[i])
