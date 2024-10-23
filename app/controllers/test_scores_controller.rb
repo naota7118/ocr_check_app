@@ -27,10 +27,12 @@ class TestScoresController < ApplicationController
 
     # Google Drive APIを用いてPDF→Googleドキュメント→テキストに変換
     convert_pdf_into_text(@drive)
-    # テキストファイルからスラッシュを目印に得点データを取得
+    # テキストファイルから被験者IDを取り出す
+    get_suject_id_from_text
+    # テキストファイルからスラッシュを目印にPDFの得点データを取得
     get_scores_from_text
     # 得点データをエクセルに出力
-    export_to_excel(@pdf_scores)
+    export_to_excel(@pdf_scores, @subject_ids)
     # エクセルから得点を取得
     get_scores_from_excel
 
@@ -60,30 +62,45 @@ class TestScoresController < ApplicationController
 
   # Google Drive OCRでスラッシュが誤って1と読み取られた場合、1を/に変換する
   # スラッシュを目印に得点を取得しており、得点を取得のためのデータ加工処理
-  def one_to_slash(chars)
-    string = chars.join
-    string[1] = '/' if string.match?(/^[0-6]{1}1{1}[0-6]{1}$/)
-
-    return unless string.chars.include?('/') && string.match?(%r{^[0-9/\[]})
-
-    string.chars
+  def convert_one_into_slash(chars_by_line)
+    string_by_line = chars_by_line.join
+    # 「1/6」がOCRで「116」と誤って読み取られているのを「1/6」に修正
+    string_by_line[1] = '/' if string_by_line.match?(/^[0-6]1[0-6]$/)
+    string_by_line unless string_by_line.nil?
   end
 
-  # 得点データx/yのうちxだけを取得
-  def score(revised_chars)
-    if revised_chars.first == '/'
+  # スラッシュを目印にスラッシュの直前の得点を取得（合計のみ2ケタ、それ以外は1ケタ）
+  def get_score_before_slash(string_with_slash)
+    if string_with_slash[0] == '/'
       @all_pdf_scores << '読みとり不可'
-    elsif revised_chars.join.match?(/^1{1}[0-6]{1}$/)
+    elsif string_with_slash.match?(/[^0-9]\/[0-6]/) # "0/1"のはずが"/1"と取得できていないバグがあったため追加
       @all_pdf_scores << '読みとり不可'
-    elsif revised_chars.join.match?(/[0-9]\/30$/) && revised_chars.join.length == 4 # 1桁の場合
-      @all_pdf_scores << revised_chars[0]
-    elsif revised_chars.join.match?(/[0-9][0-9]\/30$/) && revised_chars.join.length == 5 #2桁の場合
-      @all_pdf_scores << revised_chars.join[0, 2]
-    elsif revised_chars.include?('/')
+    elsif string_with_slash.match?(/[0-9]\/30$/) # 合計得点が1ケタの場合
+      @all_pdf_scores << string_with_slash[0]
+    elsif string_with_slash.match?(/[0-9][0-9]\/30$/) # 合計得点が2ケタの場合
+      @all_pdf_scores << string_with_slash[0, 2]
+    else
       # スラッシュの前の数字を取得
-      revised_chars.each_with_index do |char, i|
-        if char == '/'
-          @all_pdf_scores << revised_chars[i - 1]
+      unless string_with_slash[/[0-6]\//, 0].nil?
+        unless string_with_slash.include?('合計得点')
+          @all_pdf_scores << string_with_slash[/[0-6]\//, 0][0].to_i
+        end
+      end
+    end
+  end
+
+  # テキストファイルから被験者IDを取り出す
+  def get_suject_id_from_text
+    @subject_ids = []
+    File.open("./tmp/txt/sample.txt", 'r') do |f|
+      f.each_line do |line|
+        # テキストを1行ごとに1文字区切りの配列に変換
+        chars_by_line = line.strip.chars
+        # 配列の中の空白文字要素を削除
+        chars_by_line.delete_if { |char| char == ' ' }
+        new_line = chars_by_line.join
+        if new_line.include?("Osaka") || new_line.include?("Oska")
+          @subject_ids.push(new_line)
         end
       end
     end
@@ -94,27 +111,27 @@ class TestScoresController < ApplicationController
     @all_pdf_scores = []
     File.open('./tmp/txt/sample.txt', 'r') do |f|
       f.each_line do |line|
-        chars = line.strip.chars
+        # テキストを1行ごとに1文字区切りの配列に変換
+        chars_by_line = line.strip.chars
+        # 配列の中の空白文字要素を削除
+        chars_by_line.delete_if { |char| char == ' ' }
 
-        # 空白文字を削除
-        chars.delete_if { |char| char == ' ' }
-
-        # スラッシュまたは1が含まれていないものは対象外
-        if chars.include?('/') || chars.include?('1')
-          # 116→1/6に変換
-          revised_chars = one_to_slash(chars)
-          # nil以外を出力
-          score(revised_chars) unless revised_chars.nil?
+        # スラッシュまたは1を目印に得点を取得
+        if chars_by_line.include?('/') || chars_by_line.include?('1')
+          # 「1/6」がOCRで「116」として誤って読み取られたのを「1/6」に変換
+          string_with_slash = convert_one_into_slash(chars_by_line)
+          # スラッシュを目印にスラッシュの直前の得点を取得
+          get_score_before_slash(string_with_slash)
         end
       end
     end
-    # 1人ずつの配列に区切る
+    # 1人ずつの配列に区切る（11項目あるため、11個ずつで区切る）
     @pdf_scores = []
     @all_pdf_scores.each_slice(11) { |subject| @pdf_scores << subject }
   end
 
   # PDFから取得した得点をExcelに書き出す
-  def export_to_excel(pdf_scores)
+  def export_to_excel(pdf_scores, subject_ids)
     workbook = RubyXL::Workbook.new
     worksheet = workbook[0]
 
@@ -128,10 +145,10 @@ class TestScoresController < ApplicationController
     # 照合用の配列とは別にExcel書き出し用の配列を生成
     pdf_scores_with_id = pdf_scores.deep_dup
 
-    # 1人ずつ格納されている得点配列に行番号と被験者番号を追加
+    # 1人ずつ格納されている得点配列に行番号と被験者IDを追加
     pdf_scores_with_id.map.with_index do |subject_data, i|
-      subject_data.unshift(i)
-      subject_data.insert(1, "CHIBA#{i}")
+      subject_data.unshift(i+1)
+      subject_data.insert(1, subject_ids[i])
     end
 
     # PDFから取得した得点を行ごとにExcelに書き出す（1行ごとに1人分の得点が格納されている）
@@ -156,9 +173,7 @@ class TestScoresController < ApplicationController
     @excel_scores.map! do |row|
       row.values_at('被験者番号', '視空間 /5', '命名 /3', '数唱 /2', 'ひらがな /1', '100-7 /3', '復唱 /2', '語想起 /1', '抽象概念 /2', '遅延再生 /5', '見当識 /6', 'MoCA合計 /30')
     end
-    @subject_numbers = []
     @excel_scores.each do |person|
-      @subject_numbers << person.first
       person.shift
     end
   end
@@ -166,7 +181,7 @@ class TestScoresController < ApplicationController
   # PDFデータとExcelデータを照合する
   def compare(pdf_scores, excel_scores)
     @count = 0
-    @result_data = []
+    @all_result = []
     excel_scores.each_with_index do |subject, sub_i|
       @personal_result = []
       subject.each_with_index do |_score, sco_i|
@@ -181,7 +196,7 @@ class TestScoresController < ApplicationController
         end
         @personal_result << result_element
       end
-      @result_data << @personal_result
+      @all_result << @personal_result
     end
   end
 

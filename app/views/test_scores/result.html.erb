@@ -15,9 +15,9 @@
           修正が必要な箇所は<a class='count'><%= @count %></a>件です。
         </div>
 
-        <% @result_data.each_with_index do |subject, i| %>
+        <% @all_result.each_with_index do |subject, i| %>
           <div class="personal-result">
-            <p class="subject-id"><%= @subject_numbers[i] %></p>
+            <p class="subject-id"><%= @subject_ids[i] %></p>
             <table border="1" style="border-collapse: collapse">
               <thead>
                 <tr>
