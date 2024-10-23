@@ -36,6 +36,9 @@ class TestScoresController < ApplicationController
     # エクセルから得点を取得
     get_scores_from_excel
 
+    # 得点の合計が正しいかチェックする
+    calc_score_sum
+
     # PDFデータとExcelデータを照合
     compare(@pdf_scores, @excel_scores)
     # 照合が完了したらファイルを削除
@@ -75,10 +78,10 @@ class TestScoresController < ApplicationController
       @all_pdf_scores << '読みとり不可'
     elsif string_with_slash.match?(/[^0-9]\/[0-6]/) # "0/1"のはずが"/1"と取得できていないバグがあったため追加
       @all_pdf_scores << '読みとり不可'
-    elsif string_with_slash.match?(/[0-9]\/30$/) # 合計得点が1ケタの場合
-      @all_pdf_scores << string_with_slash[0]
     elsif string_with_slash.match?(/[0-9][0-9]\/30$/) # 合計得点が2ケタの場合
       @all_pdf_scores << string_with_slash[0, 2]
+    elsif string_with_slash.match?(/[0-9]\/30$/) # 合計得点が1ケタの場合
+      @all_pdf_scores << string_with_slash[0]
     else
       # スラッシュの前の数字を取得
       unless string_with_slash[/[0-6]\//, 0].nil?
@@ -158,7 +161,8 @@ class TestScoresController < ApplicationController
         worksheet.add_cell(subject_num, score_i, score)
       end
     end
-    workbook.write(Rails.root.join('public', 'uploads', 'sample.xlsx'))
+    
+    @scores_in_excel = workbook.write(Rails.root.join('public', 'uploads', 'sample.xlsx'))
   end
 
   def get_scores_from_excel
@@ -176,6 +180,13 @@ class TestScoresController < ApplicationController
     @excel_scores.each do |person|
       person.shift
     end
+  end
+
+  def calc_score_sum
+    file_path = Rails.root.join('public/uploads/sample.xlsx').to_s
+    workbook = RubyXL::Parser.parse(file_path)
+    worksheet = workbook[0]
+    # 1行ごとにからまでの合計がCと合っているかを確認する
   end
 
   # PDFデータとExcelデータを照合する
@@ -202,7 +213,7 @@ class TestScoresController < ApplicationController
 
   # ローカルからファイルを削除する
   def delete_files
-    FileUtils.rm_r(Dir.glob(Rails.root.join('public/uploads/*.xlsx').to_s))
+    # FileUtils.rm_r(Dir.glob(Rails.root.join('public/uploads/*.xlsx').to_s))
     FileUtils.rm_r(Dir.glob(Rails.root.join('public/uploads/*.pdf').to_s))
     FileUtils.rm_r(Dir.glob(Rails.root.join('tmp/txt/*.txt').to_s))
   end
