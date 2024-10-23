@@ -175,9 +175,7 @@ class TestScoresController < ApplicationController
     @excel_scores.map! do |row|
       row.values_at('被験者番号', '視空間 /5', '命名 /3', '数唱 /2', 'ひらがな /1', '100-7 /3', '復唱 /2', '語想起 /1', '抽象概念 /2', '遅延再生 /5', '見当識 /6', 'MoCA合計 /30')
     end
-    @subject_numbers = []
     @excel_scores.each do |person|
-      @subject_numbers << person.first
       person.shift
     end
   end
