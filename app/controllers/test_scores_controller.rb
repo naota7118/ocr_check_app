@@ -32,7 +32,7 @@ class TestScoresController < ApplicationController
     # テキストファイルからスラッシュを目印にPDFの得点データを取得
     get_scores_from_pdf
     # 得点データをエクセルに出力
-    export_to_excel(@pdf_scores)
+    export_to_excel(@pdf_scores, @subject_ids)
     # エクセルから得点を取得
     get_scores_from_excel
 
@@ -105,7 +105,6 @@ class TestScoresController < ApplicationController
         end
       end
     end
-    p @subject_ids
   end
 
   # テキストファイルから得点データを取得
@@ -133,7 +132,7 @@ class TestScoresController < ApplicationController
   end
 
   # PDFから取得した得点をExcelに書き出す
-  def export_to_excel(pdf_scores)
+  def export_to_excel(pdf_scores, subject_ids)
     workbook = RubyXL::Workbook.new
     worksheet = workbook[0]
 
@@ -149,8 +148,8 @@ class TestScoresController < ApplicationController
 
     # 1人ずつ格納されている得点配列に行番号と被験者番号を追加
     pdf_scores_with_id.map.with_index do |subject_data, i|
-      subject_data.unshift(i)
-      subject_data.insert(1, "CHIBA#{i}")
+      subject_data.unshift(i+1)
+      subject_data.insert(1, subject_ids[i])
     end
 
     # PDFから取得した得点を行ごとにExcelに書き出す（1行ごとに1人分の得点が格納されている）
