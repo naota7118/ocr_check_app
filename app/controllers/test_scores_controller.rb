@@ -94,15 +94,15 @@ class TestScoresController < ApplicationController
     @all_pdf_scores = []
     File.open('./tmp/txt/sample.txt', 'r') do |f|
       f.each_line do |line|
-        chars = line.strip.chars
-
+        # テキストを1行ごとに1文字区切りの配列に変換
+        chars_by_line = line.strip.chars
         # 空白文字を削除
-        chars.delete_if { |char| char == ' ' }
+        chars_by_line.delete_if { |char| char == ' ' }
 
         # スラッシュまたは1が含まれていないものは対象外
-        if chars.include?('/') || chars.include?('1')
+        if chars_by_line.include?('/') || chars_by_line.include?('1')
           # 116→1/6に変換
-          revised_chars = convert_one_into_slash(chars)
+          revised_chars = convert_one_into_slash(chars_by_line)
           # nil以外を出力
           score(revised_chars) unless revised_chars.nil?
         end
@@ -187,7 +187,7 @@ class TestScoresController < ApplicationController
 
   # ローカルからファイルを削除する
   def delete_files
-    # FileUtils.rm_r(Dir.glob(Rails.root.join('public/uploads/*.xlsx').to_s))
+    FileUtils.rm_r(Dir.glob(Rails.root.join('public/uploads/*.xlsx').to_s))
     FileUtils.rm_r(Dir.glob(Rails.root.join('public/uploads/*.pdf').to_s))
     FileUtils.rm_r(Dir.glob(Rails.root.join('tmp/txt/*.txt').to_s))
   end
