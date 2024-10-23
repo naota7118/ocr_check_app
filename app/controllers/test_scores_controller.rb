@@ -27,7 +27,9 @@ class TestScoresController < ApplicationController
 
     # Google Drive APIを用いてPDF→Googleドキュメント→テキストに変換
     convert_pdf_into_text(@drive)
-    # テキストファイルからスラッシュを目印に得点データを取得
+
+    get_suject_id_from_pdf
+    # テキストファイルからスラッシュを目印にPDFの得点データを取得
     get_scores_from_pdf
     # 得点データをエクセルに出力
     export_to_excel(@pdf_scores)
@@ -90,7 +92,20 @@ class TestScoresController < ApplicationController
   end
 
   def get_suject_id_from_pdf
-    
+    @subject_ids = []
+    File.open('./tmp/txt/sample.txt', 'r') do |f|
+      f.each_line do |line|
+        # テキストを1行ごとに1文字区切りの配列に変換
+        chars_by_line = line.strip.chars
+        # 配列の中の空白文字要素を削除
+        chars_by_line.delete_if { |char| char == ' ' }
+        new_line = chars_by_line.join
+        if new_line.include?("Osaka") || new_line.include?("Oska")
+          @subject_ids.push(new_line)
+        end
+      end
+    end
+    p @subject_ids
   end
 
   # テキストファイルから得点データを取得
@@ -170,7 +185,7 @@ class TestScoresController < ApplicationController
   # PDFデータとExcelデータを照合する
   def compare(pdf_scores, excel_scores)
     @count = 0
-    @result_data = []
+    @all_result = []
     excel_scores.each_with_index do |subject, sub_i|
       @personal_result = []
       subject.each_with_index do |_score, sco_i|
@@ -185,7 +200,7 @@ class TestScoresController < ApplicationController
         end
         @personal_result << result_element
       end
-      @result_data << @personal_result
+      @all_result << @personal_result
     end
   end
 
