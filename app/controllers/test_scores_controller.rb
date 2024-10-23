@@ -28,7 +28,7 @@ class TestScoresController < ApplicationController
     # Google Drive APIを用いてPDF→Googleドキュメント→テキストに変換
     convert_pdf_into_text(@drive)
     # テキストファイルからスラッシュを目印に得点データを取得
-    get_scores_from_text
+    get_scores_from_pdf
     # 得点データをエクセルに出力
     export_to_excel(@pdf_scores)
     # エクセルから得点を取得
@@ -89,17 +89,21 @@ class TestScoresController < ApplicationController
     end
   end
 
+  def get_suject_id_from_pdf
+    
+  end
+
   # テキストファイルから得点データを取得
-  def get_scores_from_text
+  def get_scores_from_pdf
     @all_pdf_scores = []
     File.open('./tmp/txt/sample.txt', 'r') do |f|
       f.each_line do |line|
         # テキストを1行ごとに1文字区切りの配列に変換
         chars_by_line = line.strip.chars
-        # 空白文字を削除
+        # 配列の中の空白文字要素を削除
         chars_by_line.delete_if { |char| char == ' ' }
 
-        # スラッシュまたは1が含まれていないものは対象外
+        # スラッシュまたは1を目印に得点を取得
         if chars_by_line.include?('/') || chars_by_line.include?('1')
           # 116→1/6に変換
           revised_chars = convert_one_into_slash(chars_by_line)
