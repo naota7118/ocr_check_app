@@ -77,9 +77,9 @@ class TestScoresController < ApplicationController
   def get_score_before_slash(string_with_slash)
     # 図形のスコアを取得する
     if string_with_slash.match?(/\[0\]|\[O\]|\[o\]|\[⚪︎\]|\[○\]/)
-      @all_pdf_scores << 1
+      @all_pdf_scores << {figure_score: 1}
     elsif string_with_slash.match?(/\[x\]|\[X\]|\[×\]/)
-      @all_pdf_scores << 0
+      @all_pdf_scores << {figure_score: 0}
     end
 
     if string_with_slash[0] == '/'
@@ -138,9 +138,9 @@ class TestScoresController < ApplicationController
         end
       end
     end
-    # 1人ずつの配列に区切る（11項目あるため、11個ずつで区切る）
+    # 1人ずつの配列に区切る（16項目あるため、16個ずつで区切る）
     @pdf_scores = []
-    @all_pdf_scores.each_slice(11) { |subject| @pdf_scores << subject }
+    @all_pdf_scores.each_slice(16) { |subject| @pdf_scores << subject }
     @subjects_size = @pdf_scores.size
   end
 
