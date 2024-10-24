@@ -76,11 +76,9 @@ class TestScoresController < ApplicationController
   # スラッシュを目印にスラッシュの直前の得点を取得（合計のみ2ケタ、それ以外は1ケタ）
   def get_score_before_slash(string_with_slash)
     # 図形のスコアを取得する
-    if string_with_slash.match?(/\/|1|\[0\]\[O\]|\[o\]|\[⚪︎\]|\[○\]/)
-      puts "hello"
+    if string_with_slash.match?(/\[0\]|\[O\]|\[o\]|\[⚪︎\]|\[○\]/)
       @all_pdf_scores << 1
-    elsif string_with_slash.match?(/|\[x\]|\[X\]|\[×\]/)
-      puts "hi"
+    elsif string_with_slash.match?(/\[x\]|\[X\]|\[×\]/)
       @all_pdf_scores << 0
     end
 
@@ -132,7 +130,7 @@ class TestScoresController < ApplicationController
         # ①得点は1/6や116の形式で出力される
         # ②図形のスコアは[0][O][o][○][⚪︎][x][X][×]のいずれか
         # ③1or2に該当する文字列のみを処理対象としている
-        if chars_by_line.join.match?(/\/|1|\[0\]\[O\]|\[o\]|\[⚪︎\]|\[○\]|\[x\]|\[X\]|\[×\]/)
+        if chars_by_line.join.match?(/\/|1|\[0\]|\[O\]|\[o\]|\[⚪︎\]|\[○\]|\[x\]|\[X\]|\[×\]/)
           # 「1/6」がOCRで「116」として誤って読み取られたのを「1/6」に変換
           string_with_slash = convert_one_into_slash(chars_by_line)
           # スラッシュを目印にスラッシュの直前の得点を取得
