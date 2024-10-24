@@ -4,6 +4,7 @@ require 'google/apis/drive_v3'
 require 'google/api_client/client_secrets'
 require 'roo'
 require 'rubyXL'
+require 'rubyXL/convenience_methods'
 
 class TestScoresController < ApplicationController
   # ファイルアップロード用のビューを返す
@@ -35,6 +36,9 @@ class TestScoresController < ApplicationController
     export_to_excel(@pdf_scores, @subject_ids)
     # エクセルから得点を取得
     get_scores_from_excel
+
+    # 得点の合計が正しいかチェックする
+    calc_score_sum(@subjects_size)
 
     # PDFデータとExcelデータを照合
     compare(@pdf_scores, @excel_scores)
@@ -75,10 +79,10 @@ class TestScoresController < ApplicationController
       @all_pdf_scores << '読みとり不可'
     elsif string_with_slash.match?(/[^0-9]\/[0-6]/) # "0/1"のはずが"/1"と取得できていないバグがあったため追加
       @all_pdf_scores << '読みとり不可'
-    elsif string_with_slash.match?(/[0-9]\/30$/) # 合計得点が1ケタの場合
-      @all_pdf_scores << string_with_slash[0]
     elsif string_with_slash.match?(/[0-9][0-9]\/30$/) # 合計得点が2ケタの場合
       @all_pdf_scores << string_with_slash[0, 2]
+    elsif string_with_slash.match?(/[0-9]\/30$/) # 合計得点が1ケタの場合
+      @all_pdf_scores << string_with_slash[0]
     else
       # スラッシュの前の数字を取得
       unless string_with_slash[/[0-6]\//, 0].nil?
@@ -128,6 +132,7 @@ class TestScoresController < ApplicationController
     # 1人ずつの配列に区切る（11項目あるため、11個ずつで区切る）
     @pdf_scores = []
     @all_pdf_scores.each_slice(11) { |subject| @pdf_scores << subject }
+    @subjects_size = @pdf_scores.size
   end
 
   # PDFから取得した得点をExcelに書き出す
@@ -158,7 +163,8 @@ class TestScoresController < ApplicationController
         worksheet.add_cell(subject_num, score_i, score)
       end
     end
-    workbook.write(Rails.root.join('public', 'uploads', 'sample.xlsx'))
+    
+    @scores_in_excel = workbook.write(Rails.root.join('public', 'uploads', 'sample.xlsx'))
   end
 
   def get_scores_from_excel
@@ -176,6 +182,30 @@ class TestScoresController < ApplicationController
     @excel_scores.each do |person|
       person.shift
     end
+  end
+
+  def calc_score_sum(subjects_size)
+    file_path = Rails.root.join('public/uploads/sample.xlsx').to_s
+    workbook = RubyXL::Parser.parse(file_path)
+    worksheet = workbook[0]
+    
+    for i in 1..subjects_size
+      sum_score = 0
+      for j in 2..11
+        cell_score = worksheet[i][j].value.to_i
+        sum_score += cell_score
+      end
+      moca_sum = worksheet[i][12].value.to_i
+
+      # 1行ごと各項目をすべて足した値が合計と等しいかを確認する
+      if sum_score != moca_sum
+        # 等しくなければセルの色を変更し目立たせる
+        worksheet.sheet_data[i][12].change_fill('ff6666')
+      end
+    end
+
+    # Excelの変更を上書きする
+    workbook.write(file_path)
   end
 
   # PDFデータとExcelデータを照合する
@@ -202,7 +232,7 @@ class TestScoresController < ApplicationController
 
   # ローカルからファイルを削除する
   def delete_files
-    FileUtils.rm_r(Dir.glob(Rails.root.join('public/uploads/*.xlsx').to_s))
+    # FileUtils.rm_r(Dir.glob(Rails.root.join('public/uploads/*.xlsx').to_s))
     FileUtils.rm_r(Dir.glob(Rails.root.join('public/uploads/*.pdf').to_s))
     FileUtils.rm_r(Dir.glob(Rails.root.join('tmp/txt/*.txt').to_s))
   end
