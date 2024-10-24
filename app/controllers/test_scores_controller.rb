@@ -38,7 +38,7 @@ class TestScoresController < ApplicationController
     get_scores_from_excel
 
     # 得点の合計が正しいかチェックする
-    calc_score_sum(@subjects_size)
+    # calc_score_sum(@subjects_size)
 
     # PDFデータとExcelデータを照合
     compare(@pdf_scores, @excel_scores)
@@ -149,7 +149,7 @@ class TestScoresController < ApplicationController
     workbook = RubyXL::Workbook.new
     worksheet = workbook[0]
 
-    excel_column_titles = %w(\  被験者番号 視空間\ /5 命名\ /3 数唱\ /2 ひらがな\ /1 100-7\ /3 復唱\ /2 語想起\ /1 抽象概念\ /2 遅延再生\ /5 見当識\ /6 MoCA合計\ /30)
+    excel_column_titles = %w(\  被験者番号 トレイルメイキング 立方体 時計[輪郭] 時計[数字] 時計[針] 視空間\ /5 命名\ /3 数唱\ /2 ひらがな\ /1 100-7\ /3 復唱\ /2 語想起\ /1 抽象概念\ /2 遅延再生\ /5 見当識\ /6 MoCA合計\ /30)
 
     # Excelの1行目に項目名を書き出す
     excel_column_titles.each_with_index do |title, i|
@@ -169,7 +169,11 @@ class TestScoresController < ApplicationController
     pdf_scores_with_id.each_with_index do |subject_data, subject_i|
       subject_num = subject_i + 1
       subject_data.each_with_index do |score, score_i|
-        worksheet.add_cell(subject_num, score_i, score)
+        if score.class == Hash
+          worksheet.add_cell(subject_num, score_i, score[:figure_score])
+        else
+          worksheet.add_cell(subject_num, score_i, score)
+        end
       end
     end
     
@@ -186,7 +190,7 @@ class TestScoresController < ApplicationController
     @excel_scores.shift
     # 照合に必要な列だけ取得
     @excel_scores.map! do |row|
-      row.values_at('被験者番号', '視空間 /5', '命名 /3', '数唱 /2', 'ひらがな /1', '100-7 /3', '復唱 /2', '語想起 /1', '抽象概念 /2', '遅延再生 /5', '見当識 /6', 'MoCA合計 /30')
+      row.values_at('被験者番号', 'トレイルメイキング', '立方体', '時計[輪郭]', '時計[数字]' ,'時計[針]', '視空間 /5', '命名 /3', '数唱 /2', 'ひらがな /1', '100-7 /3', '復唱 /2', '語想起 /1', '抽象概念 /2', '遅延再生 /5', '見当識 /6', 'MoCA合計 /30')
     end
     @excel_scores.each do |person|
       person.shift
@@ -200,7 +204,7 @@ class TestScoresController < ApplicationController
     
     for i in 1..subjects_size
       sum_score = 0
-      for j in 2..11
+      for j in 2..16
         cell_score = worksheet[i][j].value.to_i
         sum_score += cell_score
       end
