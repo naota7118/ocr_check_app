@@ -4,6 +4,7 @@ require 'google/apis/drive_v3'
 require 'google/api_client/client_secrets'
 require 'roo'
 require 'rubyXL'
+require 'rubyXL/convenience_methods'
 
 class TestScoresController < ApplicationController
   # ファイルアップロード用のビューを返す
@@ -37,7 +38,7 @@ class TestScoresController < ApplicationController
     get_scores_from_excel
 
     # 得点の合計が正しいかチェックする
-    calc_score_sum
+    calc_score_sum(@subjects_size)
 
     # PDFデータとExcelデータを照合
     compare(@pdf_scores, @excel_scores)
@@ -131,6 +132,7 @@ class TestScoresController < ApplicationController
     # 1人ずつの配列に区切る（11項目あるため、11個ずつで区切る）
     @pdf_scores = []
     @all_pdf_scores.each_slice(11) { |subject| @pdf_scores << subject }
+    @subjects_size = @pdf_scores.size
   end
 
   # PDFから取得した得点をExcelに書き出す
@@ -182,11 +184,28 @@ class TestScoresController < ApplicationController
     end
   end
 
-  def calc_score_sum
+  def calc_score_sum(subjects_size)
     file_path = Rails.root.join('public/uploads/sample.xlsx').to_s
     workbook = RubyXL::Parser.parse(file_path)
     worksheet = workbook[0]
-    # 1行ごとにからまでの合計がCと合っているかを確認する
+    
+    for i in 1..subjects_size
+      sum_score = 0
+      for j in 2..11
+        cell_score = worksheet[i][j].value.to_i
+        sum_score += cell_score
+      end
+      moca_sum = worksheet[i][12].value.to_i
+
+      # 1行ごと各項目をすべて足した値が合計と等しいかを確認する
+      if sum_score != moca_sum
+        # 等しくなければセルの色を変更し目立たせる
+        worksheet.sheet_data[i][12].change_fill('ff6666')
+      end
+    end
+
+    # Excelの変更を上書きする
+    workbook.write(file_path)
   end
 
   # PDFデータとExcelデータを照合する
