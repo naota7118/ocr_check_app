@@ -38,7 +38,7 @@ class TestScoresController < ApplicationController
     get_scores_from_excel
 
     # 得点の合計が正しいかチェックする
-    # calc_score_sum(@subjects_size)
+    calc_score_sum(@subjects_size)
 
     # PDFデータとExcelデータを照合
     compare(@pdf_scores, @excel_scores)
@@ -204,16 +204,16 @@ class TestScoresController < ApplicationController
     
     for i in 1..subjects_size
       sum_score = 0
-      for j in 2..16
+      for j in 7..16
         cell_score = worksheet[i][j].value.to_i
         sum_score += cell_score
       end
-      moca_sum = worksheet[i][12].value.to_i
+      moca_sum = worksheet[i][17].value.to_i
 
       # 1行ごと各項目をすべて足した値が合計と等しいかを確認する
       if sum_score != moca_sum
         # 等しくなければセルの色を変更し目立たせる
-        worksheet.sheet_data[i][12].change_fill('ff6666')
+        worksheet.sheet_data[i][17].change_fill('ff6666')
       end
     end
 
