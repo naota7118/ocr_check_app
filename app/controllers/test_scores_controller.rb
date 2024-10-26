@@ -5,6 +5,7 @@ require 'google/api_client/client_secrets'
 require 'roo'
 require 'rubyXL'
 require 'rubyXL/convenience_methods'
+require 'pdf/reader'
 
 class TestScoresController < ApplicationController
   # ファイルアップロード用のビューを返す
@@ -30,6 +31,8 @@ class TestScoresController < ApplicationController
     convert_pdf_into_text(@drive)
     # テキストファイルから被験者IDを取り出す
     get_suject_id_from_text
+    # テキストファイルの文字列を配列に格納
+    convert_line_into_array
     # テキストファイルからスラッシュを目印にPDFの得点データを取得
     get_scores_from_text
     # 得点データをエクセルに出力
@@ -51,7 +54,6 @@ class TestScoresController < ApplicationController
     file_path = Dir.glob(Rails.root.join('public/uploads/*.pdf').to_s)
     # PDFファイルをGoogleドライブにアップロード
     metadata = drive.create_file(metadata, upload_source: file_path.first, content_type: '/pdf')
-
     # Googleドキュメント形式に変換
     converted_file = drive.copy_file(metadata.id, Google::Apis::DriveV3::File.new(mime_type: 'application/vnd.google-apps.document'))
 
@@ -73,13 +75,22 @@ class TestScoresController < ApplicationController
     string_by_line unless string_by_line.nil?
   end
 
+  # PDF枚数の初期値
+  @@count = 0
   # スラッシュを目印にスラッシュの直前の得点を取得（合計のみ2ケタ、それ以外は1ケタ）
-  def get_score_before_slash(string_with_slash)
-    # 図形のスコアを取得する
-    if string_with_slash.match?(/\[0\]|\[O\]|\[o\]|\[⚪︎\]|\[○\]/)
-      @all_pdf_scores << {figure_score: 1}
-    elsif string_with_slash.match?(/\[x\]|\[X\]|\[×\]/)
-      @all_pdf_scores << {figure_score: 0}
+  def get_score_before_slash(string_with_slash, number_of_people)
+
+    if @@count < number_of_people
+      # 図形のスコアを取得する
+      if string_with_slash.match?(/\[0\]|\[O\]|\[o\]|\[⚪︎\]|\[○\]/)
+        @all_pdf_scores << {figure_score: 1}
+        @@count += 1
+      elsif string_with_slash.match?(/\[x\]|\[X\]|\[×\]/)
+        @all_pdf_scores << {figure_score: 0}
+        @@count += 1
+      end
+    else
+      @@count = 0
     end
 
     if string_with_slash[0] == '/'
@@ -117,8 +128,37 @@ class TestScoresController < ApplicationController
     end
   end
 
+  # テキストファイルの文字列を配列に格納する
+  def convert_line_into_array
+    # file_path = Dir.glob(Rails.root.join('public/uploads/*.pdf').to_s).first
+    # reader = PDF::Reader.new(file_path)
+    # # PDFの枚数（何人分のデータか）を取得
+    # number_of_people = reader.page_count
+
+    @all_texts = []
+    File.open('./tmp/txt/sample.txt', 'r') do |f|
+      f.each_line do |line|
+        @all_texts << line.strip
+      end
+    end
+    
+    # 配列を1人あたりのデータに区切る
+    portion = []
+    @all_texts = []
+    @all_texts.each do |string|
+      if string.match?(/検査実施者/)
+        portion << string
+        @pdf_texts << portion
+        portion = []
+      else
+        portion << string
+      end
+    end
+  end
+
   # テキストファイルから得点データを取得
   def get_scores_from_text
+
     @all_pdf_scores = []
     File.open('./tmp/txt/sample.txt', 'r') do |f|
       f.each_line do |line|
@@ -134,7 +174,7 @@ class TestScoresController < ApplicationController
           # 「1/6」がOCRで「116」として誤って読み取られたのを「1/6」に変換
           string_with_slash = convert_one_into_slash(chars_by_line)
           # スラッシュを目印にスラッシュの直前の得点を取得
-          get_score_before_slash(string_with_slash)
+          get_score_before_slash(string_with_slash, number_of_people)
         end
       end
     end
@@ -158,7 +198,6 @@ class TestScoresController < ApplicationController
 
     # 照合用の配列とは別にExcel書き出し用の配列を生成
     pdf_scores_with_id = pdf_scores.deep_dup
-
     # 1人ずつ格納されている得点配列に行番号と被験者IDを追加
     pdf_scores_with_id.map.with_index do |subject_data, i|
       subject_data.unshift(i+1)
@@ -205,8 +244,16 @@ class TestScoresController < ApplicationController
     for i in 1..subjects_size
       sum_score = 0
       for j in 7..16
-        cell_score = worksheet[i][j].value.to_i
-        sum_score += cell_score
+        if worksheet[i][j] == '読みとり不可'
+          worksheet[i][j] = 0
+          cell_score = worksheet[i][j].value.to_i
+          sum_score += cell_score
+        else
+          puts 'hello'
+          puts "#{worksheet[i][j]}"
+          cell_score = worksheet[i][j].value.to_i
+          sum_score += cell_score
+        end
       end
       moca_sum = worksheet[i][17].value.to_i
 
