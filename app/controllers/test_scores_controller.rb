@@ -23,24 +23,24 @@ class TestScoresController < ApplicationController
 
   # PDFとエクセルの得点データを照合し、結果を返す
   def result
+    # Google認証
+    pass_authentication
+    return if performed?
+
+    # Google Drive APIを用いてPDF→Googleドキュメント→テキストに変換
+    convert_pdf_into_text(@drive)
+    # テキストファイルから被験者IDを取り出す
+    get_suject_id_from_text
+    # テキストファイルの文字列を配列に格納
+    convert_line_into_array
+
+    convert_one_into_slash(@all_texts)
+    separate_scores(@all_texts)
+    pull_out_scores(@all_texts)
+    separate_each_pdf(@all_scores)
+    # テキストファイルからスラッシュを目印にPDFの得点データを取得
+    get_scores_from_text(@each_pdf_scores)
     begin
-      # Google認証
-      pass_authentication
-      return if performed?
-
-      # Google Drive APIを用いてPDF→Googleドキュメント→テキストに変換
-      convert_pdf_into_text(@drive)
-      # テキストファイルから被験者IDを取り出す
-      get_suject_id_from_text
-      # テキストファイルの文字列を配列に格納
-      convert_line_into_array
-
-      convert_one_into_slash(@all_texts)
-      separate_scores(@all_texts)
-      pull_out_scores(@all_texts)
-
-      # テキストファイルからスラッシュを目印にPDFの得点データを取得
-      get_scores_from_text(@pdf_texts)
       # 得点データをエクセルに出力
       export_to_excel(@pdf_scores, @subject_ids)
       # エクセルから得点を取得
@@ -102,19 +102,6 @@ class TestScoresController < ApplicationController
         @all_texts << line.strip
       end
     end
-    
-    # 配列を1人あたりのデータに区切る
-    # portion = []
-    # @pdf_texts = []
-    # @all_texts.each do |string|
-    #   if string.match?(/検査実施者/)
-    #     portion << string
-    #     @pdf_texts << portion
-    #     portion = []
-    #   else
-    #     portion << string
-    #   end
-    # end
   end
 
   # Google Drive OCRでスラッシュが誤って1と読み取られた場合、1を/に変換する
@@ -144,33 +131,29 @@ class TestScoresController < ApplicationController
   # テキストから得点のみ抽出する
   def pull_out_scores(all_texts)
     @all_scores = all_texts.map do |string|
-      string if string.match?(/\[.\]|\//)
+      string if string.match?(/\[.\]|\/|検査実施者/)
     end
     @all_scores.delete_if{|s| s == nil}
   end
 
-  # スラッシュを目印にスラッシュの直前の得点を取得（合計のみ2ケタ、それ以外は1ケタ）
-  def get_score_before_slash(string)
-    if string[0] == '/'
-      string = '読みとり不可'
-    elsif string.match?(/[^0-9]\/[0-6]/) # "0/1"のはずが"/1"と取得できていないバグがあったため追加
-      string = '読みとり不可'
-    elsif string.match?(/[0-9][0-9]\/30$/) # 合計得点が2ケタの場合
-      string = string[0, 2]
-    elsif string.match?(/[0-9]\/30$/) # 合計得点が1ケタの場合
-      string = string[0]
-    else
-      # スラッシュの前の数字を取得
-      unless string[/[0-6]\//, 0].nil?
-        unless string.include?('合計得点')
-          string << string[/[0-6]\//, 0][0].to_i
-        end
+  # PDF1枚ごとの配列に分割する
+  def separate_each_pdf(all_scores)
+    @all_scores = all_scores.deep_dup
+    one_pdf = []
+    @each_pdf_scores = []
+    @all_scores.each do |string|
+      if string.match?(/検査実施者/)
+        one_pdf << string
+        @each_pdf_scores << one_pdf
+        one_pdf = []
+      else
+        one_pdf << string
       end
     end
   end
 
   # テキストファイルから得点データを取得
-  def get_scores_from_text(pdf_texts)
+  def get_scores_from_text(each_pdf_scores)
     @pdf_texts = pdf_texts.deep_dup
     @pdf_scores = @pdf_texts.map do |portion|
       count = 0
@@ -178,7 +161,6 @@ class TestScoresController < ApplicationController
         # 図形の得点データを取得（図形のスコアは[0][O][o][○][⚪︎][x][X][×]のいずれか）
         if count < 5 
           if string.match?(/\[0\]|\[O\]|\[o\]|\[⚪︎\]|\[○\]/) && string.match?(/\/|1/)
-            binding.pry
             string = {figure_score: 1}, {score: }
             count += 1
           elsif string.match?(/\[x\]|\[X\]|\[×\]/)
@@ -199,11 +181,29 @@ class TestScoresController < ApplicationController
       end
     end
 
-    p @pdf_scores
-
     # 1人ずつの配列に区切る（16項目あるため、16個ずつで区切る）
     # @all_pdf_scores.each_slice(16) { |subject| @pdf_scores << subject }
     # @subjects_size = @pdf_scores.size
+  end
+
+  # スラッシュを目印にスラッシュの直前の得点を取得（合計のみ2ケタ、それ以外は1ケタ）
+  def get_score_before_slash(string)
+    if string[0] == '/'
+      string = '読みとり不可'
+    elsif string.match?(/[^0-9]\/[0-6]/) # "0/1"のはずが"/1"と取得できていないバグがあったため追加
+      string = '読みとり不可'
+    elsif string.match?(/[0-9][0-9]\/30$/) # 合計得点が2ケタの場合
+      string = string[0, 2]
+    elsif string.match?(/[0-9]\/30$/) # 合計得点が1ケタの場合
+      string = string[0]
+    else
+      # スラッシュの前の数字を取得
+      unless string[/[0-6]\//, 0].nil?
+        unless string.include?('合計得点')
+          string << string[/[0-6]\//, 0][0].to_i
+        end
+      end
+    end
   end
 
   # PDFから取得した得点をExcelに書き出す
@@ -308,7 +308,8 @@ class TestScoresController < ApplicationController
         end
         @personal_result << result_element
       end
-      @all_result << @personal_result
+      # @all_result << @personal_result
+      @all_result = 1
     end
   end
 
