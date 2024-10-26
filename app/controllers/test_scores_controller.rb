@@ -154,33 +154,31 @@ class TestScoresController < ApplicationController
 
   # テキストファイルから得点データを取得
   def get_scores_from_text(each_pdf_scores)
-    @pdf_texts = pdf_texts.deep_dup
-    @pdf_scores = @pdf_texts.map do |portion|
+    pdf_scores = each_pdf_scores.deep_dup
+    @figure_scores = []
+    pdf_scores.each_with_index do |pdf, p_i|
       count = 0
-      portion.each do |string|
+      one_pdf_figure_scores = []
+      pdf.each do |string, s_i|
         # 図形の得点データを取得（図形のスコアは[0][O][o][○][⚪︎][x][X][×]のいずれか）
         if count < 5 
-          if string.match?(/\[0\]|\[O\]|\[o\]|\[⚪︎\]|\[○\]/) && string.match?(/\/|1/)
-            string = {figure_score: 1}, {score: }
+          if string.match?(/\[0\]|\[O\]|\[o\]|\[⚪︎\]|\[○\]/)
+            one_pdf_figure_scores << {figure_score: 1}
             count += 1
           elsif string.match?(/\[x\]|\[X\]|\[×\]/)
-            string = {figure_score: 0}
+            one_pdf_figure_scores << {figure_score: 0}
             count += 1
           end
-        else
-          count = 0
         end
-
-        # スラッシュを目印に得点を取得（/が1と読み取られている場合あり）
-        if string.match?(/\/|1/)
-          # /が誤って1と読み取られた場合に修正（例：116→1/6）
-          modificated_string = convert_one_into_slash(string)
-          # スラッシュを目印にスラッシュの直前の得点を取得
-          get_score_before_slash(modificated_string)
-        end
+        # # スラッシュを目印に得点を取得
+        # if !string.class == Hash && string.match?(/\//)
+        #   # スラッシュを目印にスラッシュの直前の得点を取得
+        #   get_score_before_slash(string)
+        # end
       end
+      @figure_scores << one_pdf_figure_scores
     end
-
+    binding.pry
     # 1人ずつの配列に区切る（16項目あるため、16個ずつで区切る）
     # @all_pdf_scores.each_slice(16) { |subject| @pdf_scores << subject }
     # @subjects_size = @pdf_scores.size
@@ -204,6 +202,7 @@ class TestScoresController < ApplicationController
         end
       end
     end
+    string = {test_score: string}
   end
 
   # PDFから取得した得点をExcelに書き出す
