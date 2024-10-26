@@ -33,8 +33,13 @@ class TestScoresController < ApplicationController
     get_suject_id_from_text
     # テキストファイルの文字列を配列に格納
     convert_line_into_array
+
+    convert_one_into_slash(@all_texts)
+    separate_scores(@all_texts)
+    pull_out_scores(@all_texts)
+
     # テキストファイルからスラッシュを目印にPDFの得点データを取得
-    get_scores_from_text
+    get_scores_from_text(@pdf_texts)
     # 得点データをエクセルに出力
     export_to_excel(@pdf_scores, @subject_ids)
     # エクセルから得点を取得
@@ -66,51 +71,6 @@ class TestScoresController < ApplicationController
     drive.delete_file(converted_file.id)
   end
 
-  # Google Drive OCRでスラッシュが誤って1と読み取られた場合、1を/に変換する
-  # スラッシュを目印に得点を取得しており、得点を取得のためのデータ加工処理
-  def convert_one_into_slash(chars_by_line)
-    string_by_line = chars_by_line.join
-    # 「1/6」がOCRで「116」と誤って読み取られているのを「1/6」に修正
-    string_by_line[1] = '/' if string_by_line.match?(/^[0-6]1[0-6]$/)
-    string_by_line unless string_by_line.nil?
-  end
-
-  # PDF枚数の初期値
-  @@count = 0
-  # スラッシュを目印にスラッシュの直前の得点を取得（合計のみ2ケタ、それ以外は1ケタ）
-  def get_score_before_slash(string_with_slash, number_of_people)
-
-    if @@count < number_of_people
-      # 図形のスコアを取得する
-      if string_with_slash.match?(/\[0\]|\[O\]|\[o\]|\[⚪︎\]|\[○\]/)
-        @all_pdf_scores << {figure_score: 1}
-        @@count += 1
-      elsif string_with_slash.match?(/\[x\]|\[X\]|\[×\]/)
-        @all_pdf_scores << {figure_score: 0}
-        @@count += 1
-      end
-    else
-      @@count = 0
-    end
-
-    if string_with_slash[0] == '/'
-      @all_pdf_scores << '読みとり不可'
-    elsif string_with_slash.match?(/[^0-9]\/[0-6]/) # "0/1"のはずが"/1"と取得できていないバグがあったため追加
-      @all_pdf_scores << '読みとり不可'
-    elsif string_with_slash.match?(/[0-9][0-9]\/30$/) # 合計得点が2ケタの場合
-      @all_pdf_scores << string_with_slash[0, 2]
-    elsif string_with_slash.match?(/[0-9]\/30$/) # 合計得点が1ケタの場合
-      @all_pdf_scores << string_with_slash[0]
-    else
-      # スラッシュの前の数字を取得
-      unless string_with_slash[/[0-6]\//, 0].nil?
-        unless string_with_slash.include?('合計得点')
-          @all_pdf_scores << string_with_slash[/[0-6]\//, 0][0].to_i
-        end
-      end
-    end
-  end
-
   # テキストファイルから被験者IDを取り出す
   def get_suject_id_from_text
     @subject_ids = []
@@ -130,11 +90,6 @@ class TestScoresController < ApplicationController
 
   # テキストファイルの文字列を配列に格納する
   def convert_line_into_array
-    # file_path = Dir.glob(Rails.root.join('public/uploads/*.pdf').to_s).first
-    # reader = PDF::Reader.new(file_path)
-    # # PDFの枚数（何人分のデータか）を取得
-    # number_of_people = reader.page_count
-
     @all_texts = []
     File.open('./tmp/txt/sample.txt', 'r') do |f|
       f.each_line do |line|
@@ -143,45 +98,106 @@ class TestScoresController < ApplicationController
     end
     
     # 配列を1人あたりのデータに区切る
-    portion = []
-    @all_texts = []
-    @all_texts.each do |string|
-      if string.match?(/検査実施者/)
-        portion << string
-        @pdf_texts << portion
-        portion = []
+    # portion = []
+    # @pdf_texts = []
+    # @all_texts.each do |string|
+    #   if string.match?(/検査実施者/)
+    #     portion << string
+    #     @pdf_texts << portion
+    #     portion = []
+    #   else
+    #     portion << string
+    #   end
+    # end
+  end
+
+  # Google Drive OCRでスラッシュが誤って1と読み取られた場合、1を/に変換する
+  # スラッシュを目印に得点を取得しており、得点を取得のためのデータ加工処理
+  def convert_one_into_slash(all_texts)
+    # 「1/6」がOCRで「116」と誤って読み取られているのを「1/6」に修正
+    @all_texts = all_texts.map! do |string|
+      string[1] = '/' if string.match?(/^[0-6]1[0-6]$/)
+      string unless string.nil?
+    end
+  end
+
+  # 図形の得点と項目の得点が同じ行にあったら別の行に分ける 例：[0]3/5
+  def separate_scores(all_texts)
+    @all_texts = all_texts.map do |string|
+      if string.match?(/\[0\]|\[O\]|\[o\]|\[⚪︎\]|\[○\]|\[x\]|\[X\]|\[×\]/) && string.match?(/[0-6]\/[0-6]/)
+        figure_score = string[/\[0\]|\[O\]|\[o\]|\[⚪︎\]|\[○\]|\[x\]|\[X\]|\[×\]/]
+        test_score = string[/[0-6]\/[0-6]/]
+        string = [figure_score, test_score]
       else
-        portion << string
+        string
+      end
+    end
+    @all_texts.flatten!
+  end
+
+  # テキストから得点のみ抽出する
+  def pull_out_scores(all_texts)
+    @all_scores = all_texts.map do |string|
+      string if string.match?(/\[.\]|\//)
+    end
+    @all_scores.delete_if{|s| s == nil}
+  end
+
+  # スラッシュを目印にスラッシュの直前の得点を取得（合計のみ2ケタ、それ以外は1ケタ）
+  def get_score_before_slash(string)
+    if string[0] == '/'
+      string = '読みとり不可'
+    elsif string.match?(/[^0-9]\/[0-6]/) # "0/1"のはずが"/1"と取得できていないバグがあったため追加
+      string = '読みとり不可'
+    elsif string.match?(/[0-9][0-9]\/30$/) # 合計得点が2ケタの場合
+      string = string[0, 2]
+    elsif string.match?(/[0-9]\/30$/) # 合計得点が1ケタの場合
+      string = string[0]
+    else
+      # スラッシュの前の数字を取得
+      unless string[/[0-6]\//, 0].nil?
+        unless string.include?('合計得点')
+          string << string[/[0-6]\//, 0][0].to_i
+        end
       end
     end
   end
 
   # テキストファイルから得点データを取得
-  def get_scores_from_text
+  def get_scores_from_text(pdf_texts)
+    @pdf_texts = pdf_texts.deep_dup
+    @pdf_scores = @pdf_texts.map do |portion|
+      count = 0
+      portion.each do |string|
+        # 図形の得点データを取得（図形のスコアは[0][O][o][○][⚪︎][x][X][×]のいずれか）
+        if count < 5 
+          if string.match?(/\[0\]|\[O\]|\[o\]|\[⚪︎\]|\[○\]/) && string.match?(/\/|1/)
+            binding.pry
+            string = {figure_score: 1}, {score: }
+            count += 1
+          elsif string.match?(/\[x\]|\[X\]|\[×\]/)
+            string = {figure_score: 0}
+            count += 1
+          end
+        else
+          count = 0
+        end
 
-    @all_pdf_scores = []
-    File.open('./tmp/txt/sample.txt', 'r') do |f|
-      f.each_line do |line|
-        # テキストを1行ごとに1文字区切りの配列に変換
-        chars_by_line = line.strip.chars
-        # 配列の中の空白文字要素を削除
-        chars_by_line.delete_if { |char| char == ' ' }
-
-        # ①得点は1/6や116の形式で出力される
-        # ②図形のスコアは[0][O][o][○][⚪︎][x][X][×]のいずれか
-        # ③1or2に該当する文字列のみを処理対象としている
-        if chars_by_line.join.match?(/\/|1|\[0\]|\[O\]|\[o\]|\[⚪︎\]|\[○\]|\[x\]|\[X\]|\[×\]/)
-          # 「1/6」がOCRで「116」として誤って読み取られたのを「1/6」に変換
-          string_with_slash = convert_one_into_slash(chars_by_line)
+        # スラッシュを目印に得点を取得（/が1と読み取られている場合あり）
+        if string.match?(/\/|1/)
+          # /が誤って1と読み取られた場合に修正（例：116→1/6）
+          modificated_string = convert_one_into_slash(string)
           # スラッシュを目印にスラッシュの直前の得点を取得
-          get_score_before_slash(string_with_slash, number_of_people)
+          get_score_before_slash(modificated_string)
         end
       end
     end
+
+    p @pdf_scores
+
     # 1人ずつの配列に区切る（16項目あるため、16個ずつで区切る）
-    @pdf_scores = []
-    @all_pdf_scores.each_slice(16) { |subject| @pdf_scores << subject }
-    @subjects_size = @pdf_scores.size
+    # @all_pdf_scores.each_slice(16) { |subject| @pdf_scores << subject }
+    # @subjects_size = @pdf_scores.size
   end
 
   # PDFから取得した得点をExcelに書き出す
