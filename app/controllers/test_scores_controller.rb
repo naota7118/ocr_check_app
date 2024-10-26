@@ -23,35 +23,41 @@ class TestScoresController < ApplicationController
 
   # PDFとエクセルの得点データを照合し、結果を返す
   def result
-    # Google認証
-    pass_authentication
-    return if performed?
+    begin
+      # Google認証
+      pass_authentication
+      return if performed?
 
-    # Google Drive APIを用いてPDF→Googleドキュメント→テキストに変換
-    convert_pdf_into_text(@drive)
-    # テキストファイルから被験者IDを取り出す
-    get_suject_id_from_text
-    # テキストファイルの文字列を配列に格納
-    convert_line_into_array
+      # Google Drive APIを用いてPDF→Googleドキュメント→テキストに変換
+      convert_pdf_into_text(@drive)
+      # テキストファイルから被験者IDを取り出す
+      get_suject_id_from_text
+      # テキストファイルの文字列を配列に格納
+      convert_line_into_array
 
-    convert_one_into_slash(@all_texts)
-    separate_scores(@all_texts)
-    pull_out_scores(@all_texts)
+      convert_one_into_slash(@all_texts)
+      separate_scores(@all_texts)
+      pull_out_scores(@all_texts)
 
-    # テキストファイルからスラッシュを目印にPDFの得点データを取得
-    get_scores_from_text(@pdf_texts)
-    # 得点データをエクセルに出力
-    export_to_excel(@pdf_scores, @subject_ids)
-    # エクセルから得点を取得
-    get_scores_from_excel
+      # テキストファイルからスラッシュを目印にPDFの得点データを取得
+      get_scores_from_text(@pdf_texts)
+      # 得点データをエクセルに出力
+      export_to_excel(@pdf_scores, @subject_ids)
+      # エクセルから得点を取得
+      get_scores_from_excel
 
-    # 得点の合計が正しいかチェックする
-    calc_score_sum(@subjects_size)
+      # 得点の合計が正しいかチェックする
+      calc_score_sum(@subjects_size)
 
-    # PDFデータとExcelデータを照合
-    compare(@pdf_scores, @excel_scores)
-    # 照合が完了したらファイルを削除
-    delete_files
+      # PDFデータとExcelデータを照合
+      compare(@pdf_scores, @excel_scores)
+      # 照合が完了したらファイルを削除
+      delete_files
+    rescue
+      # エラーが発生したらファイルを削除
+      FileUtils.rm_r(Dir.glob(Rails.root.join('public/uploads/*.pdf').to_s))
+      FileUtils.rm_r(Dir.glob(Rails.root.join('tmp/txt/*.txt').to_s))
+    end
   end
 
   # PDFから照合処理に必要なテキストのみ抽出（Google Drive APIのOCR技術使用）
