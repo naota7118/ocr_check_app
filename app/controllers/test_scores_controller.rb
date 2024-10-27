@@ -43,9 +43,10 @@ class TestScoresController < ApplicationController
 
     # テキストファイルからスラッシュを目印にPDFの得点データを取得
     test_scores_from_text(@each_pdf_scores)
+    connect_scores(@figure_scores, @test_scores)
     begin
       # 得点データをエクセルに出力
-      export_to_excel(@pdf_scores, @subject_ids)
+      export_to_excel(@new_test_scores, @subject_ids)
       # エクセルから得点を取得
       get_scores_from_excel
 
@@ -167,16 +168,15 @@ class TestScoresController < ApplicationController
         # 図形の得点データを取得（図形のスコアは[0][O][o][○][⚪︎][x][X][×]のいずれか）
         if count < 5 
           if string.match?(/\[0\]|\[O\]|\[o\]|\[⚪︎\]|\[○\]/)
-            one_pdf_figure_scores << {figure_score: 1}
+            one_pdf_figure_scores << 1
             count += 1
           elsif string.match?(/\[x\]|\[X\]|\[×\]/)
-            one_pdf_figure_scores << {figure_score: 0}
+            one_pdf_figure_scores << 0
             count += 1
           end
         end
       end
       @figure_scores << one_pdf_figure_scores
-      @figure_scores
     end
   end
 
@@ -223,8 +223,15 @@ class TestScoresController < ApplicationController
     end
   end
 
+  def connect_scores(figure_scores, test_scores)
+    @new_test_scores = []
+    figure_scores.each_with_index do |_, i|
+      @new_test_scores << figure_scores[i].concat(test_scores[i])
+    end
+  end
+
   # PDFから取得した得点をExcelに書き出す
-  def export_to_excel(pdf_scores, subject_ids)
+  def export_to_excel(figure_scores, test_scores, subject_ids)
     workbook = RubyXL::Workbook.new
     worksheet = workbook[0]
 
@@ -236,7 +243,7 @@ class TestScoresController < ApplicationController
     end
 
     # 照合用の配列とは別にExcel書き出し用の配列を生成
-    pdf_scores_with_id = pdf_scores.deep_dup
+    pdf_scores_with_id = test_scores.deep_dup
     # 1人ずつ格納されている得点配列に行番号と被験者IDを追加
     pdf_scores_with_id.map.with_index do |subject_data, i|
       subject_data.unshift(i+1)
