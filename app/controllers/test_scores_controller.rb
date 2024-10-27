@@ -231,7 +231,7 @@ class TestScoresController < ApplicationController
   end
 
   # PDFから取得した得点をExcelに書き出す
-  def export_to_excel(figure_scores, test_scores, subject_ids)
+  def export_to_excel(new_test_scores, subject_ids)
     workbook = RubyXL::Workbook.new
     worksheet = workbook[0]
 
@@ -242,23 +242,17 @@ class TestScoresController < ApplicationController
       worksheet.add_cell(0, i, title)
     end
 
-    # 照合用の配列とは別にExcel書き出し用の配列を生成
-    pdf_scores_with_id = test_scores.deep_dup
     # 1人ずつ格納されている得点配列に行番号と被験者IDを追加
-    pdf_scores_with_id.map.with_index do |subject_data, i|
-      subject_data.unshift(i+1)
-      subject_data.insert(1, subject_ids[i])
+    new_test_scores.map.with_index do |subject, i|
+      subject.unshift(i+1)
+      subject.insert(1, subject_ids[i])
     end
 
     # PDFから取得した得点を行ごとにExcelに書き出す（1行ごとに1人分の得点が格納されている）
-    pdf_scores_with_id.each_with_index do |subject_data, subject_i|
+    new_test_scores.each_with_index do |subject, subject_i|
       subject_num = subject_i + 1
-      subject_data.each_with_index do |score, score_i|
-        if score.class == Hash
-          worksheet.add_cell(subject_num, score_i, score[:figure_score])
-        else
-          worksheet.add_cell(subject_num, score_i, score)
-        end
+      subject.each_with_index do |score, score_i|
+        worksheet.add_cell(subject_num, score_i, score)
       end
     end
     
@@ -295,8 +289,6 @@ class TestScoresController < ApplicationController
           cell_score = worksheet[i][j].value.to_i
           sum_score += cell_score
         else
-          puts 'hello'
-          puts "#{worksheet[i][j]}"
           cell_score = worksheet[i][j].value.to_i
           sum_score += cell_score
         end
