@@ -38,8 +38,11 @@ class TestScoresController < ApplicationController
     separate_scores(@all_texts)
     pull_out_scores(@all_texts)
     separate_each_pdf(@all_scores)
+    # 図形の得点を取得
+    figure_scores_from_text(@each_pdf_scores)
+
     # テキストファイルからスラッシュを目印にPDFの得点データを取得
-    get_scores_from_text(@each_pdf_scores)
+    test_scores_from_text(@each_pdf_scores)
     begin
       # 得点データをエクセルに出力
       export_to_excel(@pdf_scores, @subject_ids)
@@ -150,13 +153,14 @@ class TestScoresController < ApplicationController
         one_pdf << string
       end
     end
+    @each_pdf_scores
   end
 
-  # テキストファイルから得点データを取得
-  def get_scores_from_text(each_pdf_scores)
+  # テキストファイルから図形の得点を取得
+  def figure_scores_from_text(each_pdf_scores)
     pdf_scores = each_pdf_scores.deep_dup
     @figure_scores = []
-    pdf_scores.each_with_index do |pdf, p_i|
+    pdf_scores.each do |pdf|
       count = 0
       one_pdf_figure_scores = []
       pdf.each do |string, s_i|
@@ -170,39 +174,53 @@ class TestScoresController < ApplicationController
             count += 1
           end
         end
-        # # スラッシュを目印に得点を取得
-        # if !string.class == Hash && string.match?(/\//)
-        #   # スラッシュを目印にスラッシュの直前の得点を取得
-        #   get_score_before_slash(string)
-        # end
       end
       @figure_scores << one_pdf_figure_scores
+      @figure_scores
     end
-    binding.pry
-    # 1人ずつの配列に区切る（16項目あるため、16個ずつで区切る）
-    # @all_pdf_scores.each_slice(16) { |subject| @pdf_scores << subject }
-    # @subjects_size = @pdf_scores.size
+  end
+
+  def test_scores_from_text(each_pdf_scores)
+    pdf_scores = each_pdf_scores.deep_dup
+    @test_scores = []
+    # # スラッシュを目印に得点を取得
+    pdf_scores.each do |pdf|
+      one_pdf_test_scores = []
+      pdf.each do |string|
+        if string.match?(/\//)
+          # スラッシュを目印にスラッシュの直前の得点を取得
+          if get_score_before_slash(string)
+            one_pdf_test_scores << get_score_before_slash(string)
+          end
+        end
+      end
+      @test_scores << one_pdf_test_scores
+    end
   end
 
   # スラッシュを目印にスラッシュの直前の得点を取得（合計のみ2ケタ、それ以外は1ケタ）
   def get_score_before_slash(string)
+    
     if string[0] == '/'
       string = '読みとり不可'
+      return string
     elsif string.match?(/[^0-9]\/[0-6]/) # "0/1"のはずが"/1"と取得できていないバグがあったため追加
       string = '読みとり不可'
+      return string
     elsif string.match?(/[0-9][0-9]\/30$/) # 合計得点が2ケタの場合
       string = string[0, 2]
+      return string
     elsif string.match?(/[0-9]\/30$/) # 合計得点が1ケタの場合
       string = string[0]
+      return string
     else
       # スラッシュの前の数字を取得
-      unless string[/[0-6]\//, 0].nil?
-        unless string.include?('合計得点')
-          string << string[/[0-6]\//, 0][0].to_i
-        end
+      # [0-6]/の部分文字列をもつ かつ '合計得点'は含まない
+      if string[/[0-6]\//] && !string.include?('合計得点')
+        string = string[/[0-6]\//][0].to_i
+        return string
       end
     end
-    string = {test_score: string}
   end
 
   # PDFから取得した得点をExcelに書き出す
