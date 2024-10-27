@@ -51,7 +51,7 @@ class TestScoresController < ApplicationController
       get_scores_from_excel
 
       # 得点の合計が正しいかチェックする
-      calc_score_sum(@subjects_size)
+      calc_score_sum(@test_size)
 
       # PDFデータとExcelデータを照合
       compare(@pdf_scores, @excel_scores)
@@ -228,6 +228,8 @@ class TestScoresController < ApplicationController
     figure_scores.each_with_index do |_, i|
       @new_test_scores << figure_scores[i].concat(test_scores[i])
     end
+    @test_size = @new_test_scores.length
+    return @new_test_scores, @test_size
   end
 
   # PDFから取得した得点をExcelに書き出す
@@ -276,12 +278,12 @@ class TestScoresController < ApplicationController
     end
   end
 
-  def calc_score_sum(subjects_size)
-    file_path = Rails.root.join('public/uploads/sample.xlsx').to_s
+  def calc_score_sum(test_size)
+    file_path = Dir.glob(Rails.root.join('public/uploads/*.xlsx').to_s).first
     workbook = RubyXL::Parser.parse(file_path)
     worksheet = workbook[0]
     
-    for i in 1..subjects_size
+    for i in 1..test_size
       sum_score = 0
       for j in 7..16
         if worksheet[i][j] == '読みとり不可'
