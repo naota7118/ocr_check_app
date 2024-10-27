@@ -44,24 +44,23 @@ class TestScoresController < ApplicationController
     # テキストファイルからスラッシュを目印にPDFの得点データを取得
     test_scores_from_text(@each_pdf_scores)
     connect_scores(@figure_scores, @test_scores)
-    begin
-      # 得点データをエクセルに出力
-      export_to_excel(@new_test_scores, @subject_ids)
-      # エクセルから得点を取得
-      get_scores_from_excel
 
-      # 得点の合計が正しいかチェックする
-      calc_score_sum(@test_size)
+    # 得点データをエクセルに出力
+    export_to_excel(@new_pdf_scores, @subject_ids)
 
-      # PDFデータとExcelデータを照合
-      compare(@pdf_scores, @excel_scores)
-      # 照合が完了したらファイルを削除
-      delete_files
-    rescue
-      # エラーが発生したらファイルを削除
-      FileUtils.rm_r(Dir.glob(Rails.root.join('public/uploads/*.pdf').to_s))
-      FileUtils.rm_r(Dir.glob(Rails.root.join('tmp/txt/*.txt').to_s))
-    end
+    # 得点の合計が正しいかチェックする
+    calc_score_sum(@pdf_length)
+
+    # エクセルから得点を取得
+    get_scores_from_excel
+
+    # PDFデータとExcelデータを照合
+    compare(@new_pdf_scores, @excel_scores)
+    # 照合が完了したらファイルを削除
+    delete_files
+    # エラーが発生したらファイルを削除
+    FileUtils.rm_r(Dir.glob(Rails.root.join('public/uploads/*.pdf').to_s))
+    FileUtils.rm_r(Dir.glob(Rails.root.join('tmp/txt/*.txt').to_s))
   end
 
   # PDFから照合処理に必要なテキストのみ抽出（Google Drive APIのOCR技術使用）
@@ -224,16 +223,17 @@ class TestScoresController < ApplicationController
   end
 
   def connect_scores(figure_scores, test_scores)
-    @new_test_scores = []
+    @new_pdf_scores = []
     figure_scores.each_with_index do |_, i|
-      @new_test_scores << figure_scores[i].concat(test_scores[i])
+      @new_pdf_scores << figure_scores[i].concat(test_scores[i])
     end
-    @test_size = @new_test_scores.length
-    return @new_test_scores, @test_size
+    @pdf_length = @new_pdf_scores.length
+    return @new_pdf_scores, @pdf_length
   end
 
   # PDFから取得した得点をExcelに書き出す
-  def export_to_excel(new_test_scores, subject_ids)
+  def export_to_excel(new_pdf_scores, subject_ids)
+    pdf_scores_for_excel = new_pdf_scores.deep_dup
     workbook = RubyXL::Workbook.new
     worksheet = workbook[0]
 
@@ -245,13 +245,13 @@ class TestScoresController < ApplicationController
     end
 
     # 1人ずつ格納されている得点配列に行番号と被験者IDを追加
-    new_test_scores.map.with_index do |subject, i|
+    pdf_scores_for_excel.map.with_index do |subject, i|
       subject.unshift(i+1)
       subject.insert(1, subject_ids[i])
     end
 
     # PDFから取得した得点を行ごとにExcelに書き出す（1行ごとに1人分の得点が格納されている）
-    new_test_scores.each_with_index do |subject, subject_i|
+    pdf_scores_for_excel.each_with_index do |subject, subject_i|
       subject_num = subject_i + 1
       subject.each_with_index do |score, score_i|
         worksheet.add_cell(subject_num, score_i, score)
@@ -261,29 +261,12 @@ class TestScoresController < ApplicationController
     @scores_in_excel = workbook.write(Rails.root.join('public', 'uploads', 'sample.xlsx'))
   end
 
-  def get_scores_from_excel
-    # Excelからデータを取得
-    Dir.glob(Rails.root.join('public/uploads/*.xlsx').to_s).each do |excel|
-      @xlsx = Roo::Excelx.new(excel)
-    end
-    @excel_scores = @xlsx.parse(headers: true, clean: true)
-    # ヘッダー行は不要
-    @excel_scores.shift
-    # 照合に必要な列だけ取得
-    @excel_scores.map! do |row|
-      row.values_at('被験者番号', 'トレイルメイキング', '立方体', '時計[輪郭]', '時計[数字]' ,'時計[針]', '視空間 /5', '命名 /3', '数唱 /2', 'ひらがな /1', '100-7 /3', '復唱 /2', '語想起 /1', '抽象概念 /2', '遅延再生 /5', '見当識 /6', 'MoCA合計 /30')
-    end
-    @excel_scores.each do |person|
-      person.shift
-    end
-  end
-
-  def calc_score_sum(test_size)
+  def calc_score_sum(pdf_length)
     file_path = Dir.glob(Rails.root.join('public/uploads/*.xlsx').to_s).first
     workbook = RubyXL::Parser.parse(file_path)
     worksheet = workbook[0]
     
-    for i in 1..test_size
+    for i in 1..pdf_length
       sum_score = 0
       for j in 7..16
         if worksheet[i][j] == '読みとり不可'
@@ -308,27 +291,70 @@ class TestScoresController < ApplicationController
     workbook.write(file_path)
   end
 
-  # PDFデータとExcelデータを照合する
-  def compare(pdf_scores, excel_scores)
-    @count = 0
-    @all_result = []
-    excel_scores.each_with_index do |subject, sub_i|
-      @personal_result = []
-      subject.each_with_index do |_score, sco_i|
-        if pdf_scores[sub_i][sco_i] == '読みとり不可'
-          result_element = [pdf_scores[sub_i][sco_i], subject[sco_i], '読み取れていません']
-          @count += 1
-        elsif excel_scores[sub_i][sco_i].to_i == pdf_scores[sub_i][sco_i].to_i
-          result_element = [pdf_scores[sub_i][sco_i].to_i, excel_scores[sub_i][sco_i].to_i, '一致しています']
-          else
-            result_element = [pdf_scores[sub_i][sco_i].to_i, excel_scores[sub_i][sco_i].to_i, '一致しません']
-            @count += 1
-        end
-        @personal_result << result_element
-      end
-      # @all_result << @personal_result
-      @all_result = 1
+  def get_scores_from_excel
+    # Excelからデータを取得
+    Dir.glob(Rails.root.join('public/uploads/*.xlsx').to_s).each do |excel|
+      @xlsx = Roo::Excelx.new(excel)
     end
+    @excel_scores = @xlsx.parse(headers: true, clean: true)
+    # ヘッダー行は不要
+    @excel_scores.shift
+    # 照合に必要な列だけ取得
+    @excel_scores.map! do |row|
+      row.values_at('被験者番号', 'トレイルメイキング', '立方体', '時計[輪郭]', '時計[数字]' ,'時計[針]', '視空間 /5', '命名 /3', '数唱 /2', 'ひらがな /1', '100-7 /3', '復唱 /2', '語想起 /1', '抽象概念 /2', '遅延再生 /5', '見当識 /6', 'MoCA合計 /30')
+    end
+    @excel_scores.each do |person|
+      person.shift
+    end
+  end
+
+  # PDFデータとExcelデータを照合する
+  def compare(new_pdf_scores, excel_scores)
+    p new_pdf_scores
+    p excel_scores
+    if new_pdf_scores.eql? excel_scores
+      p @conclusion = "すべて正しいです"
+    else
+      p @conclusion = "間違いがあります"
+    end
+
+    @all_result = []
+
+    @loading_error_count = 0
+    @error_count = 0
+    new_pdf_scores.each do |_, i|
+      @personal_result = []
+      excel_scores.each do |_, j|
+        if new_pdf_scores[i][j] == '読みとり不可' || excel_scores[i][j] == '読みとり不可'
+          @result = '読み取れていません'
+          @loading_error_count += 1
+        elsif new_pdf_scores[i][j] == excel_scores[i][j]
+          @result = '一致しています'
+        else
+          @result = '一致しません'
+          @error_count += 1
+        end
+        @personal_result << @result
+      end
+      p @all_result << @personal_result
+    end
+
+    # excel_scores.each_with_index do |subject, subject_i|
+    #   @personal_result = []
+    #   subject.each_with_index do |score, score_i|
+    #     if pdf_scores[subject_i][score_i] == '読みとり不可'
+    #       result_element = [pdf_scores[subject_i][score_i], subject[score_i], '読み取れていません']
+    #       @count += 1
+    #     elsif excel_scores[sub_i][sco_i].to_i == pdf_scores[sub_i][sco_i].to_i
+    #       result_element = [pdf_scores[sub_i][sco_i].to_i, excel_scores[sub_i][sco_i].to_i, '一致しています']
+    #       else
+    #         result_element = [pdf_scores[sub_i][sco_i].to_i, excel_scores[sub_i][sco_i].to_i, '一致しません']
+    #         @count += 1
+    #     end
+    #     @personal_result << result_element
+    #   end
+    #   @all_result << @personal_result
+    # end
   end
 
   # ローカルからファイルを削除する
