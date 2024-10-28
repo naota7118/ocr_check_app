@@ -310,8 +310,6 @@ class TestScoresController < ApplicationController
 
   # PDFデータとExcelデータを照合する
   def compare(new_pdf_scores, excel_scores)
-    p new_pdf_scores
-    p excel_scores
     if new_pdf_scores.eql? excel_scores
       p @conclusion = "すべて正しいです"
     else
@@ -322,9 +320,9 @@ class TestScoresController < ApplicationController
 
     @loading_error_count = 0
     @error_count = 0
-    new_pdf_scores.each do |_, i|
+    new_pdf_scores.each_with_index do |pdf, i|
       @personal_result = []
-      excel_scores.each do |_, j|
+      pdf.each_with_index do |_, j|
         if new_pdf_scores[i][j] == '読みとり不可' || excel_scores[i][j] == '読みとり不可'
           @result = '読み取れていません'
           @loading_error_count += 1
@@ -336,25 +334,9 @@ class TestScoresController < ApplicationController
         end
         @personal_result << @result
       end
-      p @all_result << @personal_result
+      @all_result << @personal_result
     end
-
-    # excel_scores.each_with_index do |subject, subject_i|
-    #   @personal_result = []
-    #   subject.each_with_index do |score, score_i|
-    #     if pdf_scores[subject_i][score_i] == '読みとり不可'
-    #       result_element = [pdf_scores[subject_i][score_i], subject[score_i], '読み取れていません']
-    #       @count += 1
-    #     elsif excel_scores[sub_i][sco_i].to_i == pdf_scores[sub_i][sco_i].to_i
-    #       result_element = [pdf_scores[sub_i][sco_i].to_i, excel_scores[sub_i][sco_i].to_i, '一致しています']
-    #       else
-    #         result_element = [pdf_scores[sub_i][sco_i].to_i, excel_scores[sub_i][sco_i].to_i, '一致しません']
-    #         @count += 1
-    #     end
-    #     @personal_result << result_element
-    #   end
-    #   @all_result << @personal_result
-    # end
+    binding.pry
   end
 
   # ローカルからファイルを削除する
