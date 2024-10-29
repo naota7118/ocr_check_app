@@ -318,14 +318,13 @@ class TestScoresController < ApplicationController
 
     @all_result = []
 
-    @loading_error_count = 0
     @error_count = 0
     new_pdf_scores.each_with_index do |pdf, i|
       @personal_result = []
       pdf.each_with_index do |_, j|
         if new_pdf_scores[i][j] == '読みとり不可' || excel_scores[i][j] == '読みとり不可'
           @result = '読み取れていません'
-          @loading_error_count += 1
+          @error_count += 1
         elsif new_pdf_scores[i][j] == excel_scores[i][j]
           @result = '一致しています'
         else
