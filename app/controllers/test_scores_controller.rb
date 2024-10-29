@@ -56,6 +56,7 @@ class TestScoresController < ApplicationController
 
     # PDFデータとExcelデータを照合
     compare(@new_pdf_scores, @excel_scores)
+
     # 照合が完了したらファイルを削除
     delete_files
     # エラーが発生したらファイルを削除
@@ -310,14 +311,7 @@ class TestScoresController < ApplicationController
 
   # PDFデータとExcelデータを照合する
   def compare(new_pdf_scores, excel_scores)
-    if new_pdf_scores.eql? excel_scores
-      p @conclusion = "すべて正しいです"
-    else
-      p @conclusion = "間違いがあります"
-    end
-
     @all_result = []
-
     @error_count = 0
     new_pdf_scores.each_with_index do |pdf, i|
       @personal_result = []
