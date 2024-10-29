@@ -237,10 +237,10 @@ class TestScoresController < ApplicationController
     workbook = RubyXL::Workbook.new
     worksheet = workbook[0]
 
-    excel_column_titles = %w(\  被験者番号 トレイルメイキング 立方体 時計[輪郭] 時計[数字] 時計[針] 視空間\ /5 命名\ /3 数唱\ /2 ひらがな\ /1 100-7\ /3 復唱\ /2 語想起\ /1 抽象概念\ /2 遅延再生\ /5 見当識\ /6 MoCA合計\ /30)
+    @excel_column_titles = %w(\  被験者番号 トレイルメイキング 立方体 時計[輪郭] 時計[数字] 時計[針] 視空間\ /5 命名\ /3 数唱\ /2 ひらがな\ /1 100-7\ /3 復唱\ /2 語想起\ /1 抽象概念\ /2 遅延再生\ /5 見当識\ /6 MoCA合計\ /30)
 
     # Excelの1行目に項目名を書き出す
-    excel_column_titles.each_with_index do |title, i|
+    @excel_column_titles.each_with_index do |title, i|
       worksheet.add_cell(0, i, title)
     end
 
@@ -336,7 +336,6 @@ class TestScoresController < ApplicationController
       end
       @all_result << @personal_result
     end
-    binding.pry
   end
 
   # ローカルからファイルを削除する
