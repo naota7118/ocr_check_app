@@ -57,8 +57,6 @@ class TestScoresController < ApplicationController
     # PDFデータとExcelデータを照合
     compare(@new_pdf_scores, @excel_scores)
 
-    # ハッシュ型で1人ずつのデータを格納
-    store_in_hash
     # 照合が完了したらファイルを削除
     delete_files
     # エラーが発生したらファイルを削除
@@ -331,12 +329,6 @@ class TestScoresController < ApplicationController
       end
       @all_result << @personal_result
     end
-  end
-
-  def store_in_hash
-    @subject_ids.each do |subject|
-      
-    end  
   end
 
   # ローカルからファイルを削除する
