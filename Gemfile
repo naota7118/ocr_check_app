@@ -52,6 +52,8 @@ gem 'rubyXL'
 # Google認証のテストで使用する
 gem 'omniauth'
 gem "omniauth-rails_csrf_protection"
+# PDFの枚数を数える
+gem 'pdf-reader'
 # Use Redis adapter to run Action Cable in production
 # gem "redis", ">= 4.0.1"
 
