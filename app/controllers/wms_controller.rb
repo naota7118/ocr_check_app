@@ -1,0 +1,2 @@
+class WmsController < ApplicationController
+end
