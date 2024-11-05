@@ -28,6 +28,11 @@ class WmsController < ApplicationController
     return if performed?
 
     convert_pdf_into_text(@drive)
+
+    # テキストファイルの文字列を1つの配列に格納
+    convert_line_into_array
+    # 得点のみを抽出
+    pull_out_wms_scores(@all_texts)
   end
 
   # PDFから照合処理に必要なテキストのみ抽出（Google Drive APIのOCR技術使用）
@@ -40,11 +45,32 @@ class WmsController < ApplicationController
 
     # テキストファイルを出力
     drive.export_file(converted_file.id, 'text/plain', download_dest: './tmp/txt/wms.txt')
-    binding.pry
+
     # GoogleドライブからPDFファイルを削除する
     drive.delete_file(metadata.id)
     # GoogleドライブからGoogleドキュメントファイルを削除する
     drive.delete_file(converted_file.id)
+  end
+
+  # テキストファイルの文字列を1つの配列に格納する
+  def convert_line_into_array
+    @all_texts = []
+    File.open('./tmp/txt/wms.txt', 'r') do |f|
+      f.each_line do |line|
+        @all_texts << line.strip
+      end
+    end
+  end
+
+  def pull_out_wms_scores(all_texts)
+    @wms_scores = []
+    # 数字の要素のみに変換
+    all_texts.each do |line|
+      if line.match?(/^[0-6]$/)
+        @wms_scores << line
+      end
+    end
+    binding.pry
   end
 
   private
