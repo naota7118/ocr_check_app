@@ -66,7 +66,7 @@ class WmsController < ApplicationController
     @wms_scores = []
     # 数字の要素のみに変換
     all_texts.each do |line|
-      if line.match?(/^[0-6]$/)
+      if line.match?(/^[0-6]$|^[1-4][0-9]$/)
         @wms_scores << line
       end
     end
