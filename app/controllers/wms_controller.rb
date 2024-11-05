@@ -33,6 +33,8 @@ class WmsController < ApplicationController
     convert_line_into_array
     # 得点のみを抽出
     pull_out_wms_scores(@all_texts)
+    # PDF1枚ごとに配列を分割
+    separate_each_pdf(@wms_scores)
   end
 
   # PDFから照合処理に必要なテキストのみ抽出（Google Drive APIのOCR技術使用）
@@ -66,10 +68,16 @@ class WmsController < ApplicationController
     @wms_scores = []
     # 数字の要素のみに変換
     all_texts.each do |line|
-      if line.match?(/^[0-6]$|^[1-4][0-9]$/)
+      if line.match?(/^[0-6]$|^[1-5][0-9]$|論理的記憶/)
         @wms_scores << line
       end
     end
+  end
+
+  # Excelで行ごとに出力するため、PDF1枚ごとの配列に分割する
+  def separate_each_pdf(wms_scores)
+    @wms_scores = wms_scores.deep_dup
+    @each_pdf_scores = @wms_scores.slice_before(/^[0-9]*[0-9]+\s論理的記憶/).to_a
     binding.pry
   end
 
