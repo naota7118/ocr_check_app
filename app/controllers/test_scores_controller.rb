@@ -7,6 +7,8 @@ require 'rubyXL'
 require 'rubyXL/convenience_methods'
 require 'pdf/reader'
 
+"hello"
+
 class TestScoresController < ApplicationController
   # ファイルアップロード用のビューを返す
   def index; end
