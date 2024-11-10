@@ -354,11 +354,12 @@ class TestScoresController < ApplicationController
         'prompt' => 'select_account'
       }
     )
-    if request.params['code'].nil? # 認証コードを持っていなかった場合
+    if request.params['code'].nil? # アクセストークンを持っていない場合
       puts "認証コードを持っていません"
       auth_uri = auth_client.authorization_uri.to_s
+      binding.pry
       redirect_to auth_uri, allow_other_host: true
-    else # 認証コードを持っている場合
+    else # アクセストークンを持っている場合
       puts "認証コードを持っています"
       auth_client.code = request.params['code']
       auth_client.fetch_access_token!
