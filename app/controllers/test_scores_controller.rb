@@ -350,18 +350,19 @@ class TestScoresController < ApplicationController
       redirect_uri: Rails.application.credentials.dig(:google, :redirect_uri),
       additional_parameters: {
         'access_type' => 'online',
-        'include_granted_scopes' => 'true' # incremental auth
+        'response_type' => 'code',
+        'prompt' => 'select_account'
       }
     )
-    if request.params['code'].nil? # 認証コードを持っていなかった場合
+    if request.params['code'].nil? # 認可コードを持っていない場合
       auth_uri = auth_client.authorization_uri.to_s
       redirect_to auth_uri, allow_other_host: true
-    else # 認証コードを持っている場合
+    else # 認可コードを持っている場合
       auth_client.code = request.params['code']
+      # 認可コードを使ってアクセストークンを取得
       auth_client.fetch_access_token!
       auth_client.client_secret = nil
       session[:credentials] = auth_client.to_json
-
       client_opts = JSON.parse(session[:credentials])
       auth_client = Signet::OAuth2::Client.new(client_opts)
       @drive = Google::Apis::DriveV3::DriveService.new.tap do |client|
@@ -372,4 +373,5 @@ class TestScoresController < ApplicationController
       @drive.authorization = auth_client
     end
   end
+
 end
