@@ -21,57 +21,79 @@ class WmsController < ApplicationController
     end
   end
 
+  class PDFConverter
+    def convert_into_text(drive)
+      file_path = Dir.glob(Rails.root.join('public/uploads/*.pdf').to_s)
+      metadata = Google::Apis::DriveV3::File.new(name: file_path[0])
+      @metadata = drive.create_file(metadata, upload_source: file_path[0], content_type: '/pdf')
+      # Googleドキュメント形式に変換
+      @google_document = drive.copy_file(@metadata.id, Google::Apis::DriveV3::File.new(mime_type: 'application/vnd.google-apps.document'))
+      # テキストファイルを出力
+      drive.export_file(@google_document.id, 'text/plain', download_dest: './tmp/txt/wms.txt')
+    end
+
+    def remove_pdf_from_drive(drive)
+      drive.delete_file(@metadata.id)
+    end
+
+    def remove_document_from_drive(drive)
+      drive.delete_file(@google_document.id)
+    end
+  end
+
+  # 検査データオブジェクトをつくるクラス
+  class WMSTest
+    attr_accessor :raw_data, :scores_and_title
+    def initialize
+      text_per_line_in_array = []
+      File.open('./tmp/txt/wms.txt', 'r') do |f|
+        f.each_line do |line|
+          text_per_line_in_array << line.strip
+        end
+      end
+      @raw_data = text_per_line_in_array
+    end
+
+    def scores_and_title(data)
+      data.map! do |line|
+        if line.match?(/^[0-6]$|^[1-5][0-9]$|論理的記憶/)
+          line
+        end
+      end
+      @scores_and_title = data.compact!
+    end
+  end
+
+  # 得点データのみに変換（文字列「論理的記憶」のみ例外）
+  class ScoreTitleExtracter
+    attr_accessor :only_scores_and_title
+    def extract_scores_and_title(data)
+      # 「論理的記憶」はPDFごとに区切るのに必要
+      @only_scores_and_title = data.map! do |line|
+        if line.match?(/^[0-6]$|^[1-5][0-9]$|論理的記憶/)
+          @wms_scores << line
+        end
+      end
+    end
+  end
+
   # PDFとエクセルの得点データを照合し、結果を返す
   def result
     # Google認証
     pass_authentication
     return if performed?
 
-    convert_pdf_into_text(@drive)
+    @pdf_converter = PDFConverter.new
+    @pdf_converter.convert_into_text(@drive)
+    @pdf_converter.remove_pdf_from_drive(@drive)
+    @pdf_converter.remove_document_from_drive(@drive)
 
-    # テキストファイルの文字列を1つの配列に格納
-    convert_line_into_array
-    # 得点のみを抽出
-    pull_out_wms_scores(@all_texts)
+    @wms_test_data = WMSTest.new
+    @raw_data = @wms_test_data.raw_data
+    @scores_and_title = @wms_test_data.scores_and_title(@raw_data)
+    
     # PDF1枚ごとに配列を分割
     separate_each_pdf(@wms_scores)
-  end
-
-  # PDFから照合処理に必要なテキストのみ抽出（Google Drive APIのOCR技術使用）
-  def convert_pdf_into_text(drive)
-    file_path = Dir.glob(Rails.root.join('public/uploads/*.pdf').to_s)
-    # PDFファイルをGoogleドライブにアップロード
-    metadata = drive.create_file(metadata, upload_source: file_path.first, content_type: '/pdf')
-    # Googleドキュメント形式に変換
-    converted_file = drive.copy_file(metadata.id, Google::Apis::DriveV3::File.new(mime_type: 'application/vnd.google-apps.document'))
-
-    # テキストファイルを出力
-    drive.export_file(converted_file.id, 'text/plain', download_dest: './tmp/txt/wms.txt')
-
-    # GoogleドライブからPDFファイルを削除する
-    drive.delete_file(metadata.id)
-    # GoogleドライブからGoogleドキュメントファイルを削除する
-    drive.delete_file(converted_file.id)
-  end
-
-  # テキストファイルの文字列を1つの配列に格納する
-  def convert_line_into_array
-    @all_texts = []
-    File.open('./tmp/txt/wms.txt', 'r') do |f|
-      f.each_line do |line|
-        @all_texts << line.strip
-      end
-    end
-  end
-
-  def pull_out_wms_scores(all_texts)
-    @wms_scores = []
-    # 数字の要素のみに変換
-    all_texts.each do |line|
-      if line.match?(/^[0-6]$|^[1-5][0-9]$|論理的記憶/)
-        @wms_scores << line
-      end
-    end
   end
 
   # Excelで行ごとに出力するため、PDF1枚ごとの配列に分割する

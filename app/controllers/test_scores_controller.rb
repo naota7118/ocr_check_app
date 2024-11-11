@@ -373,5 +373,3 @@ class TestScoresController < ApplicationController
       @drive.authorization = auth_client
     end
   end
-
-end
