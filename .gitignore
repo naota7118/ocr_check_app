@@ -41,3 +41,5 @@ client_secrets.json
 
 /config/credentials/production.key
 node_modules
+
+/.vscode
