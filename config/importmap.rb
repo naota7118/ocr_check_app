@@ -7,3 +7,4 @@ pin '@hotwired/turbo-rails', to: 'turbo.min.js'
 pin_all_from 'app/javascript/controllers', under: 'controllers'
 
 pin 'result', to: 'result.js'
+pin 'wms', to: 'wms.js'
