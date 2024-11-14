@@ -4,10 +4,10 @@
   </div>
   <div class="center-content">
     <div class="usage-content">
-      <h2 class="usage">MoCAの照合・Excel書き出し</h2>
+      <h2 class="usage">WMSの照合・Excel書き出し</h2>
       <% if user_signed_in? %>
         <div class="select-form">
-          <%= form_with url: "/test_scores", method: :post, enctype: "multipart/form-data", data: { turbo: false } do |form| %>
+          <%= form_with url: "/wms", method: :post, enctype: "multipart/form-data", data: { turbo: false } do |form| %>
             <div class="select-files">
               <p><label for="upload">1. PDFファイルを1つ選択してください。</label></p>
               <%= form.file_field :upload, name: "upload", accept: ".pdf" %>

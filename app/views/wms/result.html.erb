@@ -1,0 +1,44 @@
+<div class="wrapper">
+  <div class="left-content">
+    <%= image_tag "/OCRCheck.png", size: '150x150' %>
+    <div class="back-btn">
+      <%= link_to wms_path, class: 'btn btn_back' do %>
+        <i class="fa-solid fa-arrow-left"></i>ファイル選択画面に戻る
+      <% end %>
+    </div>
+  </div>
+  <div class="center-content result-page">
+    <div class="result-container">
+      <div class="left-container">
+        <% @results.each do |result| %>
+          <%= result[:id] %>
+          <table border="1" style="border-collapse: collapse">
+            <tbody>
+              <% result[:scores].each do |score| %>
+                <% score.each do |each_score| %>
+                  <tr>
+                    <td><%= each_score %></td>
+                  </tr>
+                <% end %>
+              <% end %>
+            </tbody>
+          </table>
+        <% end %>
+      </div>
+      <div class="right-container">
+        <div class="guide">
+          <p><span class="pink">ピンク色</span>が修正が必要な項目です。</p>
+          <p>PDFとExcelを確認してみてください。</p>
+        </div>
+        <div class="character">
+          <%= image_tag "/OCRCheck_character.png", size: '150x150' %>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<%# <script type="module">
+  import "result";
+</script> %>
