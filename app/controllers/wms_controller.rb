@@ -43,7 +43,7 @@ class WmsController < ApplicationController
 
   # 検査データオブジェクトをつくるクラス
   class WMSTest
-    attr_accessor :raw_data, :scores_and_title
+    attr_accessor :raw_data, :wms_scores_and_title
     def initialize
       text_per_line_in_array = []
       File.open('./tmp/txt/wms.txt', 'r') do |f|
@@ -52,29 +52,100 @@ class WmsController < ApplicationController
         end
       end
       @raw_data = text_per_line_in_array
+      FileUtils.rm_r(Dir.glob(Rails.root.join('tmp/txt/*.txt').to_s))
     end
 
     def scores_and_title(data)
       data.map! do |line|
-        if line.match?(/^[0-6]$|^[1-5][0-9]$|論理的記憶/)
+        if line.match?(/^[0-6]$|^[1-5][0-9]$/)
           line
+        elsif line.match?(/^[1-5][0-9]\./)
+          line[0, 2]
+        elsif line.match?(/論理的記憶/)
+          line = '論理的記憶'
         end
       end
-      @scores_and_title = data.compact!
+      @wms_scores_and_title = data.compact!
+    end
+
+  end
+
+  class PageCountDeleter
+    attr_accessor :wms_array
+    def initialize(array)
+      @wms_array = array
+    end
+
+    def delete(array)
+      array.each_with_index do |_, i|
+        if array[i] == '5' && array[i+1] == '物語B得点'
+          array.delete_at(i)
+        end
+      end
+      array
     end
   end
 
-  # 得点データのみに変換（文字列「論理的記憶」のみ例外）
-  class ScoreTitleExtracter
-    attr_accessor :only_scores_and_title
-    def extract_scores_and_title(data)
-      # 「論理的記憶」はPDFごとに区切るのに必要
-      @only_scores_and_title = data.map! do |line|
-        if line.match?(/^[0-6]$|^[1-5][0-9]$|論理的記憶/)
-          @wms_scores << line
+  class StrikeThroughChecker
+    def initialize(array)
+      @wms_array = array
+    end
+  
+    # 取り消し線で修正された後の得点を取得
+    def corrected_score(array)
+      array.each_with_index do |_, i|
+        if array[i].match?(/≠ [0-6]|≠[0-6]/)
+          array[i] = array[i][-1, 1]
         end
       end
+      array
     end
+  end
+
+  class FindSum
+    def initialize(array)
+      @wms_array = array
+    end
+
+    # 文字列の中に入っている得点を取得 例：粗点 (物語A+B) 32
+    def sum_score(array)
+      array.each_with_index do |_, i|
+        if array[i].match?(/物語A\+B.*[0-5][0-9]/)
+          array[i] = array[i][-2, 2]
+        elsif array[i].match?(/最高.*:25.*[0-5][0-9]/)
+          array[i] = array[i].scan(/[0-5][0-9]/)[1]
+        elsif array[i].match?(/最高.*:25.*[0-9]/)
+          array[i] = array[i].scan(/[0-9]/)[2]
+        end
+      end
+      array
+    end
+  end
+
+  def find_subject_id(array)
+    subjects = array.deep_dup
+    subjects.map! do |subject|
+      if subject.match?(/Osaka/)
+        subject = subject.match(/Osaka.*[0-9]/).to_s
+      end
+    end
+    subjects.compact!
+  end
+
+  def shape(wms_array)
+    wms_array.shift
+    wms_array.partition.each_with_index { |_, index| index < 7 }
+  end
+
+  def pair(ids, scores)
+    @wms_id_and_score = []
+    ids.each_with_index do |id, i|
+      one_person_data = {}
+      one_person_data[:id] = id
+      one_person_data[:scores] = scores[i]
+      @wms_id_and_score << one_person_data
+    end
+    @wms_id_and_score
   end
 
   # PDFとエクセルの得点データを照合し、結果を返す
@@ -83,17 +154,40 @@ class WmsController < ApplicationController
     pass_authentication
     return if performed?
 
-    @pdf_converter = PDFConverter.new
-    @pdf_converter.convert_into_text(@drive)
-    @pdf_converter.remove_pdf_from_drive(@drive)
-    @pdf_converter.remove_document_from_drive(@drive)
+    pdf_converter = PDFConverter.new
+    pdf_converter.convert_into_text(@drive)
+    pdf_converter.remove_pdf_from_drive(@drive)
+    pdf_converter.remove_document_from_drive(@drive)
 
-    @wms_test_data = WMSTest.new
-    @raw_data = @wms_test_data.raw_data
-    @scores_and_title = @wms_test_data.scores_and_title(@raw_data)
-    
-    # PDF1枚ごとに配列を分割
-    separate_each_pdf(@wms_scores)
+    FileUtils.rm_r(Dir.glob(Rails.root.join('public/uploads/*.pdf').to_s))
+
+    wms_test = WMSTest.new
+    @raw_data = wms_test.raw_data
+
+    @subjects = find_subject_id(@raw_data)
+
+    page_count_deleter = PageCountDeleter.new(@raw_data)
+    @wms_array = page_count_deleter.wms_array
+    @wms_array = page_count_deleter.delete(@wms_array)
+
+    strike_through_checker = StrikeThroughChecker.new(@wms_array)
+    @wms_array = strike_through_checker.corrected_score(@wms_array)
+
+    find_sum = FindSum.new(@wms_array)
+    @wms_array = find_sum.sum_score(@wms_array)
+
+    @wms_scores_and_title = wms_test.scores_and_title(@wms_array)
+
+    # [[1人目の問題Aの得点, 1人目の問題Bの得点], [2人目の問題Aの得点, 2人目の問題Bの得点]...]の形に変換
+    @wms_scores_per_person = @wms_scores_and_title.slice_before('論理的記憶').to_a
+
+    # [問題Aの得点, 問題Bの得点]に整形
+    @wms_scores = @wms_scores_per_person.map! do |one_person_data|
+      shape(one_person_data)
+    end
+
+    # IDとデータをペアにする
+    @results = pair(@subjects, @wms_scores)
   end
 
   # Excelで行ごとに出力するため、PDF1枚ごとの配列に分割する
