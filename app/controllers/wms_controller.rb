@@ -183,6 +183,37 @@ class WmsController < ApplicationController
         worksheet.add_cell(subject_i + 1, score_i, score)
       end
     end
+
+    # 足し算が間違っていたら色を塗る
+    # 1行ごとに3-8列目=9列目 10-16列目=17列目 9列目+17列目=18列目
+    # worksheet[○行目][○列目].value
+
+    # 人数分繰り返す
+    for i in 1..wms_scores_for_excel.length
+      # 物語A得点のチェック
+      story_a_total = 0
+      for j in 2..7
+        story_a_total += worksheet[i][j].value
+      end
+      if story_a_total != worksheet[i][8].value
+        worksheet[i][8].change_fill('ff6666')
+      end
+
+      # 物語B得点のチェック
+      story_b_total = 0
+      for j in 9..15
+        story_b_total += worksheet[i][j].value
+      end
+      if story_b_total != worksheet[i][16].value
+        worksheet[i][16].change_fill('ff6666')
+      end
+
+      # 物語A+B得点のチェック
+      if worksheet[i][8].value + worksheet[i][16].value != worksheet[i][17].value
+        worksheet[i][17].change_fill('ff6666')
+      end
+
+    end
     
     workbook.write(Rails.root.join('public', 'uploads', 'wms_score.xlsx'))
   end
