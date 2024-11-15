@@ -57,7 +57,7 @@ class WmsController < ApplicationController
 
     def scores_and_title(data)
       data.map! do |line|
-        if line.match?(/^[0-6]$|^[1-5][0-9]$/)
+        if line.match?(/^[0-9]$|^[1-5][0-9]$/)
           line
         elsif line.match?(/^[1-5][0-9]\./)
           line[0, 2]
@@ -78,7 +78,9 @@ class WmsController < ApplicationController
 
     def delete(array)
       array.each_with_index do |_, i|
-        if array[i] == '5' && array[i+1] == '物語B得点'
+        if array[i].include?('5') && array[i+1] == '物語B得点'
+          array.delete_at(i)
+        elsif array[i].include?('5') && array[i+1] == 'WMS-R'
           array.delete_at(i)
         end
       end
@@ -116,6 +118,8 @@ class WmsController < ApplicationController
           array[i] = array[i].scan(/[0-5][0-9]/)[1]
         elsif array[i].match?(/最高.*:25.*[0-9]/)
           array[i] = array[i].scan(/[0-9]/)[2]
+        elsif array[i].match?(/物語B得点.*[0-9]/)
+          array[i] = array[i].match(/[0-9]/).to_s
         end
       end
       array
@@ -275,7 +279,7 @@ class WmsController < ApplicationController
 
     # 得点を文字列型から整数型に変換する
     @wms_scores = alter_string_to_number(@wms_scores)
-
+    
     # IDとデータをペアにする
     @results = pair(@subjects, @wms_scores)
 
@@ -286,46 +290,40 @@ class WmsController < ApplicationController
     @results = sum_check(@results)
   end
 
-  # Excelで行ごとに出力するため、PDF1枚ごとの配列に分割する
-  def separate_each_pdf(wms_scores)
-    @wms_scores = wms_scores.deep_dup
-    @each_pdf_scores = @wms_scores.slice_before(/^[0-9]*[0-9]+\s論理的記憶/).to_a
-  end
-
   private
 
-  # Google API認証を通す
-  def pass_authentication
-    # client_secret.jsonファイルを読み取ってオブジェクトを作成
-    client_secrets = Google::APIClient::ClientSecrets.load
-    auth_client = client_secrets.to_authorization
-    auth_client.update!(
-      scope: 'https://www.googleapis.com/auth/drive',
-      redirect_uri: Rails.application.credentials.dig(:google, :wms_redirect_uri),
-      additional_parameters: {
-        'access_type' => 'online',
-        'response_type' => 'code',
-        'prompt' => 'select_account'
-      }
-    )
-    if request.params['code'].nil? # 認可コードを持っていない場合
-      auth_uri = auth_client.authorization_uri.to_s
-      redirect_to auth_uri, allow_other_host: true
-    else # 認可コードを持っている場合
-      auth_client.code = request.params['code']
-      # 認可コードを使ってアクセストークンを取得
-      auth_client.fetch_access_token!
-      auth_client.client_secret = nil
-      session[:credentials] = auth_client.to_json
-      client_opts = JSON.parse(session[:credentials])
-      auth_client = Signet::OAuth2::Client.new(client_opts)
-      @drive = Google::Apis::DriveV3::DriveService.new.tap do |client|
-        client.client_options.open_timeout_sec = 120
-        client.client_options.read_timeout_sec = 120
-        client.request_options.retries = 3
+    # Google API認証を通す
+    def pass_authentication
+      # client_secret.jsonファイルを読み取ってオブジェクトを作成
+      client_secrets = Google::APIClient::ClientSecrets.load
+      auth_client = client_secrets.to_authorization
+      auth_client.update!(
+        scope: 'https://www.googleapis.com/auth/drive',
+        redirect_uri: Rails.application.credentials.dig(:google, :wms_redirect_uri),
+        additional_parameters: {
+          'access_type' => 'online',
+          'response_type' => 'code',
+          'prompt' => 'select_account'
+        }
+      )
+      if request.params['code'].nil? # 認可コードを持っていない場合
+        auth_uri = auth_client.authorization_uri.to_s
+        redirect_to auth_uri, allow_other_host: true
+      else # 認可コードを持っている場合
+        auth_client.code = request.params['code']
+        # 認可コードを使ってアクセストークンを取得
+        auth_client.fetch_access_token!
+        auth_client.client_secret = nil
+        session[:credentials] = auth_client.to_json
+        client_opts = JSON.parse(session[:credentials])
+        auth_client = Signet::OAuth2::Client.new(client_opts)
+        @drive = Google::Apis::DriveV3::DriveService.new.tap do |client|
+          client.client_options.open_timeout_sec = 120
+          client.client_options.read_timeout_sec = 120
+          client.request_options.retries = 3
+        end
+        @drive.authorization = auth_client
       end
-      @drive.authorization = auth_client
     end
-  end
 
 end
