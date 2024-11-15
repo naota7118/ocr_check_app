@@ -10,14 +10,22 @@
   <div class="center-content result-page">
     <div class="result-container">
       <div class="left-container">
-        <% @results.each do |result| %>
-          <%= result[:id] %>
+        <% @results.each do |person| %>
+          <%= person[:id] %>
           <table border="1" style="border-collapse: collapse">
             <tbody>
-              <% result[:scores].each do |score| %>
-                <% score.each do |each_score| %>
+              <% person[:scores].each_with_index do |story, story_i| %>
+                <% story.each_with_index do |score, i| %>
                   <tr>
-                    <td><%= each_score %></td>
+                    <% if (story_i == 0 && i == 6) && person[:story_a_sum] == false %>
+                      <td class="story_a_sum_wrong"><%= score %></td>
+                    <% elsif (story_i == 1 && i == 7) && person[:story_b_sum] == false %>
+                      <td class="story_b_sum_wrong"><%= score %></td>
+                    <% elsif (story_i == 1 && i == 8) && person[:wms_sum] == false %>
+                      <td class="wms_sum_wrong"><%= score %></td>
+                    <% else %>
+                      <td><%= score %></td>
+                    <% end %>
                   </tr>
                 <% end %>
               <% end %>
@@ -39,6 +47,6 @@
 </div>
 
 
-<%# <script type="module">
-  import "result";
-</script> %>
+<script type="module">
+  import "wms";
+</script>
