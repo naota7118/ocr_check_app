@@ -158,6 +158,66 @@ class WmsController < ApplicationController
     end
   end
 
+  # PDFから取得した得点をExcelに書き出す
+  def export_to_excel(subjects, wms_scores)
+    wms_scores_for_excel = wms_scores.deep_dup
+    workbook = RubyXL::Workbook.new
+    worksheet = workbook[0]
+
+    # Excelの1行目に項目名を書き出す
+    worksheet.add_cell(0, 8, '物語A合計')
+    worksheet.add_cell(0, 16, '物語B合計')
+    worksheet.add_cell(0, 17, '物語A+B合計')
+
+    # 1人ずつ格納されている得点配列に行番号と被験者IDを追加
+    wms_scores_for_excel.each_with_index do |subject, i|
+      subject.unshift(i+1)
+      subject.insert(1, subjects[i])
+      subject.flatten!
+    end
+
+    # PDFから取得した得点を行ごとにExcelに書き出す（1行ごとに1人分の得点が格納されている）
+    wms_scores_for_excel.each_with_index do |subject, subject_i|
+      subject.each_with_index do |score, score_i|
+        # add_cell(○行目, ○列目, 値)
+        worksheet.add_cell(subject_i + 1, score_i, score)
+      end
+    end
+
+    # 足し算が間違っていたら色を塗る
+    # 1行ごとに3-8列目=9列目 10-16列目=17列目 9列目+17列目=18列目
+    # worksheet[○行目][○列目].value
+
+    # 人数分繰り返す
+    for i in 1..wms_scores_for_excel.length
+      # 物語A得点のチェック
+      story_a_total = 0
+      for j in 2..7
+        story_a_total += worksheet[i][j].value
+      end
+      if story_a_total != worksheet[i][8].value
+        worksheet[i][8].change_fill('ff6666')
+      end
+
+      # 物語B得点のチェック
+      story_b_total = 0
+      for j in 9..15
+        story_b_total += worksheet[i][j].value
+      end
+      if story_b_total != worksheet[i][16].value
+        worksheet[i][16].change_fill('ff6666')
+      end
+
+      # 物語A+B得点のチェック
+      if worksheet[i][8].value + worksheet[i][16].value != worksheet[i][17].value
+        worksheet[i][17].change_fill('ff6666')
+      end
+
+    end
+    
+    workbook.write(Rails.root.join('public', 'uploads', 'wms_score.xlsx'))
+  end
+
   # resultハッシュに格納する
   def sum_check(results)
     results.each_with_index do |result, i|
@@ -223,7 +283,11 @@ class WmsController < ApplicationController
     # IDとデータをペアにする
     @results = pair(@subjects, @wms_scores)
 
-    p @results = sum_check(@results)
+    # Excelに書き出す
+    export_to_excel(@subjects, @wms_scores)
+
+    # 足し算の合計が正しいかチェック
+    @results = sum_check(@results)
   end
 
   # Excelで行ごとに出力するため、PDF1枚ごとの配列に分割する
