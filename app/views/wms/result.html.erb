@@ -10,28 +10,21 @@
   <div class="center-content result-page">
     <div class="result-container">
       <div class="left-container">
-        <% @results.each do |result| %>
-          <%= result[:id] %>
+        <% @results.each do |person| %>
+          <%= person[:id] %>
           <table border="1" style="border-collapse: collapse">
             <tbody>
-              <% result[:scores].each_with_index do |score, index| %>
-                <% score.each_with_index do |each_score, i| %>
+              <% person[:scores].each_with_index do |story, story_i| %>
+                <% story.each_with_index do |score, i| %>
                   <tr>
-                    <%# 1つめの配列の最後の要素（問題Aの合計） %>
-                    <% if index == 0 && i == score.length - 1 %>
-                      <td class="wms_score_a" id="questinA_sum"><%= each_score %></td>
-                    <%# 2つめの配列の最後から2番目の要素（問題Bの合計） %>
-                    <% elsif index == 1 && i == score.length - 2 %>
-                      <td class="wms_score_b" id="questinB_sum"><%= each_score %></td>
-                    <%# 2つめの配列の最後の要素（問題A+Bの合計） %>
-                    <% elsif index == 1 && i == score.length - 1 %>
-                      <td class="wms_score_a_and_b" id="questinAandB_sum"><%= each_score %></td>
-                    <%# 1つめの配列の最後以外の要素（問題Aの得点） %>
-                    <% elsif index == 0 %>
-                      <td class="wms_score_a"><%= each_score %></td>
-                    <%# 2つめの配列の最後以外の要素（問題Bの得点） %>
+                    <% if (story_i == 0 && i == 6) && person[:story_a_sum] == false %>
+                      <td class="story_a_sum_wrong"><%= score %></td>
+                    <% elsif (story_i == 1 && i == 7) && person[:story_b_sum] == false %>
+                      <td class="story_b_sum_wrong"><%= score %></td>
+                    <% elsif (story_i == 1 && i == 8) && person[:wms_sum] == false %>
+                      <td class="wms_sum_wrong"><%= score %></td>
                     <% else %>
-                      <td class="wms_score_b"><%= each_score %></td>
+                      <td><%= score %></td>
                     <% end %>
                   </tr>
                 <% end %>

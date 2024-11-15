@@ -1,13 +1,35 @@
-const result = document.getElementsByClassName('wms_score');
-console.log(result)
-// 不一致のレコードに色を塗る
-// function color (){
-//   for (let i = 0; i < result.length; i++) {
-//     let result_text = result[i].innerText;
-//     if (result_text === '一致しません' || result_text === '読み取れていません') {
-//       result[i].style.backgroundColor = "#FFC0CB";
-//     }
-//   }
-// }
+// 足し算の合計が間違っていたら色を塗る
+const color = () => {
+  const story_a_sum_wrong = document.getElementsByClassName('story_a_sum_wrong')
+  if (story_a_sum_wrong.length > 0) {
+    Array.prototype.forEach.call(
+      story_a_sum_wrong,
+      (element) => {
+        element.style.backgroundColor = "#FFC0CB";
+      }
+    )
+  }
+
+  const story_b_sum_wrong = document.getElementsByClassName('story_b_sum_wrong')
+  if (story_b_sum_wrong.length > 0) {
+    Array.prototype.forEach.call(
+      story_b_sum_wrong,
+      (element) => {
+        element.style.backgroundColor = "#FFC0CB";
+      }
+    )
+  }
+
+  const wms_sum_wrong = document.getElementsByClassName('wms_sum_wrong')
+  if (wms_sum_wrong.length > 0) {
+    Array.prototype.forEach.call(
+      wms_sum_wrong,
+      (element) => {
+        element.style.backgroundColor = "#FFC0CB";
+      }
+    )
+  }
+}
 
 alert("注意：更新ボタンは押さないでください。");
+color();

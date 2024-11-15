@@ -148,6 +148,37 @@ class WmsController < ApplicationController
     @wms_id_and_score
   end
 
+  def alter_string_to_number(results)
+    results.map! do |person|
+      person.map! do |story|
+        story.map! do |score|
+          score.to_i
+        end
+      end
+    end
+  end
+
+  # resultハッシュに格納する
+  def sum_check(results)
+    results.each_with_index do |result, i|
+      # 1人分ずつ処理する
+      # 問題A合計が間違っている
+      if result[:scores][0][0..5].sum != result[:scores][0][6]
+        results[i][:story_a_sum] = false
+      end
+
+      # 問題B合計が間違っている
+      if result[:scores][1][0..6].sum != result[:scores][1][7]
+        results[i][:story_b_sum] = false
+      end
+
+      # 問題A+B合計が間違っている
+      if (result[:scores][0][6] + result[:scores][1][7]) != result[:scores][1][8]
+        results[i][:wms_sum] = false
+      end
+    end
+  end
+
   # PDFとエクセルの得点データを照合し、結果を返す
   def result
     # Google認証
@@ -186,8 +217,13 @@ class WmsController < ApplicationController
       shape(one_person_data)
     end
 
+    # 得点を文字列型から整数型に変換する
+    @wms_scores = alter_string_to_number(@wms_scores)
+
     # IDとデータをペアにする
     @results = pair(@subjects, @wms_scores)
+
+    p @results = sum_check(@results)
   end
 
   # Excelで行ごとに出力するため、PDF1枚ごとの配列に分割する
