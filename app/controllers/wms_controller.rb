@@ -184,10 +184,6 @@ class WmsController < ApplicationController
       end
     end
 
-    # 足し算が間違っていたら色を塗る
-    # 1行ごとに3-8列目=9列目 10-16列目=17列目 9列目+17列目=18列目
-    # worksheet[○行目][○列目].value
-
     # 人数分繰り返す
     for i in 1..wms_scores_for_excel.length
       # 物語A得点のチェック
